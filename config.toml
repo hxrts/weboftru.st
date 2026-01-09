@@ -1,4 +1,4 @@
-base_url = "https://weboftru.st"
+base_url = "/"
 title = "Web of Trust"
 description = "A web of trust"
 compile_sass = true
