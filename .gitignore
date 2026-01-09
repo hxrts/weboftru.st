@@ -1,0 +1,12 @@
+# llm
+.claude
+CLAUDE.md
+
+# system
+.DS_Store
+
+# nix
+result
+
+# zola
+public/

@@ -1,0 +1,13 @@
+base_url = "https://weboftru.st"
+title = "Web of Trust"
+description = "A web of trust"
+compile_sass = true
+minify_html = true
+generate_feeds = true
+feed_filenames = ["rss.xml"]
+
+[markdown]
+highlight_code = true
+highlight_theme = "base16-ocean-dark"
+
+[extra]
