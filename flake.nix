@@ -37,12 +37,10 @@
         };
 
         devShells.default = pkgs.mkShell {
-          buildInputs = [ pkgs.zola ];
-
-          shellHook = ''
-            echo "Zola development environment"
-            echo "Run 'zola serve' to start the dev server"
-          '';
+          buildInputs = [
+            pkgs.zola
+            pkgs.just
+          ];
         };
       }
     );
