@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ config.title }}{% endblock title %}</title>
     <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
-    <link rel="stylesheet" href="{{ get_url(path='style.css', trailing_slash=false) | safe }}">
+    {% set depth = current_path | default(value="/") | trim_start_matches(pat="/") | trim_end_matches(pat="/") | split(pat="/") | length %}
+    {% if current_path == "/" or current_path == "" %}{% set depth = 0 %}{% endif %}
+    {% set base = "" %}{% for i in range(end=depth) %}{% set_global base = base ~ "../" %}{% endfor %}
+    {% if base == "" %}{% set base = "./" %}{% endif %}
+    <link rel="stylesheet" href="{{ base }}style.css">
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     {% block head %}{% endblock head %}
 </head>
 <body>
     <header>
         <nav>
-            <a href="{{ get_url(path='/') | safe }}" class="site-title">{{ config.title }}</a>
+            <a href="{{ base }}index.html" class="site-title">{{ config.title }}</a>
         </nav>
     </header>
     <main>
@@ -20,5 +26,26 @@
     <footer>
         <p>&copy; {{ now() | date(format="%Y") }} {{ config.title }}</p>
     </footer>
+    <!-- KaTeX -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ]
+        });"></script>
+    <!-- Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        document.querySelectorAll('code.language-mermaid').forEach(el => {
+            const pre = el.parentElement;
+            const mermaidPre = document.createElement('pre');
+            mermaidPre.className = 'mermaid';
+            mermaidPre.textContent = el.textContent;
+            pre.replaceWith(mermaidPre);
+        });
+        mermaid.initialize({startOnLoad: true});
+    </script>
 </body>
 </html>

@@ -1,0 +1,9 @@
+%YAML 1.2
+---
+name: Mermaid
+file_extensions: [mermaid]
+scope: source.mermaid
+contexts:
+  main:
+    - match: '.*'
+      scope: text.plain

@@ -9,7 +9,7 @@
     <ul class="post-list">
         {% for page in section.pages %}
         <li>
-            <a href="{{ page.permalink }}">
+            <a href="./{{ page.slug }}/index.html">
                 <span class="post-title">{{ page.title }}</span>
                 <span class="post-date">{{ page.date | date(format="%Y-%m-%d") }}</span>
             </a>
