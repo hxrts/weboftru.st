@@ -161,7 +161,7 @@ The diagram below shows the message flow for a 4-peer consensus with 1 initiator
 ```mermaid
 graph TB
     W1[Witness 1]
-    W2[Witness 2<br/>Initiator]
+    W2[Initiator]
     W3[Witness 3]
     W4[Witness 4]
 
@@ -183,7 +183,7 @@ graph TB
     style W4 fill:#e1f5ff
 ```
 
-Phase ① broadcasts the operation to all witnesses. Phase ② collects signature shares (Witness 2 as initiator decides after receiving 2-of-3 shares). Phase ③ broadcasts the threshold signature, allowing all witnesses to finalize.
+Phase ① broadcasts the operation to all witnesses. Phase ② collects signature shares (the initiator decides after receiving 2-of-3 shares). Phase ③ broadcasts the threshold signature, allowing all witnesses to finalize.
 
 ## Evidence Propagation
 
