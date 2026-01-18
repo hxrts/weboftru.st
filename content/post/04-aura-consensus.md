@@ -256,10 +256,10 @@ graph TB
     style W1 fill:#e1f5ff
     style W2 fill:#e1f5ff
     style W3 fill:#e1f5ff
-    style W4 fill:#e1f5ff
+    style W4 fill:#ffe1e1
 ```
 
-Phase ① shows periodic gossip with fanout k=3 (each witness sends to 3 random peers). Dotted arrows indicate repeated rounds until convergence. Phase ② shows Witness 3 broadcasting after assembling threshold shares. The gossip pattern ensures eventual agreement without a coordinator.
+Phase ① shows periodic gossip with fanout k=3 (each witness sends to 3 random peers). Dotted arrows indicate repeated rounds until convergence. Phase ② shows Witness 3 broadcasting after assembling threshold shares. Witness 4 (pink) was the initiator in the fast path but participates as a peer in fallback. The gossip pattern ensures eventual agreement without a coordinator.
 
 **Messages**
 
