@@ -160,12 +160,10 @@ The diagram below shows the message flow for a 4-peer consensus with 1 initiator
 
 ```mermaid
 graph TB
-    subgraph " "
-        W1[Witness 1]
-        I[Initiator]
-        W2[Witness 2]
-        W3[Witness 3]
-    end
+    W1[Witness 1]
+    I[Initiator]
+    W2[Witness 2]
+    W3[Witness 3]
 
     I -->|"① Execute<br/>cid, Op, prestate_hash"| W1
     I -->|"① Execute<br/>cid, Op, prestate_hash"| W2
