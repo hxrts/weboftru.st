@@ -225,6 +225,42 @@ Fallback runs when witnesses disagree on the result identifier, disagree on the 
 
 Witnesses exchange proposal maps over a sparse overlay. Each witness merges incoming maps and checks for equivocation. Equivocation is defined as a witness producing two shares for the same `cid` and `prestate_hash` but different `rid`. When any proposal accumulates `t` valid and non equivocating shares, the witness produces a threshold signature and broadcasts a `ThresholdComplete` message. All witnesses accept the first valid threshold signature they see.
 
+### Fallback Topology
+
+The diagram below shows the fallback gossip protocol for a 4-witness network (2-of-3 threshold). Unlike the fast path's star topology, fallback uses peer-to-peer gossip with bounded fanout. Each witness periodically sends its proposal map to k random peers (k=3 shown). Once any witness accumulates threshold shares, it broadcasts completion to all.
+
+```mermaid
+graph TB
+    W1[Witness 1]
+    W2[Witness 2]
+    W3[Witness 3]
+    W4[Witness 4]
+
+    W1 -.->|"① AggregateShare<br/>proposals, evidΔ"| W2
+    W1 -.->|"① AggregateShare<br/>proposals, evidΔ"| W3
+    W1 -.->|"① AggregateShare<br/>proposals, evidΔ"| W4
+
+    W2 -.->|"① AggregateShare<br/>proposals, evidΔ"| W1
+    W2 -.->|"① AggregateShare<br/>proposals, evidΔ"| W3
+
+    W3 -.->|"① AggregateShare<br/>proposals, evidΔ"| W2
+    W3 -.->|"① AggregateShare<br/>proposals, evidΔ"| W4
+
+    W4 -.->|"① AggregateShare<br/>proposals, evidΔ"| W1
+    W4 -.->|"① AggregateShare<br/>proposals, evidΔ"| W3
+
+    W3 ==>|"② ThresholdComplete<br/>cid, rid, sig, attesters"| W1
+    W3 ==>|"② ThresholdComplete<br/>cid, rid, sig, attesters"| W2
+    W3 ==>|"② ThresholdComplete<br/>cid, rid, sig, attesters"| W4
+
+    style W1 fill:#e1f5ff
+    style W2 fill:#e1f5ff
+    style W3 fill:#fff4e1
+    style W4 fill:#e1f5ff
+```
+
+Phase ① shows periodic gossip with fanout k=3 (each witness sends to 3 random peers). Dotted arrows indicate repeated rounds until convergence. Phase ② shows W3 broadcasting after assembling threshold shares (highlighted in yellow). The gossip pattern ensures eventual agreement without a coordinator.
+
 **Messages**
 
 * `Conflict(cid, proposals, evidΔ)`
