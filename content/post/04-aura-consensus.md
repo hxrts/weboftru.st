@@ -232,9 +232,9 @@ The diagram below shows the fallback gossip protocol for a 4-witness network (2-
 ```mermaid
 graph TB
     W1[Witness 1]
-    W2[Witness 2]
+    W2[Witness 4]
     W3[Witness 3]
-    W4[Witness 4]
+    W4[Witness 2]
 
     W1 -.->|"① AggregateShare<br/>proposals, evidΔ"| W2
     W1 -.->|"① AggregateShare<br/>proposals, evidΔ"| W3
@@ -259,7 +259,7 @@ graph TB
     style W4 fill:#e1f5ff
 ```
 
-Phase ① shows periodic gossip with fanout k=3 (each witness sends to 3 random peers). Dotted arrows indicate repeated rounds until convergence. Phase ② shows Witness 3 broadcasting after assembling threshold shares. Witness 2 (pink) was the initiator in the fast path but participates as a peer in fallback. The gossip pattern ensures eventual agreement without a coordinator.
+Phase ① shows periodic gossip with fanout k=3 (each witness sends to 3 random peers). Dotted arrows indicate repeated rounds until convergence. Phase ② shows Witness 3 broadcasting after assembling threshold shares. Witness 4 (pink) was the initiator in the fast path but participates as a peer in fallback. The gossip pattern ensures eventual agreement without a coordinator.
 
 **Messages**
 
