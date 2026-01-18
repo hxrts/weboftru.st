@@ -12,7 +12,7 @@ Aura targets agreement on single operations inside a context. Most state evolves
 
 The protocol gives the initiator of an operation a one round trip decision path in the good case. All honest witnesses finalize after an additional commit broadcast. The system does not maintain a global ordered log. It only agrees on commit facts for operations that require strong coordination.
 
-**Important limitation**: Aura Consensus is single-shot agreement, not log-based linearization. Each consensus instance independently agrees on a single operation and prestate, producing a single commit fact. Consensus does NOT provide global operation ordering, sequential linearization across instances, or automatic operation dependencies. To sequence operations that must execute in order, use session types (choreographic programming) that enforce ordering at the type level.
+**Important limitation**: Aura Consensus is single-shot agreement, not log-based linearization. Each consensus instance independently agrees on a single operation and prestate, producing a single commit fact. Consensus does *not* provide global operation ordering, sequential linearization across instances, or automatic operation dependencies. To sequence operations that must execute in order, use session types (choreographic programming) that enforce ordering at the type level.
 
 ## Consensus as Fact Emission
 
@@ -255,11 +255,11 @@ graph TB
 
     style W1 fill:#e1f5ff
     style W2 fill:#e1f5ff
-    style W3 fill:#fff4e1
+    style W3 fill:#e1f5ff,stroke:#f9a825,stroke-width:3px
     style W4 fill:#e1f5ff
 ```
 
-Phase ① shows periodic gossip with fanout k=3 (each witness sends to 3 random peers). Dotted arrows indicate repeated rounds until convergence. Phase ② shows W3 broadcasting after assembling threshold shares (highlighted in yellow). The gossip pattern ensures eventual agreement without a coordinator.
+Phase ① shows periodic gossip with fanout k=3 (each witness sends to 3 random peers). Dotted arrows indicate repeated rounds until convergence. Phase ② shows Witness 3 broadcasting after assembling threshold shares (highlighted with bold border). The gossip pattern ensures eventual agreement without a coordinator.
 
 **Messages**
 
