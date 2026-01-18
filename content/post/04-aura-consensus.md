@@ -225,6 +225,38 @@ Fallback runs when witnesses disagree on the result identifier, disagree on the 
 
 Witnesses exchange proposal maps over a sparse overlay. Each witness merges incoming maps and checks for equivocation. Equivocation is defined as a witness producing two shares for the same `cid` and `prestate_hash` but different `rid`. When any proposal accumulates `t` valid and non equivocating shares, the witness produces a threshold signature and broadcasts a `ThresholdComplete` message. All witnesses accept the first valid threshold signature they see.
 
+### Fallback Sequence
+
+The sequence diagram below shows how fallback handles conflicting proposals through gossip-based convergence. The initiator detects conflict and triggers fallback. Witnesses exchange proposal maps until one accumulates threshold shares and broadcasts completion.
+
+```mermaid
+sequenceDiagram
+    participant I as Initiator (W4)
+    participant W1 as Witness 1
+    participant W2 as Witness 2
+    participant W3 as Witness 3
+
+    Note over I: Detects conflicting shares
+    I->>W1: Conflict(cid, proposals, evidΔ)
+    I->>W2: Conflict(cid, proposals, evidΔ)
+    I->>W3: Conflict(cid, proposals, evidΔ)
+
+    Note over W1,W3: Gossip rounds (fanout k=3)
+    W1->>W2: AggregateShare(proposals, evidΔ)
+    W1->>W3: AggregateShare(proposals, evidΔ)
+    W2->>W1: AggregateShare(proposals, evidΔ)
+    W2->>W3: AggregateShare(proposals, evidΔ)
+    W3->>W1: AggregateShare(proposals, evidΔ)
+    W3->>W2: AggregateShare(proposals, evidΔ)
+
+    Note over W2: Reaches 2-of-3 threshold
+    W2->>W1: ThresholdComplete(cid, rid, sig, attesters)
+    W2->>W3: ThresholdComplete(cid, rid, sig, attesters)
+    W2->>I: ThresholdComplete(cid, rid, sig, attesters)
+```
+
+The initiator triggers fallback by broadcasting conflicting proposals to all witnesses. Witnesses merge proposals through periodic gossip rounds, detecting and filtering equivocation. Once Witness 2 accumulates 2-of-3 non-equivocating shares for a candidate, it produces the threshold signature and broadcasts completion. All witnesses accept the first valid threshold signature.
+
 ### Fallback Topology
 
 The diagram below shows the fallback gossip protocol for a 4-witness network (2-of-3 threshold). Unlike the fast path's star topology, fallback uses peer-to-peer gossip with bounded fanout. Each witness periodically sends its proposal map to k random peers (k=3 shown). Once any witness accumulates threshold shares, it broadcasts completion to all.
@@ -260,38 +292,6 @@ graph TB
 ```
 
 Phase ① shows periodic gossip with fanout k=3 (each witness sends to 3 random peers). Dotted arrows indicate repeated rounds until convergence. Phase ② shows Witness 2 broadcasting after assembling threshold shares. Witness 4 (pink) was the initiator in the fast path but participates as a peer in fallback. The gossip pattern ensures eventual agreement without a coordinator.
-
-### Fallback Sequence
-
-The sequence diagram below shows how fallback handles conflicting proposals through gossip-based convergence. The initiator detects conflict and triggers fallback. Witnesses exchange proposal maps until one accumulates threshold shares and broadcasts completion.
-
-```mermaid
-sequenceDiagram
-    participant I as Initiator (W4)
-    participant W1 as Witness 1
-    participant W2 as Witness 2
-    participant W3 as Witness 3
-
-    Note over I: Detects conflicting shares
-    I->>W1: Conflict(cid, proposals, evidΔ)
-    I->>W2: Conflict(cid, proposals, evidΔ)
-    I->>W3: Conflict(cid, proposals, evidΔ)
-
-    Note over W1,W3: Gossip rounds (fanout k=3)
-    W1->>W2: AggregateShare(proposals, evidΔ)
-    W1->>W3: AggregateShare(proposals, evidΔ)
-    W2->>W1: AggregateShare(proposals, evidΔ)
-    W2->>W3: AggregateShare(proposals, evidΔ)
-    W3->>W1: AggregateShare(proposals, evidΔ)
-    W3->>W2: AggregateShare(proposals, evidΔ)
-
-    Note over W2: Reaches 2-of-3 threshold
-    W2->>W1: ThresholdComplete(cid, rid, sig, attesters)
-    W2->>W3: ThresholdComplete(cid, rid, sig, attesters)
-    W2->>I: ThresholdComplete(cid, rid, sig, attesters)
-```
-
-The initiator triggers fallback by broadcasting conflicting proposals to all witnesses. Witnesses merge proposals through periodic gossip rounds, detecting and filtering equivocation. Once Witness 2 accumulates 2-of-3 non-equivocating shares for a candidate, it produces the threshold signature and broadcasts completion. All witnesses accept the first valid threshold signature.
 
 **Messages**
 
