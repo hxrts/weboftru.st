@@ -12,26 +12,33 @@ Aura targets agreement on single operations inside a context. Most state evolves
 
 The protocol gives the initiator of an operation a one round trip decision path in the good case. All honest witnesses finalize after an additional commit broadcast. The system does not maintain a global ordered log. It only agrees on commit facts for operations that require strong coordination.
 
+**Important limitation**: Aura Consensus is single-shot agreement, not log-based linearization. Each consensus instance independently agrees on a single operation and prestate, producing a single commit fact. Consensus does NOT provide global operation ordering, sequential linearization across instances, or automatic operation dependencies. To sequence operations that must execute in order, use session types (choreographic programming) that enforce ordering at the type level.
+
 ## Consensus as Fact Emission
 
 Aura treats consensus as production of a single commit fact. A commit fact is an immutable value added to a CRDT replica store. The replica store is convergent under merge.
 
-```rust
+```haskell
 struct CommitFact {
     cid: ConsensusId,
-    rid: ResultId,          // result id = H(operation, prestate)
+    prestate_hash: Hash,
+    operation_hash: Hash,
+    rid: ResultId,          -- result id = H(operation, prestate)
     threshold_signature: ThresholdSignature,
-    attester_set: BTreeSet<AuthorityId>,
+    group_pubkey: GroupPublicKey,  -- binds signature to signing group (prevents replay)
+    attester_set: Set[AuthorityId],
 }
 ```
 
-This structure records the consensus instance identifier, the deterministic result identifier, the threshold signature, and the set of attesting witnesses. Consensus safety reduces to agreement on which `CommitFact` exists for a given `cid`. Every peer merges this fact into its replica store. Once a threshold signed commit fact exists, it is final and stable under CRDT merges.
+This structure records the consensus instance identifier, the deterministic result identifier, the threshold signature, and the set of attesting witnesses. The group public key binds the threshold signature to the specific signing group, preventing an attacker from replaying a captured signature with a substituted key. Consensus safety reduces to agreement on which `CommitFact` exists for a given `cid`. Every peer merges this fact into its replica store. Once a threshold signed commit fact exists, it is final and stable under CRDT merges.
 
 ## Fast Path
 
 The fast path is a single shot threshold signing protocol coordinated by an initiator. The initiator sends a proposal to all witnesses. Witnesses validate the pre state and execute the operation deterministically. Each witness produces a signature share on the resulting `rid`. The initiator collects shares, forms a threshold signature, writes a commit fact, and broadcasts a commit message.
 
 The initiator decides when it has collected enough matching shares to form a threshold signature. Honest witnesses decide when they receive and verify the commit. In a synchronous period with an honest initiator and agreement on pre state, the initiator decides in one round trip. Witnesses decide after an additional one way commit broadcast. This corresponds to three message steps among all parties.
+
+**Pipelining Optimization**: The protocol includes a commitment pipeline that reduces steady-state consensus from 2 RTT to 1 RTT by bundling next-round nonce commitments with current-round signature shares. After a warm-up period, witnesses include their next nonce commitment when sending signature shares, allowing the coordinator to immediately start the next consensus round without waiting for a separate commitment phase. This optimization provides 50% latency reduction and message count reduction in steady state.
 
 **Messages**
 
@@ -149,19 +156,37 @@ sequenceDiagram
 
 ## Evidence Propagation
 
-Evidence is a CRDT keyed by `cid`. It tracks the final attesters and signature once known. It merges monotonically. A commit fact is always inserted under a monotonic rule. Once a threshold signature appears for `cid`, it is never replaced.
+Evidence tracks equivocation and accountability information for consensus instances using CRDT-based incremental propagation. Evidence deltas attach to all protocol messages. Witnesses merge incoming evidence automatically.
 
-Every message that participates in a consensus instance carries an evidence delta. The session protocol is structured so that these deltas follow the communication pattern. Peers merge evidence on send and receive. Peers that reconnect after being offline converge automatically.
+Equivocation occurs when a witness signs conflicting result IDs for the same prestate. The protocol detects this pattern and generates cryptographic proofs containing both conflicting signatures:
 
 ```haskell
-EvidenceDelta(cid):
-    return CRDT_Delta_for(cid)
-
-MergeEvidence(cid, evidΔ):
-    CRDT_Merge(cid, evidΔ)
+EquivocationProof = {
+    witness: AuthorityId,
+    cid: ConsensusId,
+    prestate_hash: Hash,
+    first_rid: ResultId,
+    second_rid: ResultId,
+    timestamp: Time
+}
 ```
 
-This interface exposes evidence as a per consensus instance CRDT. `EvidenceDelta` returns a delta for a given `cid`. `MergeEvidence` merges an incoming delta into local state. This makes commit evidence durable and convergent even under partitions and reconnection.
+Evidence deltas propagate via incremental synchronization. Each delta contains only new proofs since the last exchange:
+
+```haskell
+EvidenceDelta(cid) = {
+    new_proofs: Set[EquivocationProof],
+    watermark: Time
+}
+
+MergeEvidence(cid, evidΔ):
+    For each proof in evidΔ.new_proofs:
+        If proof.timestamp > local_watermark[cid]:
+            local_evidence[cid] := local_evidence[cid] ∪ {proof}
+    local_watermark[cid] := max(local_watermark[cid], evidΔ.watermark)
+```
+
+Every consensus message includes an evidence delta field. Coordinators attach deltas when broadcasting execute and commit messages. Witnesses attach deltas when sending shares. Receivers merge incoming deltas into local evidence trackers. This piggybacking ensures evidence propagates without extra round trips. Peers that reconnect after being offline converge automatically through CRDT merge.
 
 ## Fallback
 
@@ -288,12 +313,14 @@ Classical consensus protocols for ordered logs provide a total order of operatio
 
 Aura consensus uses an initiator for low latency decision in the common case and a leaderless gossip protocol for fallback. It relies on local timers and partial synchrony assumptions. It scopes consensus to a context level witness group and a single operation per instance.
 
-The protocol integrates CRDT based state, threshold signatures, and session style message flows. Aura's novelty is the combination of context scoped single shot consensus, CRDT based evidence and commit facts, and a threshold signature based fast path with a gossip based fallback. This design provides strong agreement when required while keeping most of the system available and convergent through CRDT merges.
+The protocol integrates CRDT based state, threshold signatures with pipelining optimizations, and session style message flows. Aura's novelty is the combination of context scoped single shot consensus, CRDT based evidence and commit facts with cryptographic equivocation proofs, and a threshold signature based fast path (optimized to 1 RTT in steady state) with a gossip based fallback. This design provides strong agreement when required while keeping most of the system available and convergent through CRDT merges.
 
 ## See Also
 
-- [Consensus](https://hxrts.com/aura/docs/104_consensus.md) - Full consensus specification and implementation
+- [Consensus](https://hxrts.com/aura/docs/104_consensus.md) - Full consensus specification with pipelining details and formal verification
 - [Journal](https://hxrts.com/aura/docs/102_journal.md) - CRDT fact stores and deterministic reduction
 - [Relational Contexts](https://hxrts.com/aura/docs/103_relational_contexts.md) - Context scoped witness groups
+- [Operation Categories](https://hxrts.com/aura/docs/117_operation_categories.md) - When consensus is required (Category C operations)
+- [Key Rotation Ceremonies](https://hxrts.com/aura/docs/118_key_rotation_ceremonies.md) - Ceremony lifecycle and prestate binding
 - [System Architecture](https://hxrts.com/aura/docs/001_system_architecture.md) - Integration with choreographic protocols
 - [Distributed Systems Contract](https://hxrts.com/aura/docs/004_distributed_systems_contract.md) - Safety and liveness guarantees
