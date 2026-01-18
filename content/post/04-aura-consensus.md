@@ -161,29 +161,29 @@ The diagram below shows the message flow for a 4-peer consensus with 1 initiator
 ```mermaid
 graph TB
     W1[Witness 1]
-    I[Initiator]
-    W2[Witness 2]
+    W2[Witness 2<br/>Initiator]
     W3[Witness 3]
+    W4[Witness 4]
 
-    I -->|"① Execute<br/>cid, Op, prestate_hash"| W1
-    I -->|"① Execute<br/>cid, Op, prestate_hash"| W2
-    I -->|"① Execute<br/>cid, Op, prestate_hash"| W3
+    W2 -->|"① Execute<br/>cid, Op, prestate_hash"| W1
+    W2 -->|"① Execute<br/>cid, Op, prestate_hash"| W3
+    W2 -->|"① Execute<br/>cid, Op, prestate_hash"| W4
 
-    W1 -.->|"② WitnessShare<br/>cid, rid, share"| I
-    W2 -.->|"② WitnessShare<br/>cid, rid, share"| I
-    W3 -.->|"② WitnessShare<br/>cid, rid, share"| I
+    W1 -.->|"② WitnessShare<br/>cid, rid, share"| W2
+    W3 -.->|"② WitnessShare<br/>cid, rid, share"| W2
+    W4 -.->|"② WitnessShare<br/>cid, rid, share"| W2
 
-    I ==>|"③ Commit<br/>cid, rid, threshold_sig"| W1
-    I ==>|"③ Commit<br/>cid, rid, threshold_sig"| W2
-    I ==>|"③ Commit<br/>cid, rid, threshold_sig"| W3
+    W2 ==>|"③ Commit<br/>cid, rid, threshold_sig"| W1
+    W2 ==>|"③ Commit<br/>cid, rid, threshold_sig"| W3
+    W2 ==>|"③ Commit<br/>cid, rid, threshold_sig"| W4
 
     style W1 fill:#e1f5ff
-    style W2 fill:#e1f5ff
+    style W2 fill:#ffe1e1
     style W3 fill:#e1f5ff
-    style I fill:#ffe1e1
+    style W4 fill:#e1f5ff
 ```
 
-Phase ① broadcasts the operation to all witnesses. Phase ② collects signature shares (initiator decides after receiving 2-of-3 shares). Phase ③ broadcasts the threshold signature, allowing all witnesses to finalize.
+Phase ① broadcasts the operation to all witnesses. Phase ② collects signature shares (Witness 2 as initiator decides after receiving 2-of-3 shares). Phase ③ broadcasts the threshold signature, allowing all witnesses to finalize.
 
 ## Evidence Propagation
 
@@ -254,12 +254,12 @@ graph TB
     W3 ==>|"② ThresholdComplete<br/>cid, rid, sig, attesters"| W4
 
     style W1 fill:#e1f5ff
-    style W2 fill:#e1f5ff
+    style W2 fill:#ffe1e1
     style W3 fill:#e1f5ff
-    style W4 fill:#ffe1e1
+    style W4 fill:#e1f5ff
 ```
 
-Phase ① shows periodic gossip with fanout k=3 (each witness sends to 3 random peers). Dotted arrows indicate repeated rounds until convergence. Phase ② shows Witness 3 broadcasting after assembling threshold shares. Witness 4 (pink) was the initiator in the fast path but participates as a peer in fallback. The gossip pattern ensures eventual agreement without a coordinator.
+Phase ① shows periodic gossip with fanout k=3 (each witness sends to 3 random peers). Dotted arrows indicate repeated rounds until convergence. Phase ② shows Witness 3 broadcasting after assembling threshold shares. Witness 2 (pink) was the initiator in the fast path but participates as a peer in fallback. The gossip pattern ensures eventual agreement without a coordinator.
 
 **Messages**
 
