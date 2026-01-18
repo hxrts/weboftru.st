@@ -159,25 +159,30 @@ sequenceDiagram
 The diagram below shows the message flow for a 4-peer consensus with 1 initiator and 3 witnesses (2-of-3 threshold). The initiator occupies the center of a star topology, broadcasting to all witnesses and collecting responses.
 
 ```mermaid
-flowchart TD
-    subgraph "Fast Path: 4-Peer Topology"
-        I[Initiator]
+graph TB
+    subgraph " "
         W1[Witness 1]
+        I[Initiator]
         W2[Witness 2]
         W3[Witness 3]
-
-        I -->|"① Execute<br/>cid, Op, prestate_hash"| W1
-        I -->|"① Execute<br/>cid, Op, prestate_hash"| W2
-        I -->|"① Execute<br/>cid, Op, prestate_hash"| W3
-
-        W1 -.->|"② WitnessShare<br/>cid, rid, share"| I
-        W2 -.->|"② WitnessShare<br/>cid, rid, share"| I
-        W3 -.->|"② WitnessShare<br/>cid, rid, share"| I
-
-        I ==>|"③ Commit<br/>cid, rid, threshold_sig"| W1
-        I ==>|"③ Commit<br/>cid, rid, threshold_sig"| W2
-        I ==>|"③ Commit<br/>cid, rid, threshold_sig"| W3
     end
+
+    I -->|"① Execute<br/>cid, Op, prestate_hash"| W1
+    I -->|"① Execute<br/>cid, Op, prestate_hash"| W2
+    I -->|"① Execute<br/>cid, Op, prestate_hash"| W3
+
+    W1 -.->|"② WitnessShare<br/>cid, rid, share"| I
+    W2 -.->|"② WitnessShare<br/>cid, rid, share"| I
+    W3 -.->|"② WitnessShare<br/>cid, rid, share"| I
+
+    I ==>|"③ Commit<br/>cid, rid, threshold_sig"| W1
+    I ==>|"③ Commit<br/>cid, rid, threshold_sig"| W2
+    I ==>|"③ Commit<br/>cid, rid, threshold_sig"| W3
+
+    style W1 fill:#e1f5ff
+    style W2 fill:#e1f5ff
+    style W3 fill:#e1f5ff
+    style I fill:#ffe1e1
 ```
 
 Phase ① broadcasts the operation to all witnesses. Phase ② collects signature shares (initiator decides after receiving 2-of-3 shares). Phase ③ broadcasts the threshold signature, allowing all witnesses to finalize.
