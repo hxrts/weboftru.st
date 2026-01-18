@@ -162,8 +162,8 @@ The diagram below shows the message flow for a 4-peer consensus with 1 initiator
 graph TB
     W1[Witness 1]
     W2[Initiator]
-    W3[Witness 3]
-    W4[Witness 4]
+    W3[Witness 2]
+    W4[Witness 3]
 
     W2 -->|"① Execute<br/>cid, Op, prestate_hash"| W1
     W2 -->|"① Execute<br/>cid, Op, prestate_hash"| W3
