@@ -6,6 +6,10 @@ default:
 serve:
     zola serve
 
+# build and serve (rebuilds first, then starts dev server)
+build-serve:
+    zola build && zola serve
+
 # build site to public/
 build:
     zola build

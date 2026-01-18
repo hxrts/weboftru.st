@@ -1,27 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="landing">
-    <h1>{{ config.title }}</h1>
-    <p class="tagline">{{ config.description }}</p>
-</section>
-
-<section class="posts">
-    <h2>Posts</h2>
-    {% set posts_section = get_section(path="post/_index.md") %}
-    {% if posts_section.pages %}
-    <ul class="post-list">
-        {% for page in posts_section.pages %}
-        <li>
-            <a href="./post/{{ page.slug }}/index.html">
-                <span class="post-title">{{ page.title }}</span>
-                <span class="post-date">{{ page.date | date(format="%Y-%m-%d") }}</span>
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>No posts yet.</p>
-    {% endif %}
-</section>
+<article>
+    <header class="landing">
+        <h1>{{ config.title }}</h1>
+        <p class="tagline">{{ config.description }}</p>
+    </header>
+    <div class="post-content">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </div>
+    <section class="posts">
+        <h2>Posts</h2>
+        {% set posts_section = get_section(path="post/_index.md") %}
+        {% if posts_section.pages %}
+        <ul class="post-list">
+            {% for page in posts_section.pages %}
+            <li>
+                <a href="./post/{{ page.slug }}/">
+                    <span class="post-title">{{ page.title }}</span>
+                    <span class="post-date">{{ page.date | date(format="%Y-%m-%d") }}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No posts yet.</p>
+        {% endif %}
+    </section>
+</article>
 {% endblock content %}

@@ -3,6 +3,7 @@ title = "Beyond Local-First"
 date = 2025-01-09
 description = "The first post on Web of Trust"
 slug = "beyond-local-first"
+# draft = true
 +++
 
 [Local-First](https://www.inkandswitch.com/essay/local-first/) gets a lot right. Its seven ideals for software (fast, multi-device, offline, collaborative, long-lived, private, user-controlled) describe what we actually want from our tools. The key architectural move is treating CRDTs as first-class citizens. Data becomes a distributed structure that converges across replicas without central coordination.
@@ -57,7 +58,7 @@ In this sense, Aura is not only Local-First. It is Network-Native, where the net
 
 ## See Also
 
-- [Authority and Identity](docs/100_authority_and_identity.md) - Relational identity model and contextual isolation
-- [Relational Contexts](docs/103_relational_contexts.md) - Shared state machines and collective resources
-- [Authorization](docs/109_authorization.md) - Consent primitives and capability attenuation
-- [Rendezvous](docs/110_rendezvous.md) - Peer discovery without servers
+- [Authority and Identity](https://hxrts.com/aura/docs/100_authority_and_identity.md) - Relational identity model and contextual isolation
+- [Relational Contexts](https://hxrts.com/aura/docs/103_relational_contexts.md) - Shared state machines and collective resources
+- [Authorization](https://hxrts.com/aura/docs/109_authorization.md) - Consent primitives and capability attenuation
+- [Rendezvous](https://hxrts.com/aura/docs/110_rendezvous.md) - Peer discovery without servers

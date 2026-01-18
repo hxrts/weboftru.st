@@ -3,6 +3,7 @@ title = "The Shape of Agreement"
 date = 2025-01-09
 description = "The first post on Web of Trust"
 slug = "shape-of-agreement"
+# draft = true
 +++
 
 Agreement has structure. You can add conditions, narrow scope, or delegate what you were given. You cannot expand what was agreed to or grant yourself permissions you were never offered.
@@ -47,15 +48,23 @@ graph LR
         A1["Attestation 1"] --> M1["Merged State"]
         A2["Attestation 2"] --> M1
         A3["Attestation 3"] --> M1
+        style A1 fill:#e1f5fe
+        style A2 fill:#e1f5fe
+        style A3 fill:#e1f5fe
+        style M1 fill:#81d4fa
     end
 
     subgraph "Meet: Authority Restricts"
         P1["Policy A"] --> I1["Intersection"]
         P2["Policy B"] --> I1
-        I1 --> E1["Effective Capability"]
+        P3["Policy C"] --> I1
+        style P1 fill:#fff3e0
+        style P2 fill:#fff3e0
+        style P3 fill:#fff3e0
+        style I1 fill:#ffcc80
     end
 
-    M1 -->|"evidence supports"| E1
+    M1 -->|"evidence supports"| I1
 ```
 
 ## The Journal as Constitutional Record

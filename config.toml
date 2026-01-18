@@ -8,7 +8,7 @@ feed_filenames = ["rss.xml"]
 
 [markdown]
 highlight_code = true
-highlight_theme = "base16-ocean-dark"
+highlight_theme = "base16-ocean-light"
 extra_syntaxes_and_themes = ["syntaxes"]
 
 [extra]

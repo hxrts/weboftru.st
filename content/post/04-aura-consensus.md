@@ -3,6 +3,7 @@ title = "Aura Consensus"
 date = 2025-01-09
 description = "The first post on Web of Trust"
 slug = "aura-consensus"
+# draft = true
 +++
 
 Aura consensus is designed for small groups that communicate peer-to-peer with intermittent connectivity. Each context defines a stable committee of witnesses, although individual members may be offline at any time. The committee is used only when a specific decision requires strong agreement.
@@ -291,8 +292,8 @@ The protocol integrates CRDT based state, threshold signatures, and session styl
 
 ## See Also
 
-- [Consensus](docs/104_consensus.md) - Full consensus specification and implementation
-- [Journal](docs/102_journal.md) - CRDT fact stores and deterministic reduction
-- [Relational Contexts](docs/103_relational_contexts.md) - Context scoped witness groups
-- [System Architecture](docs/001_system_architecture.md) - Integration with choreographic protocols
-- [Distributed Systems Contract](docs/004_distributed_systems_contract.md) - Safety and liveness guarantees
+- [Consensus](https://hxrts.com/aura/docs/104_consensus.md) - Full consensus specification and implementation
+- [Journal](https://hxrts.com/aura/docs/102_journal.md) - CRDT fact stores and deterministic reduction
+- [Relational Contexts](https://hxrts.com/aura/docs/103_relational_contexts.md) - Context scoped witness groups
+- [System Architecture](https://hxrts.com/aura/docs/001_system_architecture.md) - Integration with choreographic protocols
+- [Distributed Systems Contract](https://hxrts.com/aura/docs/004_distributed_systems_contract.md) - Safety and liveness guarantees

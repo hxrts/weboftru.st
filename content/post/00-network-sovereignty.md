@@ -3,6 +3,7 @@ title = "Network Sovereignty"
 date = 2025-01-09
 description = "The first post on Web of Trust"
 slug = "network-sovereignty"
+draft = true
 +++
 
 - Sovereignty is a framework for understanding the architecture of control in systems that regulate collective behavior
