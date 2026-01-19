@@ -185,6 +185,7 @@ html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     line-height: 1.15;
+    scroll-padding-top: var(--s-8);
 }
 
 body {
@@ -388,14 +389,6 @@ body > footer {
 // -----------------------------------------------------------------------------
 
 .post-list {
-    li {
-        border-bottom: 1px solid var(--c-border);
-
-        &:last-child {
-            border-bottom: none;
-        }
-    }
-
     a {
         display: flex;
         flex-direction: column;
@@ -404,23 +397,17 @@ body > footer {
         padding-bottom: var(--s-3);
         color: var(--c-text);
         text-decoration: none;
-        transition: background-color 0.15s ease;
+        transition: color 0.15s ease;
 
         @media (min-width: 640px) {
             flex-direction: row;
-            justify-content: space-between;
             align-items: baseline;
-            gap: var(--s-4);
+            gap: 0;
         }
 
         &:hover,
         &:focus {
-            background-color: var(--c-surface);
-            margin-left: calc(-1 * var(--s-3));
-            margin-right: calc(-1 * var(--s-3));
-            padding-left: var(--s-3);
-            padding-right: var(--s-3);
-            border-radius: 4px;
+            color: var(--c-link);
         }
     }
 }
@@ -429,11 +416,27 @@ body > footer {
     font-size: var(--t-base);
     font-weight: var(--fw-medium);
     line-height: var(--lh-snug);
+
+    @media (min-width: 640px) {
+        display: flex;
+        flex: 1;
+        align-items: baseline;
+
+        &::after {
+            content: '';
+            flex: 1;
+            border-bottom: 2px dotted currentColor;
+            margin-left: 0.1rem;
+            margin-right: 0.1rem;
+            margin-bottom: 0.4em;
+            min-width: 1rem;
+            opacity: 0.6;
+        }
+    }
 }
 
 .post-date {
     font-size: var(--t-sm);
-    color: var(--c-text-muted);
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -595,7 +598,7 @@ body > footer {
 
     strong,
     b {
-        font-weight: var(--fw-semibold);
+        font-weight: var(--fw-bold);
     }
 
     // Lists - hanging bullets/numbers
@@ -604,8 +607,8 @@ body > footer {
     ul,
     ol {
         margin-bottom: var(--s-4);
-        margin-left: -0.6rem; // Pull list left so bullets hang
-        padding-left: 0; // No padding
+        margin-left: -0.6rem;
+        padding-left: 0;
         list-style-position: inside;
 
         @media (min-width: 640px) {
@@ -628,14 +631,12 @@ body > footer {
 
     ol {
         list-style-type: decimal;
-
-        li::marker {
-            content: counter(list-item) ".  "; // Number with custom spacing
-        }
+        list-style-position: outside;
+        margin-left: -0.1rem;
+        padding-left: 0;
 
         li {
-            padding-left: 1.5rem; // More space for numbers
-            text-indent: -1.5rem; // Pull first line (with number) back
+            padding-left: 0.1rem;
         }
     }
 
@@ -841,10 +842,86 @@ body > footer {
         padding: 0;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        min-height: 200px;
+        opacity: 0;
+        transition: opacity 0.2s ease-in;
+        cursor: pointer;
 
         @media (min-width: 640px) {
             margin-top: var(--s-8);
             margin-bottom: var(--s-8);
+        }
+
+        &[data-processed="true"] {
+            opacity: 1;
+        }
+    }
+}
+
+// =============================================================================
+// Mermaid Diagram Overrides
+// =============================================================================
+// Note: Most styling is handled via themeVariables in base.html
+// Only font-weight needs CSS override since Mermaid doesn't expose it
+
+svg[id^="mermaid-"] {
+    text, tspan {
+        font-weight: var(--fw-diagram) !important;
+    }
+}
+
+// =============================================================================
+// Lightbox
+// =============================================================================
+
+.mermaid-lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: var(--s-4);
+
+    &.active {
+        display: flex;
+    }
+
+    .lightbox-content {
+        width: 95vw;
+        max-width: 1200px;
+        max-height: 90vh;
+        overflow: auto;
+        background-color: var(--c-bg);
+        padding: var(--s-8);
+        border: 1px solid var(--c-border);
+
+        svg {
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: var(--s-4);
+        right: var(--s-4);
+        font-size: var(--t-2xl);
+        color: var(--gray-700);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: var(--s-2);
+        line-height: 1;
+        opacity: 0.8;
+        transition: opacity 0.15s ease;
+
+        &:hover {
+            opacity: 1;
         }
     }
 }
