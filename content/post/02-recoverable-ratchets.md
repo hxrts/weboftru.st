@@ -3,12 +3,16 @@ title = "Recoverable Ratchets"
 date = 2025-01-09
 description = "The first post on Web of Trust"
 slug = "recoverable-ratchets"
-# draft = true
+draft = true
 +++
 
-The design of secure messaging protocols like MLS and TreeKEM typically focuses on cryptographic properties, key agreement, forward secrecy, post-compromise security.  distributed systems problem underneath.
+Modern secure messaging protocols like [MLS](https://messaginglayersecurity.rocks/mls-architecture/draft-ietf-mls-architecture.html) emphasize cryptographic properties, key agreement, forward secrecy, post-compromise security, however when deployed in a distributed setting, it becomes apparent that, interleaved within the cryptographic protocol, lies a distributed systems problem. [TreeKEM](https://eprint.iacr.org/2025/410), and a number of other MLS-flavored protocols, work around these issues by adjusting core data structures or introducing new cryptographic primitives.
 
-In Aura, both state and identity are distributed. Multiple devices form a single authority. Facts replicate across nodes via CRDT journals. There is no central ordering service. This changes the problem. We need messaging with explicit safety, liveness, and partition tolerance properties.
+We instead adopt a distributed systems lens, clarifying the system contract, and then working towards a protocol solution that satisfies these requirements.
+
+## Background on Aura
+
+In [Aura](https://github.com/hxrts/aura), both state and identity are distributed. Multiple devices form a single authority. Facts replicate across nodes via CRDT journals. There is no central ordering service. This changes the problem. We need messaging with explicit safety, liveness, and partition tolerance.
 
 The Aura Messaging Protocol (AMP) brings a distributed systems lens to secure messaging. It provides the same cryptographic guarantees as TreeKEM-based protocols while supporting deterministic recovery from replicated state alone. See the [protocol specification](https://hxrts.com/aura/docs/112_amp.md) for complete technical details and the [comparison section](#comparison-with-existing-protocols) for how AMP differs from MLS and Keyhive.
 

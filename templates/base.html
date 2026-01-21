@@ -13,10 +13,14 @@
     <link rel="preload" href="{{ base }}fonts/Perun-Regular.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preload" href="{{ base }}fonts/Perun-Medium.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="{{ base }}style.css">
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <!-- Theme script (must run before render to prevent flash) -->
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    {% block extra_head %}{% endblock extra_head %}
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     {% block head %}{% endblock head %}
@@ -25,14 +29,21 @@
     <header>
         <nav>
             <a href="{{ base }}" class="site-title">{{ config.title }}</a>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <span class="theme-icon">◑</span>
+            </button>
         </nav>
     </header>
     <main>
         {% block content %}{% endblock content %}
     </main>
     <footer>
-        <p>&copy; {{ now() | date(format="%Y") }} {{ config.title }}</p>
     </footer>
+    <!-- Lightbox for Mermaid diagrams -->
+    <div class="mermaid-lightbox" id="mermaidLightbox">
+        <button class="lightbox-close" onclick="closeMermaidLightbox()">&times;</button>
+        <div class="lightbox-content" id="lightboxContent"></div>
+    </div>
     <!-- KaTeX -->
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
@@ -43,90 +54,242 @@
             ]
         });"></script>
     <!-- Mermaid -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
-        document.querySelectorAll('code.language-mermaid').forEach(el => {
-            const pre = el.parentElement;
-            const mermaidPre = document.createElement('pre');
-            mermaidPre.className = 'mermaid';
-            mermaidPre.textContent = el.textContent;
-            pre.replaceWith(mermaidPre);
-        });
+        if (document.querySelector('code.language-mermaid')) {
+            document.write('<script src="{{ base }}mermaid.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        if (typeof mermaid !== 'undefined') {
+            // Convert code blocks to mermaid pre elements
+            document.querySelectorAll('code.language-mermaid').forEach(el => {
+                const pre = el.parentElement;
+                const mermaidPre = document.createElement('pre');
+                mermaidPre.className = 'mermaid';
+                mermaidPre.textContent = el.textContent;
+                pre.replaceWith(mermaidPre);
+            });
 
-        // Get CSS custom properties for consistent theming
-        const styles = getComputedStyle(document.documentElement);
-        const gray900 = styles.getPropertyValue('--gray-900').trim();
-        const gray700 = styles.getPropertyValue('--gray-700').trim();
-        const gray500 = styles.getPropertyValue('--gray-500').trim();
-        const gray400 = styles.getPropertyValue('--gray-400').trim();
-        const gray300 = styles.getPropertyValue('--gray-300').trim();
-        const gray100 = styles.getPropertyValue('--gray-100').trim();
-        const white = styles.getPropertyValue('--white').trim();
-        const blue600 = styles.getPropertyValue('--blue-600').trim();
-        const blue700 = styles.getPropertyValue('--blue-700').trim();
-        const purple600 = styles.getPropertyValue('--purple-600').trim();
-        const green600 = styles.getPropertyValue('--green-600').trim();
-        const orange600 = styles.getPropertyValue('--orange-600').trim();
-        const fontSans = styles.getPropertyValue('--font-sans').trim().replace(/\s+/g, ' ');
-        const fontSize = styles.getPropertyValue('--t-base').trim();
+            // Get CSS custom properties for consistent theming
+            const styles = getComputedStyle(document.documentElement);
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const isDark = currentTheme === 'dark';
 
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'base',
-            flowchart: {
-                curve: 'linear'
-            },
-            themeVariables: {
-                // Global fonts
-                'fontFamily': fontSans,
-                'fontSize': fontSize,
+            const gray900 = styles.getPropertyValue('--gray-900').trim();
+            const gray700 = styles.getPropertyValue('--gray-700').trim();
+            const gray500 = styles.getPropertyValue('--gray-500').trim();
+            const gray400 = styles.getPropertyValue('--gray-400').trim();
+            const gray300 = styles.getPropertyValue('--gray-300').trim();
+            const gray100 = styles.getPropertyValue('--gray-100').trim();
+            const white = styles.getPropertyValue('--white').trim();
+            const blue600 = styles.getPropertyValue('--blue-600').trim();
+            const blue700 = styles.getPropertyValue('--blue-700').trim();
+            const purple600 = styles.getPropertyValue('--purple-600').trim();
+            const green600 = styles.getPropertyValue('--green-600').trim();
+            const orange600 = styles.getPropertyValue('--orange-600').trim();
+            const fontSans = styles.getPropertyValue('--font-sans').trim().replace(/\s+/g, ' ');
+            const fontSize = styles.getPropertyValue('--t-base').trim();
 
-                // Background and surfaces
-                'primaryColor': gray100,
-                'primaryBorderColor': gray500,
-                'primaryTextColor': gray900,
+            // Theme-specific colors (dark mode uses 0x96f palette)
+            const boxBgColor = isDark ? '#363338' : gray100;       // Slightly lighter than bg
+            const mainBgColor = isDark ? '#262427' : gray100;      // 0x96f background
+            const textColor = isDark ? '#FCFCFA' : gray900;        // 0x96f foreground
+            const labelTextColor = isDark ? '#FCFCFA' : gray900;   // 0x96f foreground
+            const borderColor = isDark ? '#8B8B8A' : gray500;      // 0x96f comment gray
+            const lineColor = isDark ? '#8B8B8A' : gray400;        // 0x96f comment gray
+            const secondaryBorder = isDark ? '#8B8B8A' : gray400;
 
-                'secondaryColor': gray100,
-                'secondaryBorderColor': gray500,
-                'secondaryTextColor': gray900,
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'base',
+                flowchart: {
+                    curve: 'linear'
+                },
+                themeVariables: {
+                    // Global fonts
+                    'fontFamily': fontSans,
+                    'fontSize': fontSize,
 
-                'tertiaryColor': gray100,
-                'tertiaryBorderColor': gray500,
-                'tertiaryTextColor': gray900,
+                    // Background and surfaces
+                    'primaryColor': boxBgColor,
+                    'primaryBorderColor': borderColor,
+                    'primaryTextColor': textColor,
 
-                // Main text and lines
-                'textColor': gray900,
-                'lineColor': gray400,
-                'mainBkg': gray100,
+                    'secondaryColor': boxBgColor,
+                    'secondaryBorderColor': borderColor,
+                    'secondaryTextColor': textColor,
 
-                // Flowchart
-                'nodeBorder': gray500,
-                'clusterBkg': gray100,
-                'clusterBorder': gray500,
-                'defaultLinkColor': gray500,
+                    'tertiaryColor': boxBgColor,
+                    'tertiaryBorderColor': borderColor,
+                    'tertiaryTextColor': textColor,
 
-                // Sequence diagrams
-                'actorBkg': gray100,
-                'actorBorder': gray400,
-                'actorTextColor': gray900,
-                'actorLineColor': gray400,
-                'signalColor': gray400,
-                'signalTextColor': gray900,
-                'labelBoxBkgColor': gray100,
-                'labelBoxBorderColor': gray500,
-                'labelTextColor': gray900,
-                'loopTextColor': gray900,
-                'activationBorderColor': gray500,
-                'activationBkgColor': gray100,
-                'sequenceNumberColor': white,
+                    // Main text and lines
+                    'textColor': labelTextColor,
+                    'lineColor': lineColor,
+                    'mainBkg': mainBgColor,
 
-                // Special colors
-                'activeTaskBkgColor': blue600,
-                'activeTaskBorderColor': blue700,
-                'doneTaskBkgColor': green600,
-                'critBkgColor': orange600,
-                'critBorderColor': orange600
+                    // Flowchart
+                    'nodeBorder': borderColor,
+                    'clusterBkg': boxBgColor,
+                    'clusterBorder': borderColor,
+                    'defaultLinkColor': borderColor,
+                    'edgeLabelBackground': isDark ? 'transparent' : mainBgColor,
+
+                    // Sequence diagrams (dark mode uses 0x96f accent colors)
+                    'actor0Bkg': isDark ? '#4a2a2a' : '#ffe1e1',    // Muted coral (from #FF7272)
+                    'actor1Bkg': isDark ? '#2a3d42' : '#e1f5ff',    // Muted cyan (from #49CAE4)
+                    'actor2Bkg': isDark ? '#2d3a2a' : '#e1f5ff',    // Muted lime (from #BCDF59)
+                    'actor3Bkg': isDark ? '#3a3242' : '#e1f5ff',    // Muted purple (from #A093E2)
+                    'actorBkg': boxBgColor,
+                    'actorBorder': secondaryBorder,
+                    'actorTextColor': textColor,
+                    'actorLineColor': secondaryBorder,
+                    'signalColor': secondaryBorder,
+                    'signalTextColor': labelTextColor,
+                    'labelBoxBkgColor': isDark ? 'transparent' : mainBgColor,
+                    'labelBoxBorderColor': isDark ? 'transparent' : borderColor,
+                    'labelTextColor': labelTextColor,
+                    'loopTextColor': labelTextColor,
+                    'altBackground': isDark ? 'rgba(139, 139, 138, 0.15)' : 'rgba(158, 158, 158, 0.1)',  // Based on 0x96f comment
+                    'activationBorderColor': borderColor,
+                    'activationBkgColor': boxBgColor,
+                    'sequenceNumberColor': white,
+
+                    // Special colors (dark mode uses 0x96f palette)
+                    'activeTaskBkgColor': isDark ? '#49CAE4' : blue600,    // 0x96f cyan
+                    'activeTaskBorderColor': isDark ? '#3ab0c9' : blue700,
+                    'doneTaskBkgColor': isDark ? '#BCDF59' : green600,     // 0x96f lime
+                    'critBkgColor': isDark ? '#FF7272' : orange600,        // 0x96f coral
+                    'critBorderColor': isDark ? '#FF7272' : orange600
+                }
+            });
+
+            // Render diagrams and mark as processed to fade them in
+            document.addEventListener('DOMContentLoaded', async () => {
+                const diagrams = document.querySelectorAll('.mermaid');
+                for (const diagram of diagrams) {
+                    try {
+                        await mermaid.run({ nodes: [diagram] });
+                        diagram.setAttribute('data-processed', 'true');
+
+                        // Add click handler for lightbox
+                        diagram.addEventListener('click', function() {
+                            openMermaidLightbox(this);
+                        });
+                    } catch (e) {
+                        console.error('Mermaid rendering failed:', e);
+                        diagram.setAttribute('data-processed', 'true');
+                    }
+                }
+            });
+        }
+    </script>
+    <script>
+        // Lightbox functions (available globally)
+        function openMermaidLightbox(diagram) {
+            const lightbox = document.getElementById('mermaidLightbox');
+            const content = document.getElementById('lightboxContent');
+            if (lightbox && content && diagram) {
+                content.innerHTML = diagram.innerHTML;
+                lightbox.classList.add('active');
             }
+        }
+
+        function closeMermaidLightbox() {
+            const lightbox = document.getElementById('mermaidLightbox');
+            if (lightbox) {
+                lightbox.classList.remove('active');
+            }
+        }
+
+        // Close lightbox on click outside content or ESC key
+        document.addEventListener('DOMContentLoaded', () => {
+            const lightbox = document.getElementById('mermaidLightbox');
+            if (lightbox) {
+                lightbox.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeMermaidLightbox();
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeMermaidLightbox();
+                }
+            });
+        });
+    </script>
+    <script>
+        // Fix apostrophe kerning in sans-serif text
+        document.addEventListener('DOMContentLoaded', () => {
+            const apostrophes = /['\u2019]/g;  // curly apostrophes only
+            console.log('Apostrophe fix running...');
+
+            const walker = document.createTreeWalker(
+                document.body,
+                NodeFilter.SHOW_TEXT,
+                null
+            );
+
+            const nodesToProcess = [];
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                const parent = node.parentElement;
+
+                // Skip code/pre elements and script/style
+                if (parent) {
+                    const tag = parent.tagName;
+                    if (tag === 'CODE' || tag === 'PRE' || tag === 'SCRIPT' || tag === 'STYLE') continue;
+                    if (parent.closest('code, pre')) continue;
+                }
+
+                if (node.textContent.match(apostrophes)) {
+                    nodesToProcess.push(node);
+                }
+            }
+
+            console.log('Found nodes with apostrophes:', nodesToProcess.length);
+            nodesToProcess.forEach(node => {
+                const text = node.textContent;
+                const parts = text.split(apostrophes);
+                const matches = text.match(apostrophes);
+
+                if (!matches) return;
+
+                const fragment = document.createDocumentFragment();
+                parts.forEach((part, i) => {
+                    if (part) fragment.appendChild(document.createTextNode(part));
+                    if (matches[i]) {
+                        const span = document.createElement('span');
+                        span.className = 'apos';
+                        span.textContent = matches[i];
+                        fragment.appendChild(span);
+                    }
+                });
+
+                node.parentNode.replaceChild(fragment, node);
+            });
+        });
+    </script>
+    <script>
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('themeToggle');
+
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+
+                // Reload page to re-render Mermaid diagrams with new theme
+                if (typeof mermaid !== 'undefined' && document.querySelector('.mermaid')) {
+                    location.reload();
+                }
+            });
         });
     </script>
 </body>

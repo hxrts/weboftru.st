@@ -3,7 +3,7 @@ title = "Aura Consensus"
 date = 2025-01-09
 description = "The first post on Web of Trust"
 slug = "aura-consensus"
-# draft = true
+draft = true
 +++
 
 Aura consensus is designed for small groups that communicate peer-to-peer with intermittent connectivity. Each context defines a stable committee of witnesses, although individual members may be offline at any time. The committee is used only when a specific decision requires strong agreement.

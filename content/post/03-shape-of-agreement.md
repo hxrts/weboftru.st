@@ -3,7 +3,7 @@ title = "The Shape of Agreement"
 date = 2025-01-09
 description = "The first post on Web of Trust"
 slug = "shape-of-agreement"
-# draft = true
+draft = true
 +++
 
 Agreement has structure. You can add conditions, narrow scope, or delegate what you were given. You cannot expand what was agreed to or grant yourself permissions you were never offered.

@@ -10,5 +10,6 @@ feed_filenames = ["rss.xml"]
 highlight_code = true
 highlight_theme = "base16-ocean-light"
 extra_syntaxes_and_themes = ["syntaxes"]
+smart_punctuation = true
 
 [extra]

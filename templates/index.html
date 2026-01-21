@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+<!-- Prefetch Mermaid for post pages -->
+<link rel="prefetch" href="./mermaid.min.js" as="script">
+{% endblock extra_head %}
+
 {% block content %}
 <article>
-    <header class="landing">
-        <h1>{{ config.title }}</h1>
-        <p class="tagline">{{ config.description }}</p>
-    </header>
+    <div class="hero-image">
+        <img src="./happening_score.png" alt="Happening Score by Wolf Vostell">
+        <p class="hero-caption"><em>Happening Score</em>, Wolf Vostell, dé-coll/age happenings (1966)</p>
+    </div>
     <div class="post-content">
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        {{ section.content | safe }}
     </div>
     <section class="posts">
-        <h2>Posts</h2>
         {% set posts_section = get_section(path="post/_index.md") %}
         {% if posts_section.pages %}
         <ul class="post-list">
@@ -19,7 +22,7 @@
             <li>
                 <a href="./post/{{ page.slug }}/">
                     <span class="post-title">{{ page.title }}</span>
-                    <span class="post-date">{{ page.date | date(format="%Y-%m-%d") }}</span>
+                    <span class="post-date">{{ page.date | date(format="%d.%m.%y") }}</span>
                 </a>
             </li>
             {% endfor %}

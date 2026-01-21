@@ -3,40 +3,72 @@
 // =============================================================================
 
 @font-face {
-    font-family: 'Perun';
-    src: url('/fonts/Perun-Regular.ttf') format('truetype');
+    font-family: "JetBrains Mono";
+    src: url("/fonts/JetBrainsMono-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url("/fonts/JetBrainsMono-Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url("/fonts/JetBrainsMono-Medium.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url("/fonts/JetBrainsMono-SemiBold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Perun";
+    src: url("/fonts/Perun-Regular.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
     font-display: block;
 }
 
 @font-face {
-    font-family: 'Perun';
-    src: url('/fonts/Perun-Italic.ttf') format('truetype');
+    font-family: "Perun";
+    src: url("/fonts/Perun-Italic.ttf") format("truetype");
     font-weight: 400;
     font-style: italic;
     font-display: block;
 }
 
 @font-face {
-    font-family: 'Perun';
-    src: url('/fonts/Perun-Medium.ttf') format('truetype');
+    font-family: "Perun";
+    src: url("/fonts/Perun-Medium.ttf") format("truetype");
     font-weight: 500;
     font-style: normal;
     font-display: block;
 }
 
 @font-face {
-    font-family: 'Perun';
-    src: url('/fonts/Perun-Bold.ttf') format('truetype');
+    font-family: "Perun";
+    src: url("/fonts/Perun-Bold.ttf") format("truetype");
     font-weight: 700;
     font-style: normal;
     font-display: block;
 }
 
 @font-face {
-    font-family: 'Perun';
-    src: url('/fonts/Perun-BoldItalic.ttf') format('truetype');
+    font-family: "Perun";
+    src: url("/fonts/Perun-BoldItalic.ttf") format("truetype");
     font-weight: 700;
     font-style: italic;
     font-display: block;
@@ -77,16 +109,17 @@
     --c-link: var(--blue-600);
     --c-link-hover: var(--blue-700);
     --c-border: var(--gray-300);
-    --c-code-bg: var(--gray-100);
-    --c-pre-bg: var(--gray-100);
-    --c-pre-text: var(--gray-900);
+    // Code block colors (0x96f theme - always dark)
+    --c-code-bg: #262427;
+    --c-pre-bg: #262427;
+    --c-pre-text: #fcfcfa;
 
-    // Syntax highlighting tokens
-    --c-syntax-comment: var(--gray-500);
-    --c-syntax-keyword: var(--purple-600);
-    --c-syntax-variable: var(--red-600);
-    --c-syntax-function: var(--orange-600);
-    --c-syntax-string: var(--green-600);
+    // Syntax highlighting tokens (0x96f palette)
+    --c-syntax-comment: #8b8b8a;
+    --c-syntax-keyword: #ff7272;
+    --c-syntax-variable: #fc9867;
+    --c-syntax-function: #bcdf59;
+    --c-syntax-string: #ffca58;
 
     // -------------------------------------------------------------------------
     // Spacing Tokens
@@ -98,6 +131,7 @@
     --s-5: 1.25rem; // 20px
     --s-6: 1.5rem; // 24px
     --s-8: 2rem; // 32px
+    --s-9: 2.25rem; // 36px
     --s-10: 2.5rem; // 40px
     --s-12: 3rem; // 48px
     --s-16: 4rem; // 64px
@@ -131,7 +165,7 @@
     --lh-tight: 1.25;
     --lh-snug: 1.375;
     --lh-normal: 1.5;
-    --lh-relaxed: 1.625;
+    --lh-relaxed: 1.6;
 
     // Font weights
     --fw-normal: 400;
@@ -166,6 +200,21 @@
         --t-4xl: 2.5rem;
         --page-px: var(--s-6);
     }
+}
+
+// =============================================================================
+// Dark Theme
+// =============================================================================
+
+[data-theme="dark"] {
+    --c-bg: var(--gray-900);
+    --c-surface: var(--gray-700);
+    --c-text: var(--gray-100);
+    --c-text-muted: var(--gray-400);
+    --c-link: #5b9fff;
+    --c-link-hover: #85b5ff;
+    --c-border: var(--gray-700);
+    // Code colors inherited from :root (0x96f theme)
 }
 
 // =============================================================================
@@ -254,8 +303,10 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    // Disable all ligatures (includes st, fi, fl, ff, etc.)
-    font-feature-settings: "liga" 0, "dlig" 0;
+    // Disable ligatures for sans-serif body text
+    font-feature-settings:
+        "liga" 0,
+        "calt" 0;
     font-kerning: normal;
     text-rendering: optimizeLegibility;
 }
@@ -281,6 +332,9 @@ body > header nav {
     margin-right: auto;
     padding-left: var(--page-px);
     padding-right: var(--page-px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .site-title {
@@ -288,12 +342,35 @@ body > header nav {
     font-weight: var(--fw-semibold);
     color: var(--c-text);
     text-decoration: none;
+    text-transform: uppercase;
     transition: opacity 0.15s ease;
 
     &:hover,
     &:focus {
         opacity: 0.7;
         text-decoration: none;
+    }
+}
+
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--s-2);
+    color: var(--c-text);
+    font-size: var(--t-xl);
+    line-height: 1;
+    transition: opacity 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        opacity: 0.7;
+    }
+
+    .theme-icon {
+        display: block;
     }
 }
 
@@ -306,10 +383,10 @@ body > main {
     max-width: var(--max-w);
     margin-left: auto;
     margin-right: auto;
-    padding: var(--s-4) var(--page-px) var(--s-12);
+    padding: 0 var(--page-px) var(--s-12);
 
     @media (min-width: 640px) {
-        padding: var(--s-6) var(--page-px) var(--s-16);
+        padding: 0 var(--page-px) var(--s-16);
     }
 }
 
@@ -330,6 +407,29 @@ body > footer {
 // =============================================================================
 // Page Components
 // =============================================================================
+
+// Hero Image
+// -----------------------------------------------------------------------------
+
+.hero-image {
+    margin-bottom: var(--s-6);
+
+    @media (min-width: 640px) {
+        margin-bottom: var(--s-8);
+    }
+
+    img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .hero-caption {
+        font-size: var(--t-sm);
+        color: var(--c-text-muted);
+        margin-top: var(--s-2);
+    }
+}
 
 // Landing Page
 // -----------------------------------------------------------------------------
@@ -365,11 +465,7 @@ body > footer {
 // -----------------------------------------------------------------------------
 
 .posts {
-    margin-top: var(--s-10);
-
-    @media (min-width: 640px) {
-        margin-top: var(--s-12);
-    }
+    margin-top: var(--s-9);
 
     h2 {
         font-size: var(--t-sm);
@@ -391,19 +487,14 @@ body > footer {
 .post-list {
     a {
         display: flex;
-        flex-direction: column;
-        gap: var(--s-1);
+        flex-direction: row;
+        align-items: baseline;
+        gap: 0;
         padding-top: var(--s-3);
         padding-bottom: var(--s-3);
         color: var(--c-text);
         text-decoration: none;
         transition: color 0.15s ease;
-
-        @media (min-width: 640px) {
-            flex-direction: row;
-            align-items: baseline;
-            gap: 0;
-        }
 
         &:hover,
         &:focus {
@@ -416,27 +507,27 @@ body > footer {
     font-size: var(--t-base);
     font-weight: var(--fw-medium);
     line-height: var(--lh-snug);
+    display: flex;
+    flex: 1;
+    align-items: baseline;
 
-    @media (min-width: 640px) {
-        display: flex;
+    &::after {
+        content: "";
         flex: 1;
-        align-items: baseline;
-
-        &::after {
-            content: '';
-            flex: 1;
-            border-bottom: 2px dotted currentColor;
-            margin-left: 0.1rem;
-            margin-right: 0.1rem;
-            margin-bottom: 0.4em;
-            min-width: 1rem;
-            opacity: 0.6;
-        }
+        border-bottom: 2px dotted currentColor;
+        margin-left: 0.1rem;
+        margin-right: 0.1rem;
+        margin-bottom: 0.4em;
+        min-width: 1rem;
+        opacity: 0.6;
     }
 }
 
 .post-date {
-    font-size: var(--t-sm);
+    font-family: var(--font-mono);
+    font-size: var(--t-mono);
+    font-weight: 500;
+    font-feature-settings: "zero" 1;
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -466,20 +557,15 @@ body > footer {
 
     time {
         display: block;
-        font-size: var(--t-sm);
+        font-family: var(--font-mono);
+        font-size: var(--t-mono);
+        font-feature-settings: "zero" 1;
         color: var(--c-text-muted);
     }
 }
 
 .post-footer {
-    margin-top: var(--s-10);
-    padding-top: var(--s-5);
-    border-top: 1px solid var(--c-border);
-
-    @media (min-width: 640px) {
-        margin-top: var(--s-12);
-        padding-top: var(--s-6);
-    }
+    margin-top: var(--s-6);
 
     a {
         font-size: var(--t-sm);
@@ -516,7 +602,7 @@ body > footer {
         font-size: var(--t-3xl);
         font-weight: var(--fw-bold);
         margin-top: var(--s-12);
-        margin-bottom: var(--s-5);
+        margin-bottom: var(--s-3);
 
         @media (min-width: 640px) {
             font-size: var(--t-4xl);
@@ -526,11 +612,11 @@ body > footer {
     h2 {
         font-size: var(--t-2xl);
         margin-top: var(--s-10);
-        margin-bottom: var(--s-4);
+        margin-bottom: var(--s-2);
 
         @media (min-width: 640px) {
             margin-top: var(--s-12);
-            margin-bottom: var(--s-5);
+            margin-bottom: var(--s-3);
         }
     }
 
@@ -538,11 +624,11 @@ body > footer {
         font-size: var(--t-xl);
         line-height: var(--lh-snug);
         margin-top: var(--s-8);
-        margin-bottom: var(--s-3);
+        margin-bottom: var(--s-1);
 
         @media (min-width: 640px) {
             margin-top: var(--s-10);
-            margin-bottom: var(--s-4);
+            margin-bottom: var(--s-2);
         }
     }
 
@@ -550,11 +636,11 @@ body > footer {
         font-size: var(--t-lg);
         line-height: var(--lh-snug);
         margin-top: var(--s-6);
-        margin-bottom: var(--s-2);
+        margin-bottom: var(--s-1);
 
         @media (min-width: 640px) {
             margin-top: var(--s-8);
-            margin-bottom: var(--s-3);
+            margin-bottom: var(--s-1);
         }
     }
 
@@ -598,7 +684,7 @@ body > footer {
 
     strong,
     b {
-        font-weight: var(--fw-bold);
+        font-weight: var(--fw-semibold);
     }
 
     // Lists - hanging bullets/numbers
@@ -607,9 +693,9 @@ body > footer {
     ul,
     ol {
         margin-bottom: var(--s-4);
-        margin-left: -0.6rem;
+        list-style-position: outside;
+        margin-left: -0.1rem;
         padding-left: 0;
-        list-style-position: inside;
 
         @media (min-width: 640px) {
             margin-bottom: var(--s-5);
@@ -620,23 +706,37 @@ body > footer {
         list-style-type: disc;
 
         li::marker {
-            content: "•  "; // Bullet with custom spacing
+            content: "• "; // Bullet with custom spacing
         }
 
         li {
-            padding-left: 0.5rem; // Indent amount for bullet area
-            text-indent: -0.5rem; // Pull first line (with bullet) back
+            padding-left: 0.1rem;
+
+            // Handle block elements inside list items
+            > p {
+                margin-bottom: var(--s-2);
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
         }
     }
 
     ol {
         list-style-type: decimal;
-        list-style-position: outside;
-        margin-left: -0.1rem;
-        padding-left: 0;
 
         li {
             padding-left: 0.1rem;
+
+            // Handle block elements inside list items
+            > p {
+                margin-bottom: var(--s-2);
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
         }
     }
 
@@ -652,6 +752,7 @@ body > footer {
         > ol {
             margin-top: var(--s-2);
             margin-bottom: var(--s-2);
+            margin-left: 1rem;
         }
     }
 
@@ -678,6 +779,13 @@ body > footer {
         font-family: var(--font-mono);
         font-size: var(--t-mono);
         font-weight: var(--fw-code);
+        // Enable ligatures, contextual alternates, slashed zero, ss02 (closed/lively)
+        font-feature-settings:
+            "liga" 1,
+            "calt" 1,
+            "zero" 1,
+            "ss02" 1;
+        color: var(--c-pre-text);
         background-color: var(--c-code-bg);
         padding: 0.15em 0.4em;
         border-radius: 3px;
@@ -688,6 +796,12 @@ body > footer {
         font-family: var(--font-mono);
         font-size: var(--t-mono);
         font-weight: var(--fw-code);
+        font-feature-settings:
+            "liga" 1,
+            "calt" 1,
+            "zero" 1,
+            "ss02" 1;
+        color: var(--c-pre-text);
         line-height: var(--lh-normal);
         padding: var(--s-4);
         border-radius: 6px;
@@ -715,7 +829,7 @@ body > footer {
     }
 
     // Syntax highlighting color overrides
-    // Override inline styles from Zola's base16-ocean-light theme
+    // Override inline styles from Zola's base16-ocean-light theme with 0x96f palette
     pre code span {
         // Comments (#a7adba)
         &[style*="color:#a7adba"] {
@@ -731,7 +845,6 @@ body > footer {
         // Keywords (#b48ead)
         &[style*="color:#b48ead"] {
             color: var(--c-syntax-keyword) !important;
-            font-weight: var(--fw-medium);
         }
 
         // Variables/properties (#bf616a)
@@ -742,6 +855,11 @@ body > footer {
         // Functions/constants/numbers (#d08770)
         &[style*="color:#d08770"] {
             color: var(--c-syntax-function) !important;
+        }
+
+        // Strings (#a3be8c)
+        &[style*="color:#a3be8c"] {
+            color: var(--c-syntax-string) !important;
         }
     }
 
@@ -859,14 +977,57 @@ body > footer {
 }
 
 // =============================================================================
+// Typography Utilities
+// =============================================================================
+
+// Fix apostrophe kerning - wrap the apostrophe in a span with this class
+// Usage: I<span class="apos">'</span>m
+.apos {
+    margin-left: -0.04em;
+    margin-right: 0.2em;
+}
+
+// =============================================================================
 // Mermaid Diagram Overrides
 // =============================================================================
 // Note: Most styling is handled via themeVariables in base.html
 // Only font-weight needs CSS override since Mermaid doesn't expose it
 
 svg[id^="mermaid-"] {
-    text, tspan {
+    text,
+    tspan {
         font-weight: var(--fw-diagram) !important;
+    }
+
+    // Loop/alt/opt boxes in sequence diagrams
+    .loopLine {
+        fill: rgba(158, 158, 158, 0.1) !important;
+
+        [data-theme="dark"] & {
+            fill: rgba(255, 255, 255, 0.08) !important;
+        }
+    }
+
+    // Edge labels in flowcharts (dark mode)
+    [data-theme="dark"] & {
+        .edgeLabel {
+            rect {
+                fill: transparent !important;
+            }
+            text,
+            tspan,
+            span {
+                fill: #e8e8e8 !important;
+                color: #e8e8e8 !important;
+            }
+        }
+        .edgeLabel text,
+        .edgeLabel tspan {
+            fill: #e8e8e8 !important;
+        }
+        foreignObject .edgeLabel > div {
+            color: #e8e8e8 !important;
+        }
     }
 }
 
@@ -886,6 +1047,10 @@ svg[id^="mermaid-"] {
     align-items: center;
     justify-content: center;
     padding: var(--s-4);
+
+    [data-theme="dark"] & {
+        background-color: rgba(26, 26, 26, 0.95);
+    }
 
     &.active {
         display: flex;
@@ -923,17 +1088,5 @@ svg[id^="mermaid-"] {
         &:hover {
             opacity: 1;
         }
-    }
-}
-
-// =============================================================================
-// Mermaid Diagram Overrides
-// =============================================================================
-// Note: Most styling is handled via themeVariables in base.html
-// Only font-weight needs CSS override since Mermaid doesn't expose it
-
-svg[id^="mermaid-"] {
-    text, tspan {
-        font-weight: var(--fw-diagram) !important;
     }
 }
