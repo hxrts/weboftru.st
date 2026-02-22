@@ -2,15 +2,14 @@
 title = "Web of Trust"
 +++
 
-This is a modern Web of Trust project by [Sam Hart](https://hxrts.com), designed to be forward-secure and fully Peer-to-Peer.
+Welcome to *Web of Trust*, a workshop-style blog that documents ideas and experiments from Sam Hart.
 
-The term "Web of Trust" was coined in 1992 by the creator of the PGP, Phil Zimmermann. It referrs to a model of transitive trust he hoped would solve a social scalability problem facing adoption of E2E encryption.
+Since most of my work is digital, I'll be treating the publication like a series of digital studio visits. Writing will aim to capture some kernel of interest, but the resolution will vary as I continue to learn.
 
-E2EE communication relies on securely mapping individuals to held secrets. At the end of any cryptographic channel is an act of induction, "I believe who they are," that is fundementally rooted in some real world experience.
+I will frequently mention open source software projects I've written to work through these ideas, including [Aura](https://github.com/hxrts/aura) and [Telltale](https://github.com/hxrts/aura). Subject matter will likely orbit around a few topics of interest, software achitecture, distributed sytems, physics, political philosophy, aesthetics.
 
-Of course it's impossible for everyone to physically observe everyone else attesting to secrets, nevermind keeping track over time. So the only solution is to take others at their word, and build belief by proxy.
+The name "Web of Trust" owes to the concept of distributed key authentication proposed by Phil Zimmermann in 1992, as a solution to PGP's social scalability challenges. I've always been fond of the term because it frames a deeply technical system in terms of human relationships.
 
-PGP is a widely hated piece of software. And I can't claim to have ever enjoyed the experience of using it myself. However, I don't think we should be so quick to throw away the paradigm of relational authority entirely.
+I've repurposed the weboftru.st domain, which was originally home to a friendly [event series](https://web.archive.org/web/20250307144317/https://weboftru.st/) I organized in 2019.
 
-The goal of this project is to communicate a new kind of social form, and demonstrate some of these aspects through digital means. I'll be frequently reference the open source software experiment I've been working on,
-[Aura](https://github.com/hxrts/aura), which incorporates many of these ideas.
+You can find more about me at [hxrts.com](https://hxrts.com) which, like all personal websites, hasn't been updated in ages.
