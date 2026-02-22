@@ -41,6 +41,7 @@
             pkgs.zola
             pkgs.just
             pkgs.git
+            pkgs.libwebp
           ];
 
           shellHook = ''
