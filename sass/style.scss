@@ -357,6 +357,7 @@ body > header nav {
     border: none;
     cursor: pointer;
     padding: var(--s-2);
+    margin-right: calc(-1 * var(--s-2)); // Offset padding to align icon with content edge
     color: var(--c-text);
     font-size: var(--t-xl);
     line-height: 1;
