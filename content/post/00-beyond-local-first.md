@@ -5,7 +5,7 @@ description = "A web without servers"
 slug = "beyond-Local-first"
 
 [extra]
-cover_image = "/beyond-local-first-cover.jpg"
+cover_image = "/images/pixillation.jpg"
 cover_caption = "<em>Pixillation</em>, Lillian Schwartz and Ken Knowlton (1970)"
 +++
 

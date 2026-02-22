@@ -6,9 +6,13 @@
 {% endblock extra_head %}
 
 {% block content %}
+{% set manifest = load_data(path="static/images/manifest.json") %}
 <article>
     <div class="hero-image">
-        <img src="./happening_score.webp" alt="Happening Score by Wolf Vostell">
+        {% set img_meta = manifest["happening-score.webp"] %}
+        <div class="img-placeholder" style="aspect-ratio: {{ img_meta.width }} / {{ img_meta.height }};">
+            <img src="./images/happening-score.webp" alt="Happening Score by Wolf Vostell" width="{{ img_meta.width }}" height="{{ img_meta.height }}" onload="this.parentElement.classList.add('loaded')">
+        </div>
         <p class="hero-caption"><em>Happening Score</em>, Wolf Vostell, dé-coll/age happenings (1966)</p>
     </div>
     <div class="post-content">

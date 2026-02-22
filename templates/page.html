@@ -5,10 +5,19 @@
 {% block description %}{{ page.description | default(value=config.description) }}{% endblock description %}
 
 {% block content %}
+{% set manifest = load_data(path="static/images/manifest.json") %}
 <article class="post">
     {% if page.extra.cover_image %}
+    {% set img_filename = page.extra.cover_image | split(pat="/") | last %}
+    {% set img_meta = manifest[img_filename] %}
     <div class="hero-image">
+        {% if img_meta %}
+        <div class="img-placeholder" style="aspect-ratio: {{ img_meta.width }} / {{ img_meta.height }};">
+            <img src="{{ page.extra.cover_image }}" alt="{{ page.extra.cover_alt | default(value=page.title) }}" width="{{ img_meta.width }}" height="{{ img_meta.height }}" onload="this.parentElement.classList.add('loaded')">
+        </div>
+        {% else %}
         <img src="{{ page.extra.cover_image }}" alt="{{ page.extra.cover_alt | default(value=page.title) }}">
+        {% endif %}
         {% if page.extra.cover_caption %}
         <p class="hero-caption">{{ page.extra.cover_caption | safe }}</p>
         {% endif %}

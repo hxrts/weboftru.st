@@ -42,6 +42,7 @@
             pkgs.just
             pkgs.git
             pkgs.libwebp
+            pkgs.imagemagick
           ];
 
           shellHook = ''

@@ -418,6 +418,24 @@ body > footer {
         margin-bottom: var(--s-8);
     }
 
+    .img-placeholder {
+        width: 100%;
+        background-color: var(--c-surface);
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        &.loaded img {
+            opacity: 1;
+        }
+    }
+
     img {
         width: 100%;
         height: auto;
