@@ -40,7 +40,26 @@
           buildInputs = [
             pkgs.zola
             pkgs.just
+            pkgs.git
           ];
+
+          shellHook = ''
+            # Colors (matching your zsh prompt)
+            MAGENTA='\033[0;35m'
+            GREEN='\033[0;32m'
+            ORANGE='\033[38;5;214m'
+            RESET='\033[0m'
+
+            # Build prompt before each command
+            set_prompt() {
+              local pwd_short="''${PWD/#$HOME/\~}"
+              local branch=$(git branch 2>/dev/null | grep '^*' | sed 's/* //')
+              local git_part=""
+              [[ -n "$branch" ]] && git_part=" \[$GREEN\]($branch)\[$RESET\]"
+              PS1="\[$MAGENTA\]$pwd_short\[$RESET\]$git_part \[$ORANGE\][nix] >\[$RESET\] "
+            }
+            PROMPT_COMMAND=set_prompt
+          '';
         };
       }
     );

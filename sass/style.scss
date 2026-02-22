@@ -569,6 +569,7 @@ body > footer {
 
     a {
         font-size: var(--t-sm);
+        font-weight: var(--fw-medium);
         color: var(--c-text-muted);
         text-decoration: none;
         transition: color 0.15s ease;
@@ -576,6 +577,11 @@ body > footer {
         &:hover,
         &:focus {
             color: var(--c-link);
+        }
+
+        .arrow {
+            font-family: var(--font-mono);
+            padding-right: 0.15em;
         }
     }
 }
@@ -983,8 +989,8 @@ body > footer {
 // Fix apostrophe kerning - wrap the apostrophe in a span with this class
 // Usage: I<span class="apos">'</span>m
 .apos {
-    margin-left: -0.04em;
-    margin-right: 0.2em;
+    margin-left: -0.01em;
+    margin-right: 0.22em;
 }
 
 // =============================================================================

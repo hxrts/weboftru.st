@@ -1,9 +1,8 @@
 +++
 title = "Beyond Local-first"
 date = 2026-01-21
-description = "The first post on Web of Trust"
+description = "A web without servers"
 slug = "beyond-Local-first"
-# draft = true
 
 [extra]
 cover_image = "/beyond-local-first-cover.jpg"
@@ -12,9 +11,9 @@ cover_caption = "<em>Pixillation</em>, Lillian Schwartz and Ken Knowlton (1970)"
 
 
 
-- Identity is relational • Identity emerges bottom-up between parties that share context. Aura has no transparent state and no global singleton, rather each context is encrypted and governed by its own threshold authority. Aura's relational model enables social recovery and complete account rehydration without transient decryption in scenarios where users have lost all devices.
-- Your friends are the network • Aura forms an encrypted mesh across the social graph. Distributed protocols run within scoped sessions and channels that conceal participant structure. Gossip, rendezvous, consensus, and storage all operate through these bounded contexts.
-- Autonomy from consent • Relationships are expressed through a web-of-trust. Capabilities form a semilattice that attenuates authority. Information is governed via consent predicates, enabling participants to coordinate freely by ensuring boundaries are respected by design.
+- Identity is relational - Identity emerges bottom-up between parties that share context. Aura has no transparent state and no global singleton, rather each context is encrypted and governed by its own threshold authority. Aura's relational model enables social recovery and complete account rehydration without transient decryption in scenarios where users have lost all devices.
+- Your friends are the network - Aura forms an encrypted mesh across the social graph. Distributed protocols run within scoped sessions and channels that conceal participant structure. Gossip, rendezvous, consensus, and storage all operate through these bounded contexts.
+- Autonomy from consent - Relationships are expressed through a web-of-trust. Capabilities form a semilattice that attenuates authority. Information is governed via consent predicates, enabling participants to coordinate freely by ensuring boundaries are respected by design.
 
 
 

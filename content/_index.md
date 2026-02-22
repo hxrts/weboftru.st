@@ -12,7 +12,5 @@ Of course it's impossible for everyone to physically observe everyone else attes
 
 PGP is a widely hated piece of software. And I can't claim to have ever enjoyed the experience of using it myself. However, I don't think we should be so quick to throw away the paradigm of relational authority entirely.
 
-The goal of this project is to communicate a new kind of social form, and demonstrate some of these aspects through digital means.
-
-On this blog I'll frequently reference an open source software experiment I've been working on,
+The goal of this project is to communicate a new kind of social form, and demonstrate some of these aspects through digital means. I'll be frequently reference the open source software experiment I've been working on,
 [Aura](https://github.com/hxrts/aura), which incorporates many of these ideas.
