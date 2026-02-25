@@ -2,7 +2,7 @@
 title = "Web of Trust"
 +++
 
-Hello, I'm [Sam Hart](https://hxrts.com). Welcome to *Web of Trust*, a workshop-style blog that contains a variety of ideas and experiments.
+Hello, I'm [Sam Hart](https://hxrts.com). Welcome to *Web of Trust*, a workshop-style blog that contains a variety of the ideas I'm currently working through and notes from my experiments.
 
 Since most of my work is digital, I'll be treating posts like a series of virtual studio visits. Writings will aim to capture some kernel of interest, but the resolution may vary as I continue to learn.
 
