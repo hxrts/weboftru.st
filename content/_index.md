@@ -2,11 +2,11 @@
 title = "Web of Trust"
 +++
 
-Hello, I'm [Sam Hart](https://hxrts.com). Welcome to *Web of Trust*, a workshop-style blog that contains a variety of my ideas and experiments.
+Hello, I'm [Sam Hart](https://hxrts.com). Welcome to *Web of Trust*, a workshop-style blog that contains a variety of ideas and experiments.
 
-Since most of my work is digital, I'll be treating the publication like a series of digital studio visits. Writing will aim to capture some kernel of interest, but the resolution will vary as I continue to learn.
+Since most of my work is digital, I'll be treating posts like a series of virtual studio visits. Writings will aim to capture some kernel of interest, but the resolution may vary as I continue to learn.
 
-I will frequently mention open source software projects I've written to work through these ideas, including [Aura](https://github.com/hxrts/aura) and [Telltale](https://github.com/hxrts/aura). Subject matter will likely orbit around a few topics of interest: software architecture, distributed systems, physics, political philosophy, aesthetics.
+I'll reference open source software projects I've developed to work through these ideas, including [Aura](https://github.com/hxrts/aura) and [Telltale](https://github.com/hxrts/aura). Subject matter will likely orbit around a few topics of interest: software architecture, distributed systems, physics, political philosophy, aesthetics.
 
 The name "Web of Trust" owes to the concept of distributed key authentication proposed by Phil Zimmermann in 1992, as a solution to PGP's social scalability challenges. I've always been fond of the term because it frames a deeply technical system in terms of human relationships.
 
