@@ -10,8 +10,6 @@ cover_caption = "<em>Pixillation</em>, Lillian Schwartz and Ken Knowlton (1970)"
 +++
 
 
----
-
 ## Introduction
 
 In December I attended [Splintercon](https://splintercon.net/paris/) in Paris, a conference organized by eQualitie with help from my friends Lai Yi and Katerina. The topic was splinternets, intentionally isolated portions of the internet created by governments seeking to control information flow. There were in-depth discussions about the Chinese and Russian internet stacks, and several presentations documented the increasing sophistication of Iran's internet control apparatus.
@@ -24,11 +22,10 @@ As a follow-up, some of these developers are organizing a private event to find 
 
 I wanted to support this effort to the extent I could, so I decided to write up some of the learnings from my recent experiments. What follows is a survey of design patterns from Aura that may be relevant to developers working on mesh networks, P2P protocols, offline-first applications, and decentralized platforms.
 
----
 
 ## 1. Social Infrastructure
 
-> **Source**: [Project Overview](../docs/000_project_overview.md) | [Social Architecture](../docs/114_social_architecture.md)
+**Source**: [Project Overview](../docs/000_project_overview.md) | [Social Architecture](../docs/114_social_architecture.md)
 
 Traditional P2P systems treat the network as a flat, anonymous resource pool. Nodes connect to random peers via DHTs, discover content through flooding, and route messages through shortest paths. This approach has two fundamental problems.
 
@@ -38,7 +35,7 @@ Traditional P2P systems treat the network as a flat, anonymous resource pool. No
 
 Aura inverts this model. Your friends' devices relay your messages. Your community stores your data. Your guardians recover your keys. The people you trust are the infrastructure you depend on.
 
-> **The social graph IS the routing infrastructure.**
+**The social graph IS the routing infrastructure.**
 
 This design provides three concrete services:
 
@@ -58,11 +55,10 @@ Neighborhoods are collections of homes connected via adjacency graphs. Each home
 
 Discovery cost is proportional to social distance. When discovering a peer, the system checks direct contacts first, then home peers, then neighborhood adjacencies, and only falls back to global rendezvous as a last resort. This creates economic incentives to establish social relationships before communication. Direct messages are cheap while cold outreach is expensive. Relays are selected based on this same social topology: home peers first, then neighborhood peers, then guardians. Recovery infrastructure doubles as relay capacity.
 
----
 
 ## 2. Operation Categories
 
-> **Source**: [Operation Categories](../docs/107_operation_categories.md)
+**Source**: [Operation Categories](../docs/107_operation_categories.md)
 
 Not all operations require coordination. Aura classifies operations into three categories based on their agreement requirements.
 
@@ -76,11 +72,10 @@ The crucial insight is that ceremonies establish shared cryptographic context, a
 
 The expensive part is establishing WHO is in the relationship. Once established, operations WITHIN the relationship derive keys deterministically from shared state.
 
----
 
 ## 3. Coordination
 
-> **Source**: [MPST and Choreography](../docs/108_mpst_and_choreography.md) | [Consensus](../docs/106_consensus.md)
+**Source**: [MPST and Choreography](../docs/108_mpst_and_choreography.md) | [Consensus](../docs/106_consensus.md)
 
 Category C operations require multi-party coordination, and getting distributed protocols right is notoriously difficult. Race conditions, deadlocks, and message ordering bugs are easy to introduce and hard to detect through testing. Aura uses choreographic programming to make these protocols correct by construction.
 
@@ -104,11 +99,10 @@ The protocol has two paths. The fast path completes in 1-2 round trips when all 
 
 Operations bind to explicit prestates, preventing forks and replays by ensuring all parties agree on the starting state before any commits.
 
----
 
 ## 4. Protocol Evolution
 
-> **Source**: [Coordination Guide](../docs/803_coordination_guide.md)
+**Source**: [Coordination Guide](../docs/803_coordination_guide.md)
 
 P2P systems face a fundamental tension: protocols must evolve, but you can't coordinate a simultaneous upgrade across all peers. Devices come online at different times. Network partitions prevent synchronization. Some peers may never upgrade at all.
 
@@ -120,11 +114,10 @@ The critical property is that both operations preserve coherence: if the system 
 
 This enables genuinely asynchronous distributed upgrades. New protocol versions can be deployed incrementally. Devices joining after an upgrade inherit the new behavior through delegation. The formal coherence guarantee means you don't need to reason about every possible interleaving of old and new protocol versions. If the delegation is valid, the composed system remains correct.
 
----
 
 ## 5. Messaging
 
-> **Source**: [Asynchronous Message Patterns](../docs/110_amp.md)
+**Source**: [Asynchronous Message Patterns](../docs/110_amp.md)
 
 AMP (Asynchronous Message Protocol) provides secure messaging with strong post-compromise security and bounded forward secrecy.
 
@@ -142,11 +135,10 @@ Recovery requires no coordination: load journal facts, reduce to current state, 
 
 If your ratchet state can be lost, it will be lost. Design for recovery from first principles, with the journal as the single source of truth.
 
----
 
 ## 6. Recovery
 
-> **Source**: [Relational Contexts](../docs/112_relational_contexts.md) | [Authority and Identity](../docs/102_authority_and_identity.md)
+**Source**: [Relational Contexts](../docs/112_relational_contexts.md) | [Authority and Identity](../docs/102_authority_and_identity.md)
 
 Recovery relationships are cryptographic, not just social. They live in relational contexts with their own journals.
 
@@ -154,11 +146,10 @@ A guardian binding captures account and guardian commitment hashes, recovery par
 
 When a guardian approves recovery, they create a grant capturing the old and new account commitments, the specific operation, and the consensus proof. All operations bind to explicit prestates, preventing forks, replays, and inconsistent views.
 
----
 
 ## 7. Privacy
 
-> **Source**: [Privacy and Information Flow](../docs/003_information_flow_contract.md)
+**Source**: [Privacy and Information Flow](../docs/003_information_flow_contract.md)
 
 Traditional privacy systems force users to choose between complete isolation and complete exposure. Aura takes a different view: privacy is relational. Sharing information with people you trust isn't a privacy violation. It's the foundation of meaningful collaboration. The question isn't "who can see my data?" but "did I consent to this disclosure?"
 
@@ -178,7 +169,6 @@ Aura uses a charge-before-send invariant: every network-observable action must f
 
 This means attackers cannot probe your capabilities by observing failures. There's simply nothing to observe when an operation is denied.
 
----
 
 ## Further Reading
 
