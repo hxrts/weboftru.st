@@ -1,8 +1,8 @@
 +++
-title = "Patterns for Resilient P2P Networks: Learnings from Aura"
+title = "Patterns for P2P Resilience: Learnings from Aura"
 date = 2026-01-21
 description = "A web without servers"
-slug = "resilient-p2p"
+slug = "p2p-resilience"
 
 [extra]
 cover_image = "/images/pixillation.jpg"
