@@ -3,7 +3,6 @@ title = "Patterns for Resilient P2P Networks: Learnings from Aura"
 date = 2026-01-21
 description = "A web without servers"
 slug = "beyond-Local-first"
-draft = true
 
 [extra]
 cover_image = "/images/pixillation.jpg"
