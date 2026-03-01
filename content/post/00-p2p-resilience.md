@@ -1,7 +1,7 @@
 +++
 title = "Patterns for P2P Resilience: Learnings from Aura"
 date = 2026-01-21
-description = "A web without servers"
+description = "Design patterns for resilient encrypted P2P networks"
 slug = "p2p-resilience"
 
 [extra]
@@ -12,7 +12,7 @@ cover_caption = "<em>Pixillation</em>, Lillian Schwartz and Ken Knowlton (1970)"
 
 ## Introduction
 
-In December I attended [Splintercon](https://splintercon.net/paris/) in Paris, a conference organized by eQualitie and my friends [Katerina Kataeva](https://k-k.work/) and [Lai Yi Ohlsen](https://www.laiyiohlsen.com/). The topic was splinternets, intentionally isolated portions of the internet created by governments seeking to control information flow. The conference included in-depth discussions about the Chinese and Russian internet stacks, and presentations documenting the increasing sophistication of Iran's internet control apparatus.
+In December I attended [Splintercon](https://splintercon.net/paris/) in Paris, a conference organized by eQualitie and my friends [Katerina Kataeva](https://k-k.work/) and [Lai Yi Ohlsen](https://www.laiyiohlsen.com/). The topic was splinternets, intentionally isolated portions of the internet, typically by governments seeking greater information control. The conference included in-depth discussions about the Chinese and Russian internet stacks, and presentations documenting the increasing sophistication of Iran's internet control apparatus.
 
 The conference brought together a lovely mix of people: diplomats, academic researchers, human rights advocates, representatives from prominent internet infrastructure companies, and a contingent of developers building encrypted P2P networks and mesh networking tools. I've been building P2P software for the past few months, and the conference gave me an opportunity to speak with developers whose projects span a wide range of maturity levels.
 
@@ -73,14 +73,14 @@ Choreographies produce session-typed channels. A session type specifies the exac
 
 ## Safe Protocol Evolution
 
-P2P systems face a fundamental tension: protocols must evolve, but you can't coordinate a simultaneous upgrade across all peers. Devices come online at different times. Network partitions prevent synchronization. Some peers may never upgrade at all.
+Protocols evolve, however fully P2P systems have no mechanism for coordinated rollouts. Peers join at different times, partitions form, and some never upgrade at all.
 
 Aura addresses this with two composition primitives that preserve protocol coherence under reconfiguration.
 
 1. A `link` operation lets you safely combine protocols by checking that their connection points match. The compiler verifies compatibility at build time, the runtime also checks when protocols are joined together.
 2. A `delegate` operation safely transfers session endpoints at runtime, handing off an active session from one device to another without restarting the protocol.
 
-These operations are available through my multi-party session type library [telltale](https://github.com/hxrts/telltale). The critical property is that both operations preserve coherence: if the system was in a valid state before reconfiguration, it remains in a valid state after. This is formally verified. Device migration uses delegation to transfer sessions to a new device while preserving protocol continuity. Guardian handoff delegates recovery session endpoints to a replacement guardian.
+These operations are available through my multi-party session type library [telltale](https://github.com/hxrts/telltale). The critical property is that both operations preserve coherence: if the system was in a valid state before reconfiguration, it remains in a valid state after. Device migration uses delegation to transfer sessions to a new device while preserving protocol continuity. Guardian handoff delegates recovery session endpoints to a replacement guardian.
 
 This enables asynchronous distributed upgrades that maintain type safety. New protocol versions can be deployed incrementally. Devices joining after an upgrade inherit the new behavior through delegation.
 
@@ -152,23 +152,11 @@ Leakage tracking deserves special mention. Separate from flow budgets (which lim
 An observer cannot distinguish "operation denied" from "operation never attempted." There's simply nothing to observe when an operation fails.
 
 
-## Take-aways
+## Aura Transmission
 
-For developers building mesh networks and P2P protocols that need to survive hostile conditions, a few patterns stand out:
+The patterns above follow from a set of hard design constraints that most protocols are unwilling to accept: zero reliance on dedicated servers, robustness to device loss, E2E forward encryption. The adversarial conditions placed on mesh networks and P2P protocols internet shutdowns.
 
-- Threshold signatures let authority survive device loss
-
-- Trusted peers can help bridge the P2P service gap
-
-- Eventual consistency for evidence, bounded agreement for membership
-
-- Correct by construction enables safe composition
-
-- Design for recovery from replicated state
-
-These patterns emerged from trying to build something that works without servers, survives device loss, while maintaining strong encryption.
-
-Aura is free and open source. All core functionality works, though some areas still need polish. If you are a developer building in this space, particularly if you're attending the upcoming internet shutdown event, I encourage you to try the software or incorporate ideas from Aura into your own project.
+Aura is free and open source. All core operations are functional, though some areas still need polish. If you are building in this space, I encourage you to try the software or incorporate these ideas into your own project. My hope is that Aura can help improve the resilience of deployed networks in some capacity.
 
 
 ## Further Reading
