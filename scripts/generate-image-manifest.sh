@@ -2,39 +2,79 @@
 set -euo pipefail
 
 # Generate image manifest with dimensions for all images in static/images/
-# Outputs JSON to static/images/manifest.json
+# Only regenerates if manifest is missing or out of date
 
 IMAGES_DIR="static/images"
 MANIFEST_FILE="$IMAGES_DIR/manifest.json"
 
-# Start JSON object
-echo "{" > "$MANIFEST_FILE"
-
-first=true
-shopt -s nullglob
-for img in "$IMAGES_DIR"/*.jpg "$IMAGES_DIR"/*.jpeg "$IMAGES_DIR"/*.png "$IMAGES_DIR"/*.webp "$IMAGES_DIR"/*.gif "$IMAGES_DIR"/*.svg; do
-    [ -f "$img" ] || continue
-
-    filename=$(basename "$img")
-
-    # Get dimensions using identify (ImageMagick)
-    dimensions=$(identify -format "%wx%h" "$img" 2>/dev/null) || continue
-    width=$(echo "$dimensions" | cut -d'x' -f1)
-    height=$(echo "$dimensions" | cut -d'x' -f2)
-
-    # Add comma before entries (except first)
-    if [ "$first" = true ]; then
-        first=false
+# Get image dimensions (uses sips on macOS, identify on Linux)
+get_dimensions() {
+    local img="$1"
+    if command -v identify &>/dev/null; then
+        identify -format "%w %h" "$img" 2>/dev/null
+    elif command -v sips &>/dev/null; then
+        local w h
+        w=$(sips -g pixelWidth "$img" 2>/dev/null | awk '/pixelWidth:/{print $2}')
+        h=$(sips -g pixelHeight "$img" 2>/dev/null | awk '/pixelHeight:/{print $2}')
+        echo "$w $h"
     else
-        echo "," >> "$MANIFEST_FILE"
+        echo "Error: Neither ImageMagick (identify) nor sips available" >&2
+        return 1
     fi
+}
 
-    # Write entry (no trailing comma)
-    printf '  "%s": {"width": %s, "height": %s}' "$filename" "$width" "$height" >> "$MANIFEST_FILE"
-done
+# Check if manifest needs regeneration
+needs_update() {
+    # No manifest file
+    [ ! -f "$MANIFEST_FILE" ] && return 0
 
-# Close JSON object
-echo "" >> "$MANIFEST_FILE"
-echo "}" >> "$MANIFEST_FILE"
+    # Check each image
+    shopt -s nullglob
+    for img in "$IMAGES_DIR"/*.jpg "$IMAGES_DIR"/*.jpeg "$IMAGES_DIR"/*.png "$IMAGES_DIR"/*.webp "$IMAGES_DIR"/*.gif "$IMAGES_DIR"/*.svg; do
+        [ -f "$img" ] || continue
 
-echo "Generated $MANIFEST_FILE"
+        # Image is newer than manifest
+        [ "$img" -nt "$MANIFEST_FILE" ] && return 0
+
+        # Image not in manifest
+        filename=$(basename "$img")
+        grep -q "\"$filename\"" "$MANIFEST_FILE" || return 0
+    done
+
+    return 1
+}
+
+# Generate the manifest
+generate_manifest() {
+    echo "{" > "$MANIFEST_FILE"
+
+    first=true
+    shopt -s nullglob
+    for img in "$IMAGES_DIR"/*.jpg "$IMAGES_DIR"/*.jpeg "$IMAGES_DIR"/*.png "$IMAGES_DIR"/*.webp "$IMAGES_DIR"/*.gif "$IMAGES_DIR"/*.svg; do
+        [ -f "$img" ] || continue
+
+        filename=$(basename "$img")
+
+        read -r width height < <(get_dimensions "$img") || continue
+
+        if [ "$first" = true ]; then
+            first=false
+        else
+            echo "," >> "$MANIFEST_FILE"
+        fi
+
+        printf '  "%s": {"width": %s, "height": %s}' "$filename" "$width" "$height" >> "$MANIFEST_FILE"
+    done
+
+    echo "" >> "$MANIFEST_FILE"
+    echo "}" >> "$MANIFEST_FILE"
+
+    echo "Generated $MANIFEST_FILE"
+}
+
+# Main
+if needs_update; then
+    generate_manifest
+else
+    echo "Manifest is up to date"
+fi
