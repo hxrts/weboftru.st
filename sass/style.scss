@@ -93,8 +93,13 @@
     --gray-750: #3a3a3a;
     --gray-900: #1a1a1a;
 
-    --blue-600: #0055cc;
-    --blue-700: #003d99;
+    --blue-400: #99c4ff;
+    --blue-500: #5b9fff;
+    --blue-600: #0066dd;
+    --blue-700: #003380;
+
+    --gray-200: var(--gray-200);
+    --gray-850: #2d2d2d;
 
     --green-600: #2d7a3e;
     --purple-600: #6b4d9e;
@@ -213,8 +218,8 @@
     --c-surface: var(--gray-700);
     --c-text: var(--gray-100);
     --c-text-muted: var(--gray-400);
-    --c-link: #5b9fff;
-    --c-link-hover: #99c4ff;
+    --c-link: var(--blue-500);
+    --c-link-hover: var(--blue-400);
     --c-border: var(--gray-700);
     // Code colors inherited from :root (0x96f theme)
 }
@@ -526,7 +531,7 @@ body > footer {
 
 .post-title {
     font-size: var(--t-base);
-    font-weight: var(--fw-medium);
+    font-weight: var(--fw-normal);
     line-height: var(--lh-snug);
     display: flex;
     flex: 1;
@@ -833,7 +838,7 @@ body > footer {
 
         [data-theme="dark"] & {
             color: var(--gray-500);
-            background-color: #2d2d2d;
+            background-color: var(--gray-850);
         }
     }
 
@@ -1063,16 +1068,16 @@ svg[id^="mermaid-"] {
             text,
             tspan,
             span {
-                fill: #e8e8e8 !important;
-                color: #e8e8e8 !important;
+                fill: var(--gray-200) !important;
+                color: var(--gray-200) !important;
             }
         }
         .edgeLabel text,
         .edgeLabel tspan {
-            fill: #e8e8e8 !important;
+            fill: var(--gray-200) !important;
         }
         foreignObject .edgeLabel > div {
-            color: #e8e8e8 !important;
+            color: var(--gray-200) !important;
         }
     }
 }
