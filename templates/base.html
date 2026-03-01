@@ -88,14 +88,15 @@
             const green600 = styles.getPropertyValue('--green-600').trim();
             const orange600 = styles.getPropertyValue('--orange-600').trim();
             const fontSans = styles.getPropertyValue('--font-sans').trim().replace(/\s+/g, ' ');
-            const fontSize = styles.getPropertyValue('--t-base').trim();
+            const fontSize = styles.getPropertyValue('--t-sm').trim();
 
             // Theme-specific colors (dark mode uses 0x96f palette)
-            const boxBgColor = isDark ? '#363338' : gray100;       // Slightly lighter than bg
+            const nodeBgColor = isDark ? '#363338' : gray300;      // Inner node boxes
+            const clusterBgColor = isDark ? 'rgba(54, 51, 56, 0.5)' : gray100;   // Outer subgraph boxes
             const mainBgColor = isDark ? '#262427' : gray100;      // 0x96f background
             const textColor = isDark ? '#FCFCFA' : gray900;        // 0x96f foreground
             const labelTextColor = isDark ? '#FCFCFA' : gray900;   // 0x96f foreground
-            const borderColor = isDark ? '#8B8B8A' : gray500;      // 0x96f comment gray
+            const borderColor = isDark ? '#6B6B6A' : '#cfcfcf';      // 0x96f comment gray
             const lineColor = isDark ? '#8B8B8A' : gray400;        // 0x96f comment gray
             const secondaryBorder = isDark ? '#8B8B8A' : gray400;
 
@@ -111,36 +112,36 @@
                     'fontSize': fontSize,
 
                     // Background and surfaces
-                    'primaryColor': boxBgColor,
+                    'primaryColor': nodeBgColor,
                     'primaryBorderColor': borderColor,
                     'primaryTextColor': textColor,
 
-                    'secondaryColor': boxBgColor,
+                    'secondaryColor': nodeBgColor,
                     'secondaryBorderColor': borderColor,
                     'secondaryTextColor': textColor,
 
-                    'tertiaryColor': boxBgColor,
+                    'tertiaryColor': nodeBgColor,
                     'tertiaryBorderColor': borderColor,
                     'tertiaryTextColor': textColor,
 
                     // Main text and lines
                     'textColor': labelTextColor,
                     'lineColor': lineColor,
-                    'mainBkg': mainBgColor,
+                    'mainBkg': nodeBgColor,
 
                     // Flowchart
                     'nodeBorder': borderColor,
-                    'clusterBkg': boxBgColor,
+                    'clusterBkg': clusterBgColor,
                     'clusterBorder': borderColor,
                     'defaultLinkColor': borderColor,
-                    'edgeLabelBackground': isDark ? 'transparent' : mainBgColor,
+                    'edgeLabelBackground': isDark ? '#363338' : mainBgColor,
 
                     // Sequence diagrams (dark mode uses 0x96f accent colors)
                     'actor0Bkg': isDark ? '#4a2a2a' : '#ffe1e1',    // Muted coral (from #FF7272)
                     'actor1Bkg': isDark ? '#2a3d42' : '#e1f5ff',    // Muted cyan (from #49CAE4)
                     'actor2Bkg': isDark ? '#2d3a2a' : '#e1f5ff',    // Muted lime (from #BCDF59)
                     'actor3Bkg': isDark ? '#3a3242' : '#e1f5ff',    // Muted purple (from #A093E2)
-                    'actorBkg': boxBgColor,
+                    'actorBkg': nodeBgColor,
                     'actorBorder': secondaryBorder,
                     'actorTextColor': textColor,
                     'actorLineColor': secondaryBorder,
@@ -152,7 +153,7 @@
                     'loopTextColor': labelTextColor,
                     'altBackground': isDark ? 'rgba(139, 139, 138, 0.15)' : 'rgba(158, 158, 158, 0.1)',  // Based on 0x96f comment
                     'activationBorderColor': borderColor,
-                    'activationBkgColor': boxBgColor,
+                    'activationBkgColor': nodeBgColor,
                     'sequenceNumberColor': white,
 
                     // Special colors (dark mode uses 0x96f palette)

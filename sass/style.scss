@@ -364,7 +364,9 @@ body > header nav {
     border: none;
     cursor: pointer;
     padding: var(--s-2);
-    margin-right: calc(-1 * var(--s-2)); // Offset padding to align icon with content edge
+    margin-right: calc(
+        -1 * var(--s-2)
+    ); // Offset padding to align icon with content edge
     color: var(--c-text);
     font-size: var(--t-xl);
     line-height: 1;
@@ -600,9 +602,12 @@ body > footer {
         color: var(--c-text);
         text-decoration: none;
         background-color: var(--c-surface);
-        padding: calc(var(--s-1) + 1px) calc(var(--s-2) + 3px) var(--s-1) calc(var(--s-2) + 1px);
+        padding: calc(var(--s-1) + 1px) calc(var(--s-2) + 3px) var(--s-1)
+            calc(var(--s-2) + 1px);
         border-radius: 4px;
-        transition: color 0.15s ease, background-color 0.15s ease;
+        transition:
+            color 0.15s ease,
+            background-color 0.15s ease;
 
         [data-theme="dark"] & {
             background-color: var(--gray-750);
@@ -830,7 +835,7 @@ body > footer {
             "calt" 1,
             "zero" 1,
             "ss02" 1;
-        color: var(--gray-600);
+        color: var(--gray-700);
         background-color: var(--gray-100);
         padding: 0.1em 0.3em;
         border-radius: 3px;
@@ -1048,6 +1053,17 @@ svg[id^="mermaid-"] {
     text,
     tspan {
         font-weight: var(--fw-diagram) !important;
+    }
+
+    // Adjust node label vertical positioning (reduce bottom padding)
+    .node foreignObject > div {
+        padding-bottom: 0 !important;
+        margin-top: 1.5px;
+    }
+
+    // Adjust cluster/subgraph title positioning
+    .cluster-label foreignObject > div {
+        margin-top: 0.5px;
     }
 
     // Loop/alt/opt boxes in sequence diagrams

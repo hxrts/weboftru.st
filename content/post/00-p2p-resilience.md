@@ -1,5 +1,5 @@
 +++
-title = "Patterns for P2P Resilience: Learnings from Aura"
+title = "Patterns for P2P Resilience: Learnings from Aura Protocol"
 date = 2026-01-21
 description = "Design patterns for resilient encrypted P2P networks"
 slug = "p2p-resilience"
@@ -31,7 +31,7 @@ Aura starts with the following design constraints:
 - The system must be robust to intermittent connectivity and device loss
 - All messages are forward encrypted, all state is encrypted at rest
 
-This is a *very* challenging combination. For instance, the local-first paradigm treats devices as authoritative for state and identity. However, if devices can be lost or compromised, signing authority cannot be local to any single device. CRDTs provide eventual consistency for data, but they can't help when the cryptographic context itself is in flux. You can't derive keys to encrypt a message until you know who's in the group. Changing membership, rotating keys, or transferring ownership require bounded agreement before any dependent operations can proceed.
+This is a *very* challenging combination. For instance, the [local-first](https://www.inkandswitch.com/essay/local-first/) paradigm treats devices as authoritative for state and identity, however if devices can be lost or compromised, signing authority cannot be local to any single device. CRDTs provide eventual consistency for data, but they're of no help when the cryptographic context itself is in flux. You can't derive keys to encrypt a message until you know who's in the group to begin with. Changing membership, rotating keys, or transferring ownership require bounded agreement before any dependent operations can proceed.
 
 Aura addresses the first problem by using threshold signatures to abstract authority into the network. An authority can be one actor with many devices, or many actors acting as one. The same primitive works at every scale.
 
@@ -46,11 +46,11 @@ Given these constraints, certain services must come from somewhere: message rela
 
 Those familiar with Secure Scuttlebutt can appreciate the effectiveness of marrying the social graph with network infrastructure. Aura extends this model to provision additional key services:
 
-1. **Discovery**: Find peers through the social topology
+1. Discovery - Find peers through the social topology
 
-2. **Storage**: Relay encrypted packets and replicate shared data
+2. Storage - Relay encrypted packets and replicate shared data
 
-3. **Authority**: Administer groups and recover keys through the social network
+3. Authority - Administer groups and recover through the social network
 
 ## Servers Without Servers
 
@@ -73,14 +73,14 @@ Choreographies produce session-typed channels. A session type specifies the exac
 
 ## Safe Protocol Evolution
 
-Protocols evolve, however fully P2P systems have no mechanism for coordinated rollouts. Peers join at different times, partitions form, and some never upgrade at all.
+Protocols must evolve, but a fully P2P system has no mechanism for coordinated rollouts. Peers join at different times, partitions form, and some never upgrade at all.
 
-Aura addresses this with two composition primitives that preserve protocol coherence under reconfiguration.
+Aura addresses this with two formally verified primitives that preserve certain compositional properties under reconfiguration.
 
-1. A `link` operation lets you safely combine protocols by checking that their connection points match. The compiler verifies compatibility at build time, the runtime also checks when protocols are joined together.
+1. A `link` operation lets you safely combine protocols by checking that their connection points match. The compiler verifies compatibility at build time, while the runtime checks each join during execution.
 2. A `delegate` operation safely transfers session endpoints at runtime, handing off an active session from one device to another without restarting the protocol.
 
-These operations are available through my multi-party session type library [telltale](https://github.com/hxrts/telltale). The critical property is that both operations preserve coherence: if the system was in a valid state before reconfiguration, it remains in a valid state after. Device migration uses delegation to transfer sessions to a new device while preserving protocol continuity. Guardian handoff delegates recovery session endpoints to a replacement guardian.
+These operations are available through the multi-party session type library I built for this project, [telltale](https://github.com/hxrts/telltale). The critical property is that both operations preserve coherence: if the system was in a valid state before reconfiguration, it remains in a valid state after. Device migration uses delegation to transfer sessions to a new device while preserving protocol continuity. Guardian handoff delegates recovery session endpoints to a replacement guardian.
 
 This enables asynchronous distributed upgrades that maintain type safety. New protocol versions can be deployed incrementally. Devices joining after an upgrade inherit the new behavior through delegation.
 
@@ -98,7 +98,7 @@ Commits bind to explicit prestates, preventing forks and replays by ensuring all
 
 ## The Ratchet Problem
 
-Secure messaging is usually framed as a cryptographic problem. But when both state and identity are distributed across nodes with no central coordinator, it becomes a distributed systems problem. Protocols like MLS assume ordered delivery via a central service. Signal-style ratchets assume device-local state. Aura needs to work without either assumption while remaining fully recoverable from replicated state.
+Secure messaging is usually framed as a cryptographic problem. But when both state and identity are distributed across nodes with no central coordinator, it becomes a distributed systems problem. Protocols like MLS assume ordered delivery via a central service. Signal-style ratchets assume device-local state. Aura must work without either assumption while remaining fully recoverable from replicated state.
 
 Signal-style ratchets store the ratchet position on your device, and if you lose your device, you lose your ratchet state. Multi-device support requires complex synchronization protocols that are difficult to get right.
 
