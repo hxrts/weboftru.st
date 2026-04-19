@@ -203,6 +203,15 @@
             }
         }
 
+        // Attach lightbox click handlers to inline SVG diagrams
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.svg-diagram').forEach(diagram => {
+                diagram.addEventListener('click', function() {
+                    openMermaidLightbox(this);
+                });
+            });
+        });
+
         // Close lightbox on click outside content or ESC key
         document.addEventListener('DOMContentLoaded', () => {
             const lightbox = document.getElementById('mermaidLightbox');

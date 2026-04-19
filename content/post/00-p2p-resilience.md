@@ -12,7 +12,7 @@ cover_caption = "<em>Pixillation</em>, Lillian Schwartz and Ken Knowlton (1970)"
 
 ## Introduction
 
-In December I attended [Splintercon](https://splintercon.net/paris/) in Paris, a conference organized by eQualitie and my friends [Katerina Kataeva](https://k-k.work/) and [Lai Yi Ohlsen](https://www.laiyiohlsen.com/). The topic was isolated portions of the internet, or "Splinternets," typically implemented by repressive governments as a means of information control. The conference included in-depth presentations on Chinese and Russian internet censorship regimes, from backdoored cryptography and state-sponsored botnets to physical hardware exports and foreign policy. In light of recent events, there was also a special focus on Iran's internet censorship apparatus.
+In December I attended [Splintercon](https://splintercon.net/paris/) in Paris, a conference organized by eQualitie and my friends [Katerina Kataeva](https://k-k.work/) and [Lai Yi Ohlsen](https://www.laiyiohlsen.com/). The subject of the event was so-called "Splinternets," isolated portions of the internet, often realized by repressive governments. The conference included in-depth presentations on Chinese and Russian internet censorship regimes, from backdoored cryptography and state-sponsored botnets to hardware exports and foreign policy. In light of recent events, there was also a special focus on Iran's proliferating internet censorship apparatus.
 
 The event brought together a very special group: academic researchers studying internet shutdowns, investigative journalists reporting on mass surveillance, human rights advocates, representatives from prominent internet infrastructure companies, and a contingent of engineers building encrypted P2P networks and mesh networking tools.
 
@@ -31,7 +31,7 @@ Aura starts with the following assumptions about the system and takes those as s
 
 - The network topology is fully P2P, no dedicated servers, no DNS, no central software distribution authority
 - The system must be robust to intermittent connectivity and device loss
-- All messages are forward encrypted, all state is encrypted at rest
+- All channels are E2E encrypted with bounded forward secrecy
 
 This is a *very* challenging combination. As a point of comparison, the [local-first](https://www.inkandswitch.com/essay/local-first/) paradigm treats devices as authoritative for state and identity. But if we assume devices will be lost or compromised, signing authority *cannot* be local to any single device. The Local-first paradigm relies heavily on CRDTs for data availability, however a CRDT is unhelpful when the cryptographic context itself is in flux. You can't derive keys to encrypt a message until you know who's in the group to begin with. Changing membership, rotating keys, or transferring ownership require bounded agreement before any dependent operations can proceed.
 
@@ -50,7 +50,7 @@ Those familiar with Secure Scuttlebutt can appreciate the effectiveness of marry
 
 1. Discovery - Find peers through the social topology
 
-2. Storage - Relay encrypted packets and replicate shared data
+2. Replication - Relay encrypted packets and store shared data
 
 3. Authority - Administer groups and recover through the social network
 

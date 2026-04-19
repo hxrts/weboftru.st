@@ -935,9 +935,13 @@ body > footer {
 
     hr {
         border: none;
-        border-top: 1px solid var(--c-border);
+        border-top: 1px solid var(--gray-400);
         margin-top: var(--s-8);
         margin-bottom: var(--s-8);
+
+        [data-theme="dark"] & {
+            border-top-color: var(--c-border);
+        }
 
         @media (min-width: 640px) {
             margin-top: var(--s-10);
@@ -1027,10 +1031,10 @@ body > footer {
         padding: 0;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        min-height: 200px;
         opacity: 0;
         transition: opacity 0.2s ease-in;
         cursor: pointer;
+        text-align: center;
 
         @media (min-width: 640px) {
             margin-top: var(--s-8);
@@ -1039,6 +1043,10 @@ body > footer {
 
         &[data-processed="true"] {
             opacity: 1;
+        }
+
+        svg {
+            display: inline-block;
         }
     }
 }
@@ -1061,9 +1069,20 @@ body > footer {
 // Only font-weight needs CSS override since Mermaid doesn't expose it
 
 svg[id^="mermaid-"] {
+    font-family: var(--font-sans) !important;
+    font-feature-settings: "liga" 0, "calt" 0 !important;
+
     text,
     tspan {
+        font-family: var(--font-sans) !important;
+        font-feature-settings: "liga" 0, "calt" 0 !important;
         font-weight: var(--fw-diagram) !important;
+    }
+
+    foreignObject div,
+    foreignObject span {
+        font-family: var(--font-sans) !important;
+        font-feature-settings: "liga" 0, "calt" 0 !important;
     }
 
     // Adjust node label vertical positioning (reduce bottom padding)
@@ -1109,6 +1128,69 @@ svg[id^="mermaid-"] {
     }
 }
 
+// Mermaid dark-mode node fill overrides (match Triangle of Forgetting palette)
+// Decision rhombuses render as <polygon>, not <rect>, so target both.
+[data-theme="dark"] svg[id^="mermaid-"] {
+    // Blue family → muted cyan
+    rect[style*="e1f5fe" i], polygon[style*="e1f5fe" i],
+    rect[style*="b3e5fc" i], polygon[style*="b3e5fc" i],
+    rect[style*="81d4fa" i], polygon[style*="81d4fa" i] {
+        fill: #2a3d42 !important;
+    }
+
+    // Orange/yellow → muted orange (matches .tof-secrecy dark fill)
+    rect[style*="fff3e0" i], polygon[style*="fff3e0" i],
+    rect[style*="ffe0b2" i], polygon[style*="ffe0b2" i] {
+        fill: #4a3a20 !important;
+    }
+
+    // Green → muted green
+    rect[style*="c8e6c9" i], polygon[style*="c8e6c9" i],
+    rect[style*="e8f5e9" i], polygon[style*="e8f5e9" i] {
+        fill: #2d3a2a !important;
+    }
+
+    // Red → muted coral
+    rect[style*="ffcdd2" i], polygon[style*="ffcdd2" i] {
+        fill: #4a2a2a !important;
+    }
+}
+
+// =============================================================================
+// Triangle of Forgetting inline SVG
+// =============================================================================
+
+.svg-diagram {
+    cursor: pointer;
+    margin-top: var(--s-6);
+    margin-bottom: var(--s-6);
+
+    @media (min-width: 640px) {
+        margin-top: var(--s-8);
+        margin-bottom: var(--s-8);
+    }
+}
+
+.triangle-diagram {
+    rect           { stroke: #c0c0c0; }
+    line           { stroke: #c0c0c0; }
+    marker path    { fill:   #c0c0c0; }
+
+    .tof-convergence { fill: #e1f5fe; }
+    .tof-secrecy     { fill: #fff3e0; }
+    .tof-membership  { fill: #e8f5e9; }
+
+    [data-theme="dark"] & {
+        rect        { stroke: #6B6B6A; }
+        line        { stroke: #6B6B6A; }
+        marker path { fill:   #6B6B6A; }
+
+        .tof-convergence { fill: #2a3d42; }
+        .tof-secrecy     { fill: #4a3a20; }
+        .tof-membership  { fill: #2d3a2a; }
+    }
+}
+
 // =============================================================================
 // Lightbox
 // =============================================================================
@@ -1135,8 +1217,9 @@ svg[id^="mermaid-"] {
     }
 
     .lightbox-content {
-        width: 95vw;
-        max-width: 1200px;
+        width: fit-content;
+        height: fit-content;
+        max-width: 95vw;
         max-height: 90vh;
         overflow: auto;
         background-color: var(--c-bg);
@@ -1144,8 +1227,11 @@ svg[id^="mermaid-"] {
         border: 1px solid var(--c-border);
 
         svg {
-            width: 100%;
-            height: auto;
+            display: block;
+            width: min(80vw, 1200px) !important;
+            max-width: none !important;
+            height: auto !important;
+            max-height: calc(90vh - var(--s-8) * 2) !important;
         }
     }
 

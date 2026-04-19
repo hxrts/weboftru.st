@@ -132,9 +132,9 @@ Recovery is fully deterministic. A device that loses all local state can recover
 
 ## Comparison with Existing Protocols
 
-Several protocols address secure group messaging in decentralized settings. MLS and its decentralized variants focus on TreeKEM-based key agreement. Keyhive adapts TreeKEM for CRDT-based coordination. These are excellent protocols with different trade-offs.
+Several protocols address secure group messaging in decentralized settings. MLS and its decentralized variants focus on TreeKEM-based key agreement. Keyhive adapts TreeKEM for CRDT-based coordination. Amigo pushes in the opposite direction, treating every operation as eventually convergent. These are excellent protocols with different trade-offs.
 
-The key difference is how each handles the distributed systems problem. MLS delegates ordering to a Delivery Service. Keyhive uses eventual consistency everywhere. Neither provides the selective consistency that Aura requires for both concurrent messaging and linearizable epoch transitions.
+The key difference is how each handles the distributed systems problem. MLS delegates ordering to a Delivery Service. Keyhive and Amigo use eventual consistency everywhere. None of them provides the selective consistency that Aura requires for both concurrent messaging and linearizable epoch transitions.
 
 ### MLS
 
@@ -152,23 +152,31 @@ Eventual consistency cannot enforce linear epoch chains. Concurrent epoch propos
 
 Keyhive has a simple fixed authorization model with read, write, admin, and pull permissions. Aura requires arbitrary capabilities that can be attenuated and delegated.
 
+### Amigo
+
+Amigo takes the opposite position to AMP. It favors eventual convergence for every operation, letting both messages and key rotations merge under causal structure without a consensus step. Cutoffs propagate through the network like any other update, and validity remains a local property until the system converges.
+
+This suits harsh, partition-prone networks where consensus is expensive and connectivity is intermittent. The cost is a soft secrecy boundary. Old keys can remain effective past their designated cutoff on nodes that have not yet observed the rotation, so the moment of forgetting is blurred rather than crisp.
+
+AMP makes the opposite choice. Message sends remain CRDT-based for availability, while epoch transitions require consensus, so forgetting is sharp at the price of a coordination step.
+
 ### Why AMP?
 
 Aura's recovery system requires pure reduction from facts. Existing protocols derive state from processing history with deleted intermediates. Retrofitting recovery would require storing all intermediate states or accepting that recovery loses message history.
 
-MLS requires strict ordering. Keyhive provides only eventual consistency. AMP applies each consistency model where appropriate.
+MLS requires strict ordering. Keyhive and Amigo provide only eventual consistency. AMP applies each consistency model where appropriate.
 
 Existing protocols do not provide hooks for authorization checks before key derivation.
 
 TreeKEM protocols expose group structure through tree operations. AMP derives keys from authority-scoped roots that hide internal device structure.
 
-| Requirement | MLS | Keyhive | AMP |
-|-------------|-----|---------|-----|
-| Pure recovery from facts | No | Partial | Yes |
-| Linear epoch chain | Via DS | No | Via consensus |
-| Concurrent sends | No | Yes | Yes |
-| Extensible authorization | No | No | Yes |
-| Opaque authority | No | No | Yes |
+| Requirement | MLS | Keyhive | Amigo | AMP |
+|-------------|-----|---------|-------|-----|
+| Pure recovery from facts | No | Partial | Partial | Yes |
+| Linear epoch chain | Via DS | No | No | Via consensus |
+| Concurrent sends | No | Yes | Yes | Yes |
+| Extensible authorization | No | No | No | Yes |
+| Opaque authority | No | No | No | Yes |
 
 ## Conclusion
 
@@ -176,7 +184,7 @@ Secure messaging is usually framed as a cryptographic problem. AMP reframes it a
 
 The protocol demonstrates that deterministic recovery and post-compromise security are compatible. This requires explicit choices about safety, liveness, and partition tolerance at each layer. Message sends favor availability. Epoch transitions favor consistency. The dual window ratchet provides bounded forward secrecy while remaining fully recoverable from journal state.
 
-MLS assumes ordered delivery. Keyhive assumes eventual consistency everywhere. AMP applies each consistency model where the distributed systems requirements demand it.
+MLS assumes ordered delivery. Keyhive and Amigo assume eventual consistency everywhere. AMP applies each consistency model where the distributed systems requirements demand it.
 
 ## See Also
 

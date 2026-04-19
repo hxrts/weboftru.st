@@ -11,7 +11,7 @@ MANIFEST_FILE="$IMAGES_DIR/manifest.json"
 get_dimensions() {
     local img="$1"
     if command -v identify &>/dev/null; then
-        identify -format "%w %h" "$img" 2>/dev/null
+        identify -format "%w %h\n" "$img" 2>/dev/null
     elif command -v sips &>/dev/null; then
         local w h
         w=$(sips -g pixelWidth "$img" 2>/dev/null | awk '/pixelWidth:/{print $2}')
