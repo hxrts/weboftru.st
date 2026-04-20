@@ -63,11 +63,11 @@ The problem appears when admission depends on what the local observer can see. A
 
 Membership changes define many of the cutoffs the system cares about, since removing a member means their keys must stop working. Yet membership changes are themselves ordinary updates, and they propagate with the same delay as any other message on the network. In MLS, for example, an update or removal only takes effect for other members once the relevant commit is processed.
 
-Different nodes therefore disagree about who belongs to the group and about whether a cutoff has already happened. One node may treat an update as live while another treats that same update as expired. The question of who may speak becomes the question of which updates still count.
+Different nodes therefore disagree about who belongs to the group and about whether a cutoff has already happened. One node may treat an update as live while another treats that same update as expired. The question of who may speak becomes the question of which speach still counts.
 
 ## Building intuition
 
-With the problem now in full view, it helps to place the triangle of forgetting beside two established distributed systems results, FLP Impossibility and Consistency as Logical Monotonicity (CALM). Even though their setup is distinct, a comparison will clarify the key tradeoff shape.
+With the problem now in full view, it helps to place the Triangle of Forgetting beside two established distributed systems results, FLP Impossibility and Consistency as Logical Monotonicity (CALM). Even though their setup is distinct, a comparison will clarify the key tradeoff shape.
 
 ### FLP Impossibility
 
