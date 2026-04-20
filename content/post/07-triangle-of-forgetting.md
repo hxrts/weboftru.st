@@ -18,9 +18,9 @@ Convergence and expiry pull in different directions. That tension turns forgetti
 
 ## No free lunch
 
-Three properties are in play: monotone merge, temporal secrecy, and dynamic membership. Here temporal secrecy names the joint requirement of forward secrecy and post-compromise security, so retired keys must no longer decrypt and compromised state must eventually heal. Monotone merge means replicas can absorb updates out of order and still converge through a monotone join discipline. Dynamic membership means the system supports both joins and leaves.
+What follows rests on three properties: temporal secrecy, monotone merge, and dynamic membership. *Temporal secrecy* names the joint requirement of forward secrecy and post-compromise security, so retired keys may no longer decrypt and compromised state must eventually heal. Under monotone merge, replicas can absorb updates out of order and still converge without retracting prior state. Dynamic membership gives the system support for both joins and leaves.
 
-Taken together these three properties do not compose cleanly. Any two can be satisfied with moderate machinery, but the third demands extra structure. The conflict surfaces the moment we try to define a clean cutoff between live and expired updates. Monotone merge wants prior evidence to remain mergeable, while temporal secrecy wants some once-live evidence to become inert.
+These three commitments cannot be jointly guaranteed. The conflict appears as soon as the system must draw a clean cutoff between live and expired updates. Monotone merge keeps late updates admissible, while temporal secrecy requires some previously admissible updates to be rejected.
 
 ## Forgetting requires a time horizon
 
