@@ -139,7 +139,7 @@ The trilemma can be paid in three ways:
 2. Relax monotone convergence by rejecting late updates that would otherwise merge.
 3. Relax dynamic membership by fixing the group boundary instead of letting authority evolve.
 
-## The bargain
+## The path to compromise
 
 MLS was designed to make secure group messaging more accessible through flexible async group chats with strong forward secrecy and post-compromise security. TreeKEM, and later CGKA, made this a distributed problem. The Triangle of Forgetting names the tension among these implied design objectives: secrecy should heal over time, delayed updates should converge across replicas, membership should evolve. Completing the triangle is impossible, forgetting is the cost of compromise.
 
