@@ -10,6 +10,7 @@ result
 
 # zola
 public/
+static/processed_images/
 
 # working
 work

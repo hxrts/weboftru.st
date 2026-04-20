@@ -23,13 +23,50 @@
       {%- set meta_url = config.base_url -%}
       {%- set meta_type = "website" -%}
     {%- endif -%}
-    {%- set meta_image = "" -%}
+    {# Resolve the raw source image (in order: page → section → config fallback) #}
+    {%- set raw_cover = "" -%}
     {%- if page is defined and page.extra.cover_image -%}
-      {%- set meta_image = config.base_url ~ page.extra.cover_image -%}
+      {%- set raw_cover = page.extra.cover_image -%}
     {%- elif section is defined and section.extra.cover_image -%}
-      {%- set meta_image = config.base_url ~ section.extra.cover_image -%}
+      {%- set raw_cover = section.extra.cover_image -%}
     {%- elif config.extra.default_og_image -%}
-      {%- set meta_image = config.base_url ~ config.extra.default_og_image -%}
+      {%- set raw_cover = config.extra.default_og_image -%}
+    {%- endif -%}
+
+    {# For social cards: if the source is too large, emit a Zola-resized copy.
+       Source size comes from the image manifest. Site rendering is unaffected. #}
+    {%- set meta_image = "" -%}
+    {%- set meta_image_width = 0 -%}
+    {%- set meta_image_height = 0 -%}
+    {%- set meta_image_type = "" -%}
+    {%- if raw_cover -%}
+      {%- set img_filename = raw_cover | split(pat="/") | last -%}
+      {%- set img_manifest = load_data(path="static/images/manifest.json") -%}
+      {%- set img_meta = img_manifest[img_filename] -%}
+      {%- set src_width = img_meta.width | default(value=0) -%}
+      {%- set src_height = img_meta.height | default(value=0) -%}
+      {%- if src_width > 1500 -%}
+        {# Social-card-only downscale. Source stays untouched for page rendering.
+           WebP keeps the resulting file well under Bluesky's ~1 MB card limit. #}
+        {%- set resized = resize_image(path=raw_cover, width=1200, op="fit_width", format="webp", quality=85) -%}
+        {%- set meta_image = resized.url -%}
+        {%- set meta_image_width = resized.width -%}
+        {%- set meta_image_height = resized.height -%}
+        {%- set meta_image_type = "image/webp" -%}
+      {%- else -%}
+        {%- set meta_image = config.base_url ~ raw_cover -%}
+        {%- set meta_image_width = src_width -%}
+        {%- set meta_image_height = src_height -%}
+        {%- if raw_cover is ending_with(".png") -%}
+          {%- set meta_image_type = "image/png" -%}
+        {%- elif raw_cover is ending_with(".jpg") or raw_cover is ending_with(".jpeg") -%}
+          {%- set meta_image_type = "image/jpeg" -%}
+        {%- elif raw_cover is ending_with(".webp") -%}
+          {%- set meta_image_type = "image/webp" -%}
+        {%- elif raw_cover is ending_with(".gif") -%}
+          {%- set meta_image_type = "image/gif" -%}
+        {%- endif -%}
+      {%- endif -%}
     {%- endif -%}
 
     <link rel="canonical" href="{{ meta_url | safe }}">
@@ -41,6 +78,13 @@
     {% if meta_image %}
     <meta property="og:image" content="{{ meta_image | safe }}">
     <meta property="og:image:alt" content="{{ meta_title }}">
+    {% if meta_image_width > 0 %}
+    <meta property="og:image:width" content="{{ meta_image_width }}">
+    <meta property="og:image:height" content="{{ meta_image_height }}">
+    {% endif %}
+    {% if meta_image_type %}
+    <meta property="og:image:type" content="{{ meta_image_type }}">
+    {% endif %}
     {% endif %}
     {% if page is defined and page.date %}
     <meta property="article:published_time" content="{{ page.date | date(format='%Y-%m-%d') }}">
