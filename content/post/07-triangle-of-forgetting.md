@@ -71,7 +71,7 @@ With the problem now in full view, it helps to place the Triangle of Forgetting 
 
 ### FLP Impossibility
 
-When delay and failure are indistinguishable, a node does not know when it is safe to decide. A protocol that decides too early risks violating safety. A protocol that waits for certainty may do so indefinitely. Our problem lives in a broader setting, but it inherits the same shape, where boundary uncertainty forces a costly choice.
+When delay and failure are indistinguishable, a node does not know when it is safe to decide. A protocol that decides too early risks violating safety. A protocol that waits for certainty may do so indefinitely. Our problem lives in a broader setting, but also inherits a shape in which boundary uncertainty forces a costly choice.
 
 ```mermaid
 flowchart LR
