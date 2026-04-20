@@ -70,6 +70,16 @@
     {%- endif -%}
 
     <link rel="canonical" href="{{ meta_url | safe }}">
+    {# Advertise the raw markdown source on GitHub for LLMs / markdown clients #}
+    {%- if config.extra.github_repo -%}
+      {%- set gh_branch = config.extra.github_branch | default(value="main") -%}
+      {%- set raw_base = "https://raw.githubusercontent.com/" ~ config.extra.github_repo ~ "/" ~ gh_branch ~ "/content/" -%}
+      {%- if page is defined and page.relative_path %}
+    <link rel="alternate" type="text/markdown" title="Markdown source" href="{{ raw_base }}{{ page.relative_path }}">
+      {%- elif section is defined and section.relative_path %}
+    <link rel="alternate" type="text/markdown" title="Markdown source" href="{{ raw_base }}{{ section.relative_path }}">
+      {%- endif %}
+    {%- endif %}
     <meta property="og:type" content="{{ meta_type }}">
     <meta property="og:title" content="{{ meta_title }}">
     <meta property="og:description" content="{{ meta_description }}">

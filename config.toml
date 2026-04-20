@@ -19,3 +19,6 @@ author = "Sam Hart"
 default_og_image = "/images/happening-score.webp"
 # Optional: set to "@handle" to emit twitter:creator / twitter:site
 # twitter_handle = "@hxrts"
+# Source repo; used to advertise the raw markdown via <link rel="alternate">
+github_repo = "hxrts/weboftru.st"
+github_branch = "main"
