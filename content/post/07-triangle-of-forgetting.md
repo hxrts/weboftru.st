@@ -127,7 +127,7 @@ flowchart LR
     style Q1 fill:#fff3e0
     style C fill:#ffcdd2
     style M fill:#b3e5fc
-    style T fill:#b3e5fc
+    style T fill:#e1f5fe
     style Q2 fill:#fff3e0
     style W fill:#ffcdd2
     style U fill:#ffcdd2
