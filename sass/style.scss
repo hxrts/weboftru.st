@@ -564,10 +564,10 @@ body > footer {
 // -----------------------------------------------------------------------------
 
 .post-header {
-    margin-bottom: var(--s-8);
+    margin-bottom: var(--s-6);
 
     @media (min-width: 640px) {
-        margin-bottom: var(--s-10);
+        margin-bottom: var(--s-8);
     }
 
     h1 {

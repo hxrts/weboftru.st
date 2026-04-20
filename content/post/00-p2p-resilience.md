@@ -3,6 +3,7 @@ title = "Patterns for P2P Resilience: Learnings from Aura Protocol"
 date = 2026-02-28
 description = "Design patterns for resilient encrypted P2P networks"
 slug = "p2p-resilience"
+draft = true
 
 [extra]
 cover_image = "/images/pixillation.jpg"

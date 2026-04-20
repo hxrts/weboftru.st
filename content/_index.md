@@ -1,5 +1,8 @@
 +++
 title = "Web of Trust"
+
+[extra]
+cover_image = "/images/happening-score.webp"
 +++
 
 Hi, welcome to *Web of Trust*, [Sam Hart](https://hxrts.com)'s workshop-style blog, containing a variety of ideas and notes from in-progress experiments.

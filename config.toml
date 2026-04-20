@@ -13,3 +13,9 @@ extra_syntaxes_and_themes = ["syntaxes"]
 smart_punctuation = true
 
 [extra]
+# Author attribution for article metadata
+author = "Sam Hart"
+# Fallback image for social cards when a page has no cover_image
+default_og_image = "/images/happening-score.webp"
+# Optional: set to "@handle" to emit twitter:creator / twitter:site
+# twitter_handle = "@hxrts"
