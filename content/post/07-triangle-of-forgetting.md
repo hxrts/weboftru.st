@@ -16,9 +16,9 @@ This post takes up this problem in the context of designing protocols for causal
 
 ## No free lunch
 
-Three properties are in play: eventual convergence, temporal secrecy, and dynamic membership. Convergence holds that late updates should still be mergeable, temporal secrecy holds that old state must eventually stop being usable, and dynamic membership holds that the set of legitimate participants keeps changing over time.
+Three properties are in play: monotone merge (CRDT-style eventual convergence), temporal secrecy, and dynamic membership. Monotone merge holds that updates can be folded in out of order without coordination, temporal secrecy holds that old state must eventually stop being usable, and dynamic membership holds that the set of legitimate participants keeps changing over time.
 
-Taken together these three properties do not compose. Any two can be satisfied with moderate machinery, but the third always demands extra structure. The conflict surfaces the moment we try to define a clean cutoff between valid and invalid state. Convergence wants the past to remain reachable, while temporal secrecy wants it to be gone.
+Taken together these three properties do not compose. Any two can be satisfied with moderate machinery, but the third always demands extra structure. The conflict surfaces the moment we try to define a clean cutoff between valid and invalid state. Monotone merge wants the past to remain reachable, while temporal secrecy wants it to be gone.
 
 ## Forgetting requires a time horizon
 
@@ -42,9 +42,9 @@ Different nodes therefore disagree about who belongs to the group and about whet
 
 You can merge forever, or you can forget cleanly. To do both, you must agree on when forgetting happens, and everything else is a way of paying for that agreement.
 
-There are only a few ways to pay. You can reject old updates strictly, which preserves temporal secrecy at the expense of convergence until nodes catch up. You can instead accept old updates for longer, which preserves convergence at the expense of prolonged key validity. Or you can coordinate the cutoff through shared structure, which restores agreement at the cost of the very asynchrony the system was meant to tolerate.
+There are only a few ways to pay. You can reject old updates strictly, which preserves temporal secrecy at the expense of monotone merge until nodes catch up. You can instead accept old updates for longer, which preserves monotone merge at the expense of prolonged key validity. Or you can coordinate the cutoff through shared structure, which restores agreement at the cost of the very asynchrony the system was meant to tolerate.
 
-Real systems stake out positions along this spectrum. Some favor convergence, letting updates merge under causal structure and treating validity as local until the system converges. This suits harsh networks but leaves the moment of forgetting blurred. Others favor canonical state, defining cutoffs through shared journal state and restoring a crisp boundary at the price of structural commitments.
+Real systems stake out positions along this spectrum. Some favor monotone merge, letting updates accumulate under causal structure and treating validity as local until the system converges. This suits harsh networks but leaves the moment of forgetting blurred. Others favor canonical state, defining cutoffs through shared journal state and restoring a crisp boundary at the price of structural commitments.
 
 ---
 
@@ -117,7 +117,7 @@ flowchart LR
 
 ### Triangle of Forgetting
 
-Our setting combines concerns from all three precursors. Monotonic merge provides convergence, revocation provides temporal secrecy, and evolving authority provides dynamic membership. Each pulls against the others: convergence wants to keep merging, revocation wants to cut things off, and membership keeps changing the rules for both.
+Our setting combines concerns from all three precursors. The monotone merge vertex comes straight from CRDTs, temporal secrecy from revocation, and dynamic membership from evolving authority. Each pulls against the others: monotone merge wants to keep growing, revocation wants to cut things off, and membership keeps changing the rules for both.
 
 The ambiguity here is between delayed and invalid. A node cannot tell whether an old update is simply late or whether it should be rejected outright, and reconciling the two requires a commitment the local node is never in a position to make alone.
 
@@ -135,7 +135,7 @@ The ambiguity here is between delayed and invalid. A node cannot tell whether an
   </g>
   <g font-family="var(--font-sans)" font-size="15">
     <rect class="tof-convergence" x="150" y="15" width="200" height="55" stroke-width="1"/>
-    <text x="250" y="43" text-anchor="middle" dominant-baseline="middle" fill="currentColor">Convergence</text>
+    <text x="250" y="43" text-anchor="middle" dominant-baseline="middle" fill="currentColor">Monotone merge</text>
     <rect class="tof-secrecy" x="5" y="200" width="180" height="55" stroke-width="1"/>
     <text x="95" y="228" text-anchor="middle" dominant-baseline="middle" fill="currentColor">Temporal Secrecy</text>
     <rect class="tof-membership" x="315" y="200" width="180" height="55" stroke-width="1"/>
@@ -152,9 +152,15 @@ FLP, CAP, and the CRDT result concern operational tradeoffs that surface at runt
 
 | Problem                | What is ambiguous    | What must be chosen   |
 | ---------------------- | -------------------- | --------------------- |
-| FLP Impossibility      | slow vs failed       | decide or wait        |
-| CAP Theorem            | partition vs delay   | respond or block      |
-| CRDT Monotonicity      | growth vs revocation | accrete or coordinate |
-| Triangle of Forgetting | delayed vs invalid   | merge or reject       |
+| FLP Impossibility      | delay vs failure      | decide or wait        |
+| CAP Theorem            | delay vs partition    | respond or block      |
+| CRDT Monotonicity      | growth vs revocation  | accrete or coordinate |
+| Triangle of Forgetting | delay vs invalidation | merge or reject       |
 
 The Triangle of Forgetting is a sibling to known results. It states if system cannot distinguish between late and expired, it must choose: remember or forget.
+
+## References
+
+- Fischer, M. J., Lynch, N. A., & Paterson, M. S. (1985). [Impossibility of distributed consensus with one faulty process](https://dl.acm.org/doi/10.1145/3149.214121). *Journal of the ACM*, 32(2), 374–382.
+- Gilbert, S., & Lynch, N. (2002). [Brewer's conjecture and the feasibility of consistent, available, partition-tolerant web services](https://dl.acm.org/doi/10.1145/564585.564601). *ACM SIGACT News*, 33(2), 51–59.
+- Hellerstein, J. M., & Alvaro, P. (2020). [Keeping CALM: When Distributed Consistency is Easy](https://cacm.acm.org/research/keeping-calm/). *Communications of the ACM*, 63(9), 72–81. Preprint: [arXiv:1901.01930](https://arxiv.org/abs/1901.01930).
