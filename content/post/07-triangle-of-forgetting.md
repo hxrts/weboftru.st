@@ -71,7 +71,7 @@ With the problem now in full view, it helps to place the Triangle of Forgetting 
 
 ### FLP Impossibility
 
-When delay and failure are indistinguishable, a node does not know when it is safe to decide. A protocol that decides too early risks violating safety. A protocol that waits for certainty may do so indefinitely. Our problem lives in a broader setting, but also inherits a shape in which boundary uncertainty forces a costly choice.
+When delay and failure are indistinguishable, a node does not know when it is safe to decide. A protocol that decides too early risks violating safety. A protocol that waits for certainty may do so indefinitely. Our problem lives in a broader setting, but also inherits a shape where boundary uncertainty forces a costly choice.
 
 ```mermaid
 flowchart LR
@@ -105,7 +105,7 @@ flowchart LR
 
 ### Triangle of Forgetting
 
-Our setting combines both concerns. Monotone merge wants durable mergeability, while temporal secrecy and dynamic membership together turn revocation into a moving problem of authority.
+Our setting touches both concerns. Monotone merge wants durable mergeability, while temporal secrecy and dynamic membership together turn revocation into a moving problem of authority.
 
 The ambiguity here is the late-versus-invalid ambiguity from the formal result. In protocol terms, it appears as uncertainty about whether an update is simply late or whether it has already expired. Reconciling those two possibilities requires a commitment the local node is never in a position to make alone.
 
