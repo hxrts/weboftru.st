@@ -149,4 +149,4 @@ MLS was designed to make secure group messaging more accessible through flexible
 - Fischer, M. J., Lynch, N. A., & Paterson, M. S. (1985). [Impossibility of distributed consensus with one faulty process](https://dl.acm.org/doi/10.1145/3149.214121). *Journal of the ACM*, 32(2), 374–382.
 - Hellerstein, J. M., & Alvaro, P. (2020). [Keeping CALM: When Distributed Consistency is Easy](https://cacm.acm.org/research/keeping-calm/). *Communications of the ACM*, 63(9), 72–81. Preprint: [arXiv:1901.01930](https://arxiv.org/abs/1901.01930).
 - Rescorla, E., et al. (2023). [RFC 9420: The Messaging Layer Security (MLS) Protocol](https://www.rfc-editor.org/rfc/rfc9420.html).
-- Shapiro, M., Preguica, N., Baquero, C., & Zawirski, M. (2011). [Conflict-free replicated data types](https://pages.lip6.fr/Marc.Shapiro/papers/CRDTs_SSS-2011.pdf). In *Stabilization, Safety, and Security of Distributed Systems*.
+- Shapiro, M., Preguica, N., Baquero, C., & Zawirski, M. (2011). [Conflict-free replicated data types](https://arxiv.org/abs/1805.06358). In *Stabilization, Safety, and Security of Distributed Systems*.
