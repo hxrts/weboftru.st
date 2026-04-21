@@ -151,8 +151,9 @@
     </footer>
     <!-- Lightbox for Mermaid diagrams -->
     <div class="mermaid-lightbox" id="mermaidLightbox">
-        <button class="lightbox-close" onclick="closeMermaidLightbox()">&times;</button>
+        <button class="lightbox-close" onclick="closeMermaidLightbox()" aria-label="Close">&times;</button>
         <div class="lightbox-content" id="lightboxContent"></div>
+        <button class="lightbox-download" onclick="downloadLightboxSvg()" aria-label="Download SVG">⤓</button>
     </div>
     <!-- KaTeX -->
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -302,8 +303,19 @@
             const content = document.getElementById('lightboxContent');
             if (lightbox && content && diagram) {
                 content.innerHTML = diagram.innerHTML;
+                lightbox.dataset.figureIndex = diagram.dataset.figureIndex || '';
                 lightbox.classList.add('active');
             }
+        }
+
+        // Build "{slug}-{index}.svg" from the URL path + the active figure's index.
+        function lightboxDownloadFilename() {
+            const path = window.location.pathname.replace(/\/+$/, '');
+            const parts = path.split('/').filter(Boolean);
+            const slug = parts.length ? parts[parts.length - 1] : 'figure';
+            const lightbox = document.getElementById('mermaidLightbox');
+            const idx = lightbox && lightbox.dataset.figureIndex;
+            return idx ? slug + '-' + idx + '.svg' : slug + '.svg';
         }
 
         function closeMermaidLightbox() {
@@ -313,12 +325,115 @@
             }
         }
 
-        // Attach lightbox click handlers to inline SVG diagrams
+        async function downloadLightboxSvg() {
+            const content = document.getElementById('lightboxContent');
+            const svg = content ? content.querySelector('svg') : null;
+            if (!svg) return;
+
+            // Inline computed styles so the download reflects post-processing
+            // (dark-mode fills, font-family overrides, etc.) that come from
+            // the page stylesheet rather than inline SVG attributes.
+            const cloned = svg.cloneNode(true);
+
+            // Capture the SVG's currently rendered size so the standalone
+            // file opens at the same dimensions as the lightbox. Mermaid
+            // otherwise ships small intrinsic width/max-width values.
+            const rect = svg.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+                cloned.setAttribute('width', Math.round(rect.width));
+                cloned.setAttribute('height', Math.round(rect.height));
+                // Preserve the source's viewBox so aspect ratio and positioning
+                // (default xMidYMid meet) match what the lightbox showed.
+                if (!cloned.getAttribute('viewBox') && svg.viewBox && svg.viewBox.baseVal) {
+                    const vb = svg.viewBox.baseVal;
+                    cloned.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.width + ' ' + vb.height);
+                }
+            }
+            // Strip any inline constraints Mermaid emits (e.g. max-width) that
+            // would keep the downloaded file from rendering at the captured size.
+            if (cloned.style) {
+                cloned.style.removeProperty('max-width');
+                cloned.style.removeProperty('max-height');
+                cloned.style.removeProperty('width');
+                cloned.style.removeProperty('height');
+            }
+            const PROPS = [
+                'fill', 'fill-opacity',
+                'stroke', 'stroke-width', 'stroke-opacity',
+                'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin',
+                'font-family', 'font-size', 'font-weight', 'font-style',
+                'font-feature-settings',
+                'text-anchor', 'dominant-baseline',
+                'color', 'opacity'
+            ];
+            const srcEls = [svg, ...svg.querySelectorAll('*')];
+            const dstEls = [cloned, ...cloned.querySelectorAll('*')];
+            for (let i = 0; i < srcEls.length; i++) {
+                const src = srcEls[i];
+                const dst = dstEls[i];
+                if (!dst.setAttribute) continue;
+                const cs = window.getComputedStyle(src);
+                let inline = '';
+                for (const p of PROPS) {
+                    const v = cs.getPropertyValue(p);
+                    if (v) inline += p + ':' + v + ';';
+                }
+                const existing = dst.getAttribute('style') || '';
+                dst.setAttribute('style', inline + existing);
+            }
+
+            if (!cloned.getAttribute('xmlns')) {
+                cloned.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            }
+            const source = new XMLSerializer().serializeToString(cloned);
+            const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+
+            const filename = lightboxDownloadFilename();
+
+            // Prefer native Save As dialog (Chromium-based browsers).
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: filename,
+                        types: [{
+                            description: 'SVG image',
+                            accept: { 'image/svg+xml': ['.svg'] }
+                        }]
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
+                    return;
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return;
+                    // Fall through to anchor-based download on other errors
+                }
+            }
+
+            // Fallback: anchor-based download (Firefox, Safari, or when the
+            // File System Access API is unavailable or blocked).
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Attach lightbox click handlers to inline SVG diagrams and number
+        // every figure (mermaid + svg-diagram) in document order so downloads
+        // can be named "{slug}-{index}.svg".
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.svg-diagram').forEach(diagram => {
                 diagram.addEventListener('click', function() {
                     openMermaidLightbox(this);
                 });
+            });
+            const figures = document.querySelectorAll('.mermaid, .svg-diagram');
+            figures.forEach((el, i) => {
+                el.setAttribute('data-figure-index', String(i + 1));
             });
         });
 

@@ -1070,19 +1070,25 @@ body > footer {
 
 svg[id^="mermaid-"] {
     font-family: var(--font-sans) !important;
-    font-feature-settings: "liga" 0, "calt" 0 !important;
+    font-feature-settings:
+        "liga" 0,
+        "calt" 0 !important;
 
     text,
     tspan {
         font-family: var(--font-sans) !important;
-        font-feature-settings: "liga" 0, "calt" 0 !important;
+        font-feature-settings:
+            "liga" 0,
+            "calt" 0 !important;
         font-weight: var(--fw-diagram) !important;
     }
 
     foreignObject div,
     foreignObject span {
         font-family: var(--font-sans) !important;
-        font-feature-settings: "liga" 0, "calt" 0 !important;
+        font-feature-settings:
+            "liga" 0,
+            "calt" 0 !important;
     }
 
     // Adjust node label vertical positioning (reduce bottom padding)
@@ -1132,26 +1138,34 @@ svg[id^="mermaid-"] {
 // Decision rhombuses render as <polygon>, not <rect>, so target both.
 [data-theme="dark"] svg[id^="mermaid-"] {
     // Blue family → muted cyan
-    rect[style*="e1f5fe" i], polygon[style*="e1f5fe" i],
-    rect[style*="b3e5fc" i], polygon[style*="b3e5fc" i],
-    rect[style*="81d4fa" i], polygon[style*="81d4fa" i] {
+    rect[style*="e1f5fe" i],
+    polygon[style*="e1f5fe" i],
+    rect[style*="b3e5fc" i],
+    polygon[style*="b3e5fc" i],
+    rect[style*="81d4fa" i],
+    polygon[style*="81d4fa" i] {
         fill: #2a3d42 !important;
     }
 
     // Orange/yellow → muted orange (matches .tof-secrecy dark fill)
-    rect[style*="fff3e0" i], polygon[style*="fff3e0" i],
-    rect[style*="ffe0b2" i], polygon[style*="ffe0b2" i] {
+    rect[style*="fff3e0" i],
+    polygon[style*="fff3e0" i],
+    rect[style*="ffe0b2" i],
+    polygon[style*="ffe0b2" i] {
         fill: #4a3a20 !important;
     }
 
     // Green → muted green
-    rect[style*="c8e6c9" i], polygon[style*="c8e6c9" i],
-    rect[style*="e8f5e9" i], polygon[style*="e8f5e9" i] {
+    rect[style*="c8e6c9" i],
+    polygon[style*="c8e6c9" i],
+    rect[style*="e8f5e9" i],
+    polygon[style*="e8f5e9" i] {
         fill: #2d3a2a !important;
     }
 
     // Red → muted coral
-    rect[style*="ffcdd2" i], polygon[style*="ffcdd2" i] {
+    rect[style*="ffcdd2" i],
+    polygon[style*="ffcdd2" i] {
         fill: #4a2a2a !important;
     }
 }
@@ -1172,22 +1186,46 @@ svg[id^="mermaid-"] {
 }
 
 .triangle-diagram {
-    rect           { stroke: #c0c0c0; }
-    line           { stroke: #c0c0c0; }
-    marker path    { fill:   #c0c0c0; }
+    rect {
+        stroke: #c0c0c0;
+    }
+    line {
+        stroke: #c0c0c0;
+    }
+    marker path {
+        fill: #c0c0c0;
+    }
 
-    .tof-convergence { fill: #e1f5fe; }
-    .tof-secrecy     { fill: #fff3e0; }
-    .tof-membership  { fill: #e8f5e9; }
+    .tof-convergence {
+        fill: #e1f5fe;
+    }
+    .tof-secrecy {
+        fill: #fff3e0;
+    }
+    .tof-membership {
+        fill: #e8f5e9;
+    }
 
     [data-theme="dark"] & {
-        rect        { stroke: #6B6B6A; }
-        line        { stroke: #6B6B6A; }
-        marker path { fill:   #6B6B6A; }
+        rect {
+            stroke: #6b6b6a;
+        }
+        line {
+            stroke: #6b6b6a;
+        }
+        marker path {
+            fill: #6b6b6a;
+        }
 
-        .tof-convergence { fill: #2a3d42; }
-        .tof-secrecy     { fill: #4a3a20; }
-        .tof-membership  { fill: #2d3a2a; }
+        .tof-convergence {
+            fill: #2a3d42;
+        }
+        .tof-secrecy {
+            fill: #4a3a20;
+        }
+        .tof-membership {
+            fill: #2d3a2a;
+        }
     }
 }
 
@@ -1235,9 +1273,9 @@ svg[id^="mermaid-"] {
         }
     }
 
-    .lightbox-close {
+    .lightbox-close,
+    .lightbox-download {
         position: absolute;
-        top: var(--s-4);
         right: var(--s-4);
         font-size: var(--t-2xl);
         color: var(--gray-700);
@@ -1252,5 +1290,14 @@ svg[id^="mermaid-"] {
         &:hover {
             opacity: 1;
         }
+    }
+
+    .lightbox-close {
+        top: var(--s-4);
+    }
+    .lightbox-download {
+        bottom: var(--s-4);
+        font-weight: 250;
+        font-size: calc(var(--t-2xl) * 0.95);
     }
 }
