@@ -12,7 +12,7 @@ cover_caption = "Source: <em>Triangle of Sadness</em> (2022) promotional materia
 
 All distributed systems choose what to remember and what to forget. When memory lives in one place, something can be forgotten by simple deletion. When spread across nodes with different views of the past, forgetting becomes a coordination problem.
 
-This post takes up that problem in the context of causal group key agreement. CGKA is the core primitive in secure group messaging protocols that operate over unordered networks, where updates arrive late and state converges gradually. Either an update is admitted into shared state and remembered, or treated as expired and forgotten. Convergence and expiry pull in different directions, which promotes the semantics of forgetting into the core protocol.
+This post takes up the problem in the context of causal group key agreement. CGKA is the core primitive in secure group messaging protocols that operate over unordered networks, where updates arrive late and state converges gradually. Either an update is admitted into shared state and remembered, or treated as expired and forgotten. Convergence and expiry pull in different directions, which promotes the semantics of forgetting into the core protocol.
 
 ## A trilemma
 
