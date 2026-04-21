@@ -24,7 +24,7 @@ Those conversations also revealed large gaps that need to be bridged before thes
 
 I've been building P2P software for the past few months, and the conference gave me a window into the real challenges of deploying systems in times of crisis.
 
-I wanted to write up some of the learnings from my recent experiments for this group. What follows is a summary of several design patterns used in Aura that may be relevant to developers working on mesh networks and encrypted P2P protocols aiming to resist internet shutdowns.
+I wanted to write up some of the lessons from my recent experiments for this group. What follows is a summary of several design patterns used in Aura that may be relevant to developers working on mesh networks and encrypted P2P protocols aiming to resist internet shutdowns.
 
 
 ## Beyond Local-first
@@ -35,7 +35,7 @@ Aura starts with the following assumptions about the system and takes those as s
 - The system must be robust to intermittent connectivity and device loss
 - All channels are E2E encrypted with bounded forward secrecy
 
-This is a *very* challenging combination. As a point of comparison, the [local-first](https://www.inkandswitch.com/essay/local-first/) paradigm treats devices as authoritative for state and identity. But if we assume devices will be lost or compromised, signing authority *cannot* be local to any single device. The local-first paradigm relies heavily on CRDTs for data availability, but CRDTs alone do not settle when changing authority makes previously admissible operations inadmissible. You cannot derive keys to encrypt a message until you know who is in the group to begin with. Changing membership, rotating keys, or transferring ownership require bounded agreement before any dependent operations can proceed.
+This is a *very* challenging combination. As a point of comparison, the [local-first](https://www.inkandswitch.com/essay/local-first/) paradigm treats devices as authoritative for state and identity. But if we assume devices will be lost or compromised, signing authority *cannot* be local to any single device. The local-first paradigm relies heavily on CRDTs for data availability, but a CRDT cannot resolve what happens when changing authority invalidates previously admissible operations. You cannot derive keys to encrypt a message until you know who is in the group. Changing membership, rotating keys, or transferring ownership requires bounded agreement before any dependent operations can proceed.
 
 This is the same pressure described in [Triangle of Forgetting](/post/triangle-of-forgetting/): monotone convergence, temporal secrecy, and dynamic membership cannot be jointly guaranteed.
 
@@ -73,7 +73,7 @@ Relying on the social graph has real trade-offs. Network activity reveals inform
 
 ## Composing Protocols
 
-You can think of Aura as a protocol orchestrator that brings together distributed key generation, key resharing, BFT consensus, rendezvous and authority management. All of these protocols need to compose well and remain upgrade-safe. Getting this right is challenging in any setting. Race conditions, deadlocks, and message ordering bugs are easy to introduce and hard to detect. We have the added challenge of assuming networks with heterogeneous software versions. Aura uses choreographic programming to ensure these protocols are correct by construction.
+You can think of Aura as a protocol orchestrator that brings together distributed key generation, key resharing, BFT consensus, rendezvous, and authority management. All of these protocols need to compose well and remain upgrade-safe. Getting this right is challenging in any setting. Race conditions, deadlocks, and message ordering bugs are easy to introduce and hard to detect. We have the added challenge of assuming networks with heterogeneous software versions. Aura uses choreographic programming to ensure these protocols are correct by construction.
 
 A choreography describes a protocol from a global perspective, capturing the complete interaction pattern between all participants. The compiler then projects this global view into local implementations for each role, guaranteeing that the pieces fit together correctly. If the global choreography is well-formed, the local projections cannot deadlock or get stuck waiting for messages that never arrive.
 
@@ -153,7 +153,7 @@ For identity, recovery relationships are cryptographic. A guardian binding captu
 
 ## Nothing to See
 
-If an attacker can observe failures, they can probe capabilities by watching what gets rejected. In order to preserve privacy, denied operations should be invisible. 
+If an attacker can observe failures, they can probe capabilities by watching what gets rejected. To preserve privacy, denied operations should be invisible.
 
 Aura enforces this by checking everything locally before sending. Before any message crosses the network, it passes through a guard chain: capability verification, flow budget charging, journal coupling, and leakage tracking. If any check fails, the operation is blocked with no packet emitted. The transport layer only sees messages that have already passed all guards.
 
@@ -166,7 +166,7 @@ An observer cannot distinguish "operation denied" from "operation never attempte
 
 The patterns above follow from a set of hard design constraints that most protocols are unwilling to accept: zero reliance on dedicated servers, robustness to device loss, and E2E encryption with bounded forward secrecy. These constraints reflect the adversarial conditions placed on mesh networks and P2P protocols during internet shutdowns.
 
-Aura is free and open source. All core operations are functional, though some areas still need polish. If you are building in this space, I encourage you to try the software or incorporate these ideas into your own project. My hope is that Aura can help improve the resilience of deployed networks in some capacity.
+Aura is free and open source. All core operations are functional, though some areas still need polish. If you are building in this space, I encourage you to try the software or incorporate these ideas into your own project. My hope is that Aura can help improve the resilience of deployed networks.
 
 
 ## Further Reading
