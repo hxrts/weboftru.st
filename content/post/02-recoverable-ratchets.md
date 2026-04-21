@@ -14,7 +14,7 @@ We instead adopt a distributed systems lens, clarifying the system contract, and
 
 In [Aura](https://github.com/hxrts/aura), both state and identity are distributed. Multiple devices form a single authority. Facts replicate across nodes via CRDT journals. There is no central ordering service. This changes the problem. We need messaging with explicit safety, liveness, and partition tolerance.
 
-The Aura Messaging Protocol (AMP) brings a distributed systems lens to secure messaging. It provides the same cryptographic guarantees as TreeKEM-based protocols while supporting deterministic recovery from replicated state alone. See the [protocol specification](https://hxrts.com/aura/docs/112_amp.md) for complete technical details and the [comparison section](#comparison-with-existing-protocols) for how AMP differs from MLS and Keyhive.
+The Aura Messaging Protocol (AMP) brings a distributed systems lens to secure messaging. It provides the same cryptographic guarantees as TreeKEM-based protocols while supporting deterministic recovery from replicated state alone. See the [protocol specification](https://hxrts.com/aura/112_amp.html) for complete technical details and the [comparison section](#comparison-with-existing-protocols) for how AMP differs from MLS and Keyhive.
 
 ## Requirements
 
@@ -188,9 +188,9 @@ MLS assumes ordered delivery. Keyhive and Amigo assume eventual consistency ever
 
 ## See Also
 
-- [Aura Messaging Protocol Specification](https://hxrts.com/aura/docs/112_amp.md) for complete technical details
-- [System Architecture](https://hxrts.com/aura/docs/001_system_architecture.md) for broader system context
-- [Accounts and Commitment Tree](https://hxrts.com/aura/docs/101_accounts_and_commitment_tree.md) for tree operation details
-- [Journal System](https://hxrts.com/aura/docs/102_journal.md) for CRDT journal mechanics
-- [Relational Contexts](https://hxrts.com/aura/docs/103_relational_contexts.md) for shared state machines
-- [Distributed Systems Contract](https://hxrts.com/aura/docs/004_distributed_systems_contract.md) for consistency guarantees
+- [Aura Messaging Protocol Specification](https://hxrts.com/aura/112_amp.html) for complete technical details
+- [System Architecture](https://hxrts.com/aura/001_system_architecture.html) for broader system context
+- [Authority and Identity](https://hxrts.com/aura/102_authority_and_identity.html) for commitment tree operation details
+- [Journal System](https://hxrts.com/aura/105_journal.html) for CRDT journal mechanics
+- [Relational Contexts](https://hxrts.com/aura/114_relational_contexts.html) for shared state machines
+- [Distributed Systems Contract](https://hxrts.com/aura/004_distributed_systems_contract.html) for consistency guarantees

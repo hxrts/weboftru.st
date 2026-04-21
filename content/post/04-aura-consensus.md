@@ -416,10 +416,9 @@ The protocol integrates CRDT based state, threshold signatures with pipelining o
 
 ## See Also
 
-- [Consensus](https://hxrts.com/aura/docs/104_consensus.md) - Full consensus specification with pipelining details and formal verification
-- [Journal](https://hxrts.com/aura/docs/102_journal.md) - CRDT fact stores and deterministic reduction
-- [Relational Contexts](https://hxrts.com/aura/docs/103_relational_contexts.md) - Context scoped witness groups
-- [Operation Categories](https://hxrts.com/aura/docs/117_operation_categories.md) - When consensus is required (Category C operations)
-- [Key Rotation Ceremonies](https://hxrts.com/aura/docs/118_key_rotation_ceremonies.md) - Ceremony lifecycle and prestate binding
-- [System Architecture](https://hxrts.com/aura/docs/001_system_architecture.md) - Integration with choreographic protocols
-- [Distributed Systems Contract](https://hxrts.com/aura/docs/004_distributed_systems_contract.md) - Safety and liveness guarantees
+- [Consensus](https://hxrts.com/aura/108_consensus.html) - Full consensus specification with pipelining details and formal verification
+- [Journal](https://hxrts.com/aura/105_journal.html) - CRDT fact stores and deterministic reduction
+- [Relational Contexts](https://hxrts.com/aura/114_relational_contexts.html) - Context scoped witness groups
+- [Operation Categories](https://hxrts.com/aura/109_operation_categories.html) - When consensus is required (Category C operations)
+- [System Architecture](https://hxrts.com/aura/001_system_architecture.html) - Integration with choreographic protocols
+- [Distributed Systems Contract](https://hxrts.com/aura/004_distributed_systems_contract.html) - Safety and liveness guarantees

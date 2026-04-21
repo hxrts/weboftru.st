@@ -23,12 +23,14 @@
         {% if posts_section.pages %}
         <ul class="post-list">
             {% for page in posts_section.pages %}
+            {% if not page.extra.unlisted %}
             <li>
                 <a href="./post/{{ page.slug }}/">
                     <span class="post-title">{{ page.title }}</span>
                     <span class="post-date">{{ page.date | date(format="%d.%m.%y") }}</span>
                 </a>
             </li>
+            {% endif %}
             {% endfor %}
         </ul>
         {% else %}

@@ -1,13 +1,14 @@
 +++
 title = "Patterns for P2P Resilience: Learnings from Aura Protocol"
-date = 2026-02-28
+date = 2026-04-21
 description = "Design patterns for resilient encrypted P2P networks"
 slug = "p2p-resilience"
-draft = true
+draft = false
 
 [extra]
 cover_image = "/images/pixillation.jpg"
 cover_caption = "<em>Pixillation</em>, Lillian Schwartz and Ken Knowlton (1970)"
+unlisted = true
 +++
 
 
@@ -17,9 +18,9 @@ In December I attended [Splintercon](https://splintercon.net/paris/) in Paris, a
 
 The event brought together a very special group: academic researchers studying internet shutdowns, investigative journalists reporting on mass surveillance, human rights advocates, representatives from prominent internet infrastructure companies, and a contingent of engineers building encrypted P2P networks and mesh networking tools.
 
-Out of necessity, private, P2P, and mesh technologies are starting to see real adoption in places like Iran. However, these are asymmetric environments where the regime controls physical infrastructure and coordinates large-scale disinformation campaigns. 
+Out of necessity, private, P2P, and mesh technologies are starting to see real adoption in places like Iran. However, these are asymmetric environments where the regime controls physical infrastructure and coordinates large-scale disinformation campaigns.
 
-conversations also revealed large gaps that need to be bridged before these networks can reliably survive internet shutdown.
+Those conversations also revealed large gaps that need to be bridged before these networks can reliably survive internet shutdowns.
 
 I've been building P2P software for the past few months, and the conference gave me a window into the real challenges of deploying systems in times of crisis.
 
@@ -34,7 +35,9 @@ Aura starts with the following assumptions about the system and takes those as s
 - The system must be robust to intermittent connectivity and device loss
 - All channels are E2E encrypted with bounded forward secrecy
 
-This is a *very* challenging combination. As a point of comparison, the [local-first](https://www.inkandswitch.com/essay/local-first/) paradigm treats devices as authoritative for state and identity. But if we assume devices will be lost or compromised, signing authority *cannot* be local to any single device. The Local-first paradigm relies heavily on CRDTs for data availability, however a CRDT is unhelpful when the cryptographic context itself is in flux. You can't derive keys to encrypt a message until you know who's in the group to begin with. Changing membership, rotating keys, or transferring ownership require bounded agreement before any dependent operations can proceed.
+This is a *very* challenging combination. As a point of comparison, the [local-first](https://www.inkandswitch.com/essay/local-first/) paradigm treats devices as authoritative for state and identity. But if we assume devices will be lost or compromised, signing authority *cannot* be local to any single device. The local-first paradigm relies heavily on CRDTs for data availability, but CRDTs alone do not settle when changing authority makes previously admissible operations inadmissible. You cannot derive keys to encrypt a message until you know who is in the group to begin with. Changing membership, rotating keys, or transferring ownership require bounded agreement before any dependent operations can proceed.
+
+This is the same pressure described in [Triangle of Forgetting](/post/triangle-of-forgetting/): monotone convergence, temporal secrecy, and dynamic membership cannot be jointly guaranteed.
 
 Aura addresses the first problem by using threshold signatures to abstract authority into the network. An authority can be one actor with many devices, or many actors acting as one. The same primitive works at every scale.
 
@@ -45,7 +48,7 @@ Underlying both is a dual semilattice model. Facts (evidence, attestations, mess
 
 ## Web of Trust
 
-Given these constraints, certain services must come from somewhere: message relay, data storage, peer discovery, key recovery. Without dedicated servers, these services must be provided by peers. But these are semi-trusted functions. You trust peers to provide the service, and you trust them with what they learn while doing so. This leads Aura to leverate a web of trust.
+Given these constraints, certain services must come from somewhere: message relay, data storage, peer discovery, key recovery. Without dedicated servers, these services must be provided by peers. But these are semi-trusted functions. You trust peers to provide the service, and you trust them with what they learn while doing so. This leads Aura to leverage a web of trust.
 
 Those familiar with Secure Scuttlebutt can appreciate the effectiveness of marrying the social graph with network infrastructure. Aura extends this model to provision additional key services:
 
@@ -70,7 +73,7 @@ Relying on the social graph has real trade-offs. Network activity reveals inform
 
 ## Composing Protocols
 
-You can think of Aura as a protocol orchestrator that brings together distributed key generation, key resharing, BFT consensus, rendezvous and authority management. All of these protocols need to compose well and remain upgrade-safe. Getting this right is challenging in any setting, race conditions, deadlocks, and message ordering bugs are easy to introduce and hard to detect. We have the added challenge of assuming networks with heterogeneous software versions. Aura uses choreographic programming to ensure these protocols are correct by construction.
+You can think of Aura as a protocol orchestrator that brings together distributed key generation, key resharing, BFT consensus, rendezvous and authority management. All of these protocols need to compose well and remain upgrade-safe. Getting this right is challenging in any setting. Race conditions, deadlocks, and message ordering bugs are easy to introduce and hard to detect. We have the added challenge of assuming networks with heterogeneous software versions. Aura uses choreographic programming to ensure these protocols are correct by construction.
 
 A choreography describes a protocol from a global perspective, capturing the complete interaction pattern between all participants. The compiler then projects this global view into local implementations for each role, guaranteeing that the pieces fit together correctly. If the global choreography is well-formed, the local projections cannot deadlock or get stuck waiting for messages that never arrive.
 
@@ -94,7 +97,7 @@ Aura's upgrade system uses these primitives to handle typed reconfiguration boun
 
 ## Bounded Agreement
 
-Most state syncs via CRDTs, but some changes need bounded agreement before anything else can proceed. You can't derive keys to encrypt a message until you know who's in the group. Adding a member, rotating keys, or binding a guardian relationship all change the cryptographic context that everything else depends on.
+Most state syncs via CRDTs, but some changes need bounded agreement before anything else can proceed. You cannot derive keys to encrypt a message until you know who is in the group. Adding a member, rotating keys, or binding a guardian relationship all change the cryptographic context that everything else depends on.
 
 Aura Consensus provides single-shot agreement for these changes. It is not a global log. Each instance agrees on one thing, binds to a single prestate, and produces a single commit fact. Once the cryptographic context is established, activity within that context is cheap. Keys derive deterministically from shared state and sync via CRDTs.
 
@@ -105,13 +108,13 @@ Commits bind to explicit prestates, preventing forks and replays by ensuring all
 
 ## The Ratchet Problem
 
-Secure messaging is usually framed as a cryptography problem. But when both state and identity are distributed across nodes with no central coordinator, it becomes a distributed systems problem. Protocols like MLS assume ordered delivery via a central service. Signal-style ratchets assume device-local state. Aura must work without either assumption while remaining fully recoverable from replicated state.
+Secure messaging is usually framed as a cryptography problem. But when both state and identity are distributed across nodes with no central coordinator, it becomes a distributed systems problem. Protocols like MLS assume a delivery service that provides a consistent order. Signal-style ratchets assume device-local state. Aura must work without either assumption while remaining fully recoverable from replicated state.
 
 Signal-style ratchets store the ratchet position on your device, and if you lose your device, you lose your ratchet state. Multi-device support requires complex synchronization protocols that are difficult to get right.
 
 Aura has different requirements. All ratchet state must be deterministically recoverable from replicated facts, with no device-specific secrets. All devices must converge to the same ratchet position after syncing. And out-of-order delivery must work without head-of-line blocking.
 
-Aura solves this with a dual-window ratchet that maintains two overlapping valid ranges at all times. Message sends use CRDT merge for availability. Epoch bumps require consensus for linearizable agreement. The dual window bridges these modes by accepting messages from both current and previous epochs during transitions.
+Aura solves this with a dual-window ratchet that can maintain overlapping valid ranges during ordinary transitions. Message sends use CRDT merge for availability. Channel epoch bumps use a certified single-winner transition: one successor can become live before later consensus makes it durable. The dual window bridges these modes by accepting messages from current and successor epochs when policy permits. Removal and emergency transitions can instead require stricter cutover.
 
 ```mermaid
 flowchart TD
@@ -128,7 +131,7 @@ flowchart TD
         Base0 --> W0B["Window B: gen 1025-2048"]
     end
 
-    W0B --> |"trigger"| Consensus[Consensus]
+    W0B --> |"trigger"| Transition[Certified Transition]
 
     subgraph Epoch1 ["Epoch 1"]
         Root --> |"KDF(root, channel, 1)"| Base1[Base Key 1]
@@ -136,7 +139,7 @@ flowchart TD
         Base1 --> W1D["Window D: gen 1025-2048"]
     end
 
-    Consensus --> |"epoch bump"| Base1
+    Transition --> |"live successor"| Base1
 ```
 
 ## Deterministic Recovery
@@ -161,7 +164,7 @@ An observer cannot distinguish "operation denied" from "operation never attempte
 
 ## Aura Transmission
 
-The patterns above follow from a set of hard design constraints that most protocols are unwilling to accept: zero reliance on dedicated servers, robustness to device loss, E2E forward encryption. The adversarial conditions placed on mesh networks and P2P protocols internet shutdowns.
+The patterns above follow from a set of hard design constraints that most protocols are unwilling to accept: zero reliance on dedicated servers, robustness to device loss, and E2E encryption with bounded forward secrecy. These constraints reflect the adversarial conditions placed on mesh networks and P2P protocols during internet shutdowns.
 
 Aura is free and open source. All core operations are functional, though some areas still need polish. If you are building in this space, I encourage you to try the software or incorporate these ideas into your own project. My hope is that Aura can help improve the resilience of deployed networks in some capacity.
 
@@ -172,9 +175,9 @@ Aura is free and open source. All core operations are functional, though some ar
 - [System Architecture](https://hxrts.com/aura/001_system_architecture.html) - Guard chain, effect system
 - [Privacy Contract](https://hxrts.com/aura/003_information_flow_contract.html) - Flow budgets, leakage tracking
 - [Authority and Identity](https://hxrts.com/aura/102_authority_and_identity.html) - Threshold signatures, account model
-- [Social Architecture](https://hxrts.com/aura/114_social_architecture.html) - Homes, neighborhoods
-- [MPST and Choreography](https://hxrts.com/aura/108_mpst_and_choreography.html) - Session types, choreographic programming
-- [Consensus](https://hxrts.com/aura/106_consensus.html) - Fast path and fallback protocol
-- [Relational Contexts](https://hxrts.com/aura/112_relational_contexts.html) - Guardian binding
-- [AMP Protocol](https://hxrts.com/aura/110_amp.html) - Dual-window ratcheting details
-- [Distributed Maintenance Architecture](https://hxrts.com/aura/docs/115_maintenance.md) - OTA upgrades
+- [Social Architecture](https://hxrts.com/aura/115_social_architecture.html) - Homes, neighborhoods
+- [MPST and Choreography](https://hxrts.com/aura/110_mpst_and_choreography.html) - Session types, choreographic programming
+- [Consensus](https://hxrts.com/aura/108_consensus.html) - Fast path and fallback protocol
+- [Relational Contexts](https://hxrts.com/aura/114_relational_contexts.html) - Guardian binding
+- [AMP Protocol](https://hxrts.com/aura/112_amp.html) - Dual-window ratcheting details
+- [Distributed Maintenance Architecture](https://hxrts.com/aura/116_maintenance.html) - OTA upgrades
