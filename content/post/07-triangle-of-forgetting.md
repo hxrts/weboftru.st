@@ -16,13 +16,13 @@ This post takes up that problem in the context of causal group key agreement. CG
 
 ## A trilemma
 
-Temporal secrecy, monotone convergence, and dynamic membership cannot be jointly guaranteed (formalized in [Lean](https://github.com/hxrts/telltale/tree/main/lean/Distributed/Families/TriangleOfForgetting)).
+Temporal secrecy, monotone convergence, and dynamic membership cannot be jointly guaranteed ([Lean formalization](https://github.com/hxrts/telltale/tree/main/lean/Distributed/Families/TriangleOfForgetting)).
 
 - *Temporal secrecy* is the combined requirement of forward secrecy and post-compromise security. Retired keys must stop decrypting, and compromised state must eventually heal.
-- Under monotone merge, replicas can absorb updates out of order and still converge without retracting prior state.
-- Dynamic membership allows authority within the group to evolve through joins and leaves.
+- *Monotone merge* lets replicas can absorb updates out of order and still converge without retracting prior state.
+- *Dynamic membership* allows authority within the group to evolve through joins and leaves.
 
-The conflict appears when the system must draw a clean cutoff between live and expired updates. Late updates are admitted by monotone merge; temporal secrecy requires the rejection of updates that were once admissible.
+A conflict appears when the system must draw a clean cutoff between live and expired updates for the group. Late updates are admitted by monotone merge, but temporal secrecy requires the rejection of updates that were once admissible.
 
 <div class="svg-diagram">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 270" class="triangle-diagram" style="display: block; margin: 0 auto; max-width: 500px; width: 100%; height: auto;">
@@ -51,7 +51,7 @@ The conflict appears when the system must draw a clean cutoff between live and e
 
 A distinction between live and expired updates is what makes collective forgetting possible. At some point updates must cease to count as live, otherwise recovery from key exposure will never heal and revocation never completes. Any system that promises to forget must therefore specify a cutoff.
 
-Clock time should be avoided when defining that cutoff. To avoid disagreement over whether the same update is live or expired, the cutoff’s meaning must be fixed by protocol history rather than privately observed clocks.
+Clock time can supply a timeout, but not an escape hatch. A TTL replaces a protocol-history cutoff with a synchrony assumption, since replicas must trust that their clocks and delivery delays are sufficiently bounded to classify each update consistently.
 
 ## Ordering is not agreement
 
@@ -67,7 +67,7 @@ Different nodes therefore disagree about who belongs to the group and about whet
 
 ## Building intuition
 
-With the problem now in full view, it helps to place the Triangle of Forgetting beside two established distributed systems results, FLP Impossibility and Consistency as Logical Monotonicity (CALM). Even though their setup is distinct, a comparison will clarify the key tradeoff shape.
+With the problem now in full view, it helps to place the Triangle of Forgetting beside two established distributed systems results, FLP Impossibility and Consistency as Logical Monotonicity (CALM). Even though their setup is distinct, a comparison will clarify the key tradeoffs.
 
 ### FLP Impossibility
 
