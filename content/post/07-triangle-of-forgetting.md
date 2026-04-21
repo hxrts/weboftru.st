@@ -88,7 +88,7 @@ flowchart LR
 
 ### CALM
 
-For systems where conclusions are purely additive, coordination is altogether avoidable. Coordination is a consequence of retraction. Shapiro's work on Conflict-free Replicated Data Types gives this principle a concrete distributed form. Tombstones can encode removal without breaking monotone merge, but they do not by themselves solve the question of when obsolete authority can stop counting. Our setting includes monotone distributed replication, but temporal secrecy necessarily introduces distributed programs in which previously admissible conclusions may later become inadmissible.
+For purely additive systems, coordination is altogether avoidable. Coordination is a consequence of retraction. Shapiro's work on Conflict-free Replicated Data Types gives this principle a concrete distributed form. Tombstones can encode removal without breaking monotone merge, but they do not by themselves solve the question of when obsolete authority can stop counting. Our setting includes monotone distributed replication, but temporal secrecy necessarily introduces distributed programs in which previously admissible conclusions may later become inadmissible.
 
 ```mermaid
 flowchart LR
