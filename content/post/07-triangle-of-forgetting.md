@@ -38,7 +38,7 @@ A conflict appears when the system must draw a clean cutoff between live and exp
   </g>
   <g font-family="var(--font-sans)" font-size="15">
     <rect class="tof-convergence" x="150" y="10" width="200" height="55" stroke-width="1"/>
-    <text x="250" y="38" text-anchor="middle" dominant-baseline="middle" fill="currentColor">Monotone merge</text>
+    <text x="250" y="38" text-anchor="middle" dominant-baseline="middle" fill="currentColor">Monotone Merge</text>
     <rect class="tof-secrecy" x="5" y="200" width="180" height="55" stroke-width="1"/>
     <text x="95" y="228" text-anchor="middle" dominant-baseline="middle" fill="currentColor">Temporal Secrecy</text>
     <rect class="tof-membership" x="315" y="200" width="180" height="55" stroke-width="1"/>
