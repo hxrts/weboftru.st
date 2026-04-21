@@ -18,32 +18,28 @@ In December I attended [Splintercon](https://splintercon.net/paris/) in Paris, a
 
 The event brought together a very special group: academic researchers studying internet shutdowns, investigative journalists reporting on mass surveillance, human rights advocates, representatives from prominent internet infrastructure companies, and a contingent of engineers building encrypted P2P networks and mesh networking tools.
 
-Out of necessity, private, P2P, and mesh technologies are starting to see real adoption in places like Iran. However, these are asymmetric environments where the regime controls physical infrastructure and coordinates large-scale disinformation campaigns.
+Out of necessity, private, P2P, and mesh technologies are starting to see real adoption in places like Iran. However, conversations at the event revealed large gaps that need to be bridged before bottom-up networks can survive internet shutdowns reliably. These are highly asymmetric environments where the regime controls physical infrastructure, monitors transmission channels, and mounts large-scale disinformation campaigns.
 
-Those conversations also revealed large gaps that need to be bridged before these networks can reliably survive internet shutdowns.
+I've been building a variety of P2P research prototypes for the past few months, and the conference gave me a window into the real challenges of deploying systems in times of crisis.
 
-I've been building P2P software for the past few months, and the conference gave me a window into the real challenges of deploying systems in times of crisis.
-
-I wanted to write up some of the lessons from my recent experiments for this group. What follows is a summary of several design patterns used in Aura that may be relevant to developers working on mesh networks and encrypted P2P protocols aiming to resist internet shutdowns.
+In this post I'll highlight a few software patterns from my recent experiments that may be of interest to developers working on mesh networks and encrypted P2P protocols aiming to resist internet shutdowns.
 
 
 ## Beyond Local-first
 
-Aura starts with the following assumptions about the system and takes those as strict design constraints:
+Aura starts with several under-studied design considerations, which the system takes as strict constraints:
 
 - The network topology is fully P2P, no dedicated servers, no DNS, no central software distribution authority
 - The system must be robust to intermittent connectivity and device loss
 - All channels are E2E encrypted with bounded forward secrecy
 
-This is a *very* challenging combination. As a point of comparison, the [local-first](https://www.inkandswitch.com/essay/local-first/) paradigm treats devices as authoritative for state and identity. But if we assume devices will be lost or compromised, signing authority *cannot* be local to any single device. The local-first paradigm relies heavily on CRDTs for data availability, but a CRDT cannot resolve what happens when changing authority invalidates previously admissible operations. You cannot derive keys to encrypt a message until you know who is in the group. Changing membership, rotating keys, or transferring ownership requires bounded agreement before any dependent operations can proceed.
+This is a *very* challenging combination. As a point of comparison, the [local-first](https://www.inkandswitch.com/essay/local-first/) paradigm treats devices as authoritative for state and identity. However, if we assume any combination of devices can be lost or compromised, authority *cannot* be local to a device. The local-first paradigm relies heavily on CRDTs for data availability, but a CRDT cannot resolve what happens when an authority change invalidates previously admissible operations. Key derivation depends on the current group authority, so membership changes must be settled before dependent messages can be encrypted safely. Changing membership, rotating keys, or transferring ownership requires bounded agreement before any dependent operations can proceed.
 
-This is the same pressure described in [Triangle of Forgetting](/post/triangle-of-forgetting/): monotone convergence, temporal secrecy, and dynamic membership cannot be jointly guaranteed.
+My last post, [Triangle of Forgetting](/post/triangle-of-forgetting/), sharpens this tradeoff: monotone convergence, temporal secrecy, and dynamic membership cannot be jointly guaranteed.
 
-Aura addresses the first problem by using threshold signatures to abstract authority into the network. An authority can be one actor with many devices, or many actors acting as one. The same primitive works at every scale.
+Aura addresses the authority problem by using threshold signatures to abstract authority into the network. An authority can be one actor with many devices, or many actors acting as one.
 
-The second part of the solution is making coordination tractable. Most operations sync via CRDTs, but operations that establish or modify cryptographic relationships need bounded agreement. Aura uses choreographic programming to make these coordination protocols correct by construction.
-
-Underlying both is a dual semilattice model. Facts (evidence, attestations, message counters) grow monotonically via join. Capabilities (permissions, budgets, delegation chains) shrink monotonically via meet. These two lattices evolve independently but interact through guard predicates: every operation must satisfy both "do I have the capability?" and "does the evidence support this?" This gives you eventual consistency for replicated state and monotonic restriction for authorization in a unified framework.
+Most operations in Aura sync via CRDTs, but operations that establish or modify cryptographic relationships need bounded agreement. Aura does not force authority into the same shape as replicated evidence. Facts grow by join, capabilities shrink by meet. Every operation must be both supported by evidence and permitted by a capability. This preserves CRDT-style availability where it fits, without pretending changes in authority are just another merge.
 
 
 ## Web of Trust
@@ -97,7 +93,7 @@ Aura's upgrade system uses these primitives to handle typed reconfiguration boun
 
 ## Bounded Agreement
 
-Most state syncs via CRDTs, but some changes need bounded agreement before anything else can proceed. You cannot derive keys to encrypt a message until you know who is in the group. Adding a member, rotating keys, or binding a guardian relationship all change the cryptographic context that everything else depends on.
+Most state syncs via CRDTs, but some changes need bounded agreement before anything else can proceed. Key derivation depends on the current group authority, so membership changes must be settled before dependent messages can be encrypted safely. Adding a member, rotating keys, or binding a guardian relationship all change the cryptographic context that everything else depends on.
 
 Aura Consensus provides single-shot agreement for these changes. It is not a global log. Each instance agrees on one thing, binds to a single prestate, and produces a single commit fact. Once the cryptographic context is established, activity within that context is cheap. Keys derive deterministically from shared state and sync via CRDTs.
 
@@ -171,9 +167,6 @@ Aura is free and open source. All core operations are functional, though some ar
 
 ## Further Reading
 
-- [Project Overview](https://hxrts.com/aura/000_project_overview.html) - Design goals, system overview
-- [System Architecture](https://hxrts.com/aura/001_system_architecture.html) - Guard chain, effect system
-- [Privacy Contract](https://hxrts.com/aura/003_information_flow_contract.html) - Flow budgets, leakage tracking
 - [Authority and Identity](https://hxrts.com/aura/102_authority_and_identity.html) - Threshold signatures, account model
 - [Social Architecture](https://hxrts.com/aura/115_social_architecture.html) - Homes, neighborhoods
 - [MPST and Choreography](https://hxrts.com/aura/110_mpst_and_choreography.html) - Session types, choreographic programming
