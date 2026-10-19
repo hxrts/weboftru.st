@@ -44,9 +44,12 @@ Wrap a picture in the `tikz` shortcode inside a post's markdown:
   as the Mermaid loader.
 - The engine is TikZJax, a WebAssembly TeX port, vendored so figures work
   offline and same-origin:
-  - `static/tikzjax/tikzjax.js` — patched to locate the WASM relative to its
-    own URL (stock builds hardcode an S3 base)
-  - `static/tikzjax/3f69...wasm` — the TeX engine
+  - `static/tikzjax/tikzjax.js` — patched to locate the WASM and memory image
+    relative to its own URL (stock builds hardcode an S3 base)
+  - `static/tikzjax/3f69...wasm` — the TeX engine, plus
+    `static/tikzjax/b565...gz` — its prebuilt memory image (163,840,000 bytes
+    unpacked). Both are fetched at page load; if either is missing, the engine
+    fails with "Could not find file sample.dvi" and no figure appears.
   - `static/tikzjax/fonts.css` + `static/tikzjax/bakoma/ttf/*.ttf` —
     Computer Modern fonts; browsers fetch only glyphs a figure uses
 - Dark mode inverts the SVG (`.tikz-fig svg { filter: invert(1) }`),
