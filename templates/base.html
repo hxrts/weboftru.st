@@ -164,10 +164,28 @@
                 {left: '$', right: '$', display: false}
             ]
         });"></script>
+    <!-- Fenced math blocks (```math) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof katex === 'undefined') return;
+            document.querySelectorAll('pre code.language-math').forEach(function (el) {
+                const display = document.createElement('div');
+                katex.render(el.textContent, display, { displayMode: true, throwOnError: false });
+                el.parentElement.replaceWith(display);
+            });
+        });
+    </script>
     <!-- Mermaid -->
     <script>
         if (document.querySelector('code.language-mermaid')) {
             document.write('<script src="{{ base }}mermaid.min.js"><\/script>');
+        }
+    </script>
+    <!-- TikZ (TikZJax, vendored in static/tikzjax/; loaded only when a tikz-fig exists) -->
+    <script>
+        if (document.querySelector('script[type="text/tikz"]')) {
+            document.write('<link rel="stylesheet" href="{{ base }}tikzjax/fonts.css">');
+            document.write('<script src="{{ base }}tikzjax/tikzjax.js"><\/script>');
         }
     </script>
     <script>

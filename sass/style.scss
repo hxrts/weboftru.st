@@ -1230,6 +1230,29 @@ svg[id^="mermaid-"] {
 }
 
 // =============================================================================
+// TikZ Figures (client-side TikZJax, {% tikz %} shortcode)
+// =============================================================================
+// TikZJax replaces the shortcode's <script type="text/tikz"> with an inline SVG.
+// TikZ renders in black ink on transparency, so dark mode inverts it, matching
+// the Mermaid handling above. A figure's width can be set per figure with the
+// shortcode's fig_w argument (--fig-w), like the ep-presentation deck.
+
+.tikz-fig {
+    display: flex;
+    justify-content: center;
+
+    svg {
+        width: var(--fig-w, auto);
+        max-width: 100%;
+        height: auto;
+
+        [data-theme="dark"] & {
+            filter: invert(1);
+        }
+    }
+}
+
+// =============================================================================
 // Lightbox
 // =============================================================================
 
