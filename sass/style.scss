@@ -1146,6 +1146,10 @@ body > footer {
         }
     }
 
+    .footnote-definition:last-child {
+        margin-bottom: var(--s-1);
+    }
+
     .mermaid {
         margin-top: var(--s-6);
         margin-bottom: var(--s-6);
