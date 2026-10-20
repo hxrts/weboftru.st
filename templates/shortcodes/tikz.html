@@ -1,17 +1,25 @@
 {# TikZ figure rendered client-side by TikZJax (vendored in static/tikzjax/).
    Usage in a post:
-       {% tikz(fig_w="520px") %}
+       {% tikz(fig_w="520px", caption="Optional caption, HTML allowed") %}
        \begin{tikzpicture}
          ...
        \end{tikzpicture}
        {% end %}
    fig_w is optional; it sets the rendered width (--fig-w), matching the
-   ep-presentation deck's .tikz-fig convention. The body passes through raw:
-   Zola does not run markdown over an .html shortcode's body, and `str |
-   safe` prevents Tera from escaping it. Use \usetikzlibrary{...} for extra
-   TikZ libraries (arrows.meta, decorations.markings, ...). #}
-<div class="tikz-fig"{% if fig_w %} style="--fig-w: {{ fig_w }}"{% endif %}>
+   ep-presentation deck's .tikz-fig convention. caption is optional and sits
+   in a <figcaption> styled like image/Mermaid captions; Tera escapes it, so
+   pass `| safe`-style HTML like the cover captions use (<em>…</em>).
+   The body passes through raw: Zola does not run markdown over an .html
+   shortcode's body, and `str | safe` prevents Tera from escaping it. Use
+   \usetikzlibrary{...} for extra TikZ libraries (arrows.meta,
+   decorations.markings, ...). #}
+<figure class="tikz-fig"{% if fig_w %} style="--fig-w: {{ fig_w }}"{% endif %}>
+<div class="tikz-fig-body">
 <script type="text/tikz">
 {{ body | safe }}
 </script>
 </div>
+{%- if caption %}
+<figcaption>{{ caption | safe }}</figcaption>
+{% endif -%}
+</figure>

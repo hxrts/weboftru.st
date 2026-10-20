@@ -116,17 +116,17 @@
     --c-link: var(--blue-600);
     --c-link-hover: var(--blue-700);
     --c-border: var(--gray-300);
-    // Code block colors (0x96f theme - always dark)
-    --c-code-bg: #262427;
-    --c-pre-bg: #262427;
-    --c-pre-text: #fcfcfa;
+    // Code block colors (light theme - base16-ocean-light from config)
+    --c-code-bg: #eff1f5;
+    --c-pre-bg: #eff1f5;
+    --c-pre-text: #4f5b66;
 
-    // Syntax highlighting tokens (0x96f palette)
-    --c-syntax-comment: #8b8b8a;
-    --c-syntax-keyword: #ff7272;
-    --c-syntax-variable: #fc9867;
-    --c-syntax-function: #bcdf59;
-    --c-syntax-string: #ffca58;
+    // Syntax highlighting tokens (base16-ocean-light palette)
+    --c-syntax-comment: #a7adba;
+    --c-syntax-keyword: #b48ead;
+    --c-syntax-variable: #bf616a;
+    --c-syntax-function: #d08770;
+    --c-syntax-string: #a3be8c;
 
     // -------------------------------------------------------------------------
     // Spacing Tokens
@@ -221,7 +221,21 @@
     --c-link: var(--blue-500);
     --c-link-hover: var(--blue-400);
     --c-border: var(--gray-700);
-    // Code colors inherited from :root (0x96f theme)
+    // Code block colors (0x96f theme - dark only)
+    --c-code-bg: #262427;
+    --c-pre-bg: #262427;
+    --c-pre-text: #fcfcfa;
+
+    // Syntax highlighting tokens (0x96f palette)
+    --c-syntax-comment: #a3a3a2;
+    --c-syntax-keyword: #ff7272;
+    --c-syntax-variable: #fc9867;
+    --c-syntax-function: #bcdf59;
+    --c-syntax-string: #ffca58;
+}
+
+[data-theme="dark"] code {
+    color: var(--gray-400);
 }
 
 // =============================================================================
@@ -551,6 +565,21 @@ body > footer {
     }
 }
 
+.draft-tag {
+    font-family: var(--font-mono);
+    font-size: var(--t-mono);
+    font-weight: var(--fw-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--c-text-muted);
+    border: 1px solid var(--c-border);
+    border-radius: 3px;
+    padding: 0 var(--s-1);
+    margin-right: var(--s-2);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 .post-date {
     font-family: var(--font-mono);
     font-size: var(--t-mono);
@@ -750,55 +779,66 @@ body > footer {
 
     // Lists - hanging bullets/numbers
     // -------------------------------------------------------------------------
+    // Markers are drawn with positioned ::before boxes rather than engine-drawn
+    // ::marker content. Native outside markers with a zero/padded gutter place
+    // the glyph differently in Blink vs WebKit (Safari hangs them left of the
+    // content column and drops them inconsistently), so we position them
+    // ourselves for identical rendering in every engine.
 
     ul,
     ol {
         margin-bottom: var(--s-4);
-        list-style-position: outside;
         margin-left: -0.1rem;
         padding-left: 0;
+        list-style: none;
 
         @media (min-width: 640px) {
             margin-bottom: var(--s-5);
         }
     }
 
-    ul {
-        list-style-type: disc;
+    ul > li,
+    ol > li {
+        position: relative;
+        padding-left: 0.1rem;
 
-        li::marker {
-            content: "• "; // Bullet with custom spacing
-        }
+        // Handle block elements inside list items
+        > p {
+            margin-bottom: var(--s-2);
 
-        li {
-            padding-left: 0.1rem;
-
-            // Handle block elements inside list items
-            > p {
-                margin-bottom: var(--s-2);
-
-                &:last-child {
-                    margin-bottom: 0;
-                }
+            &:last-child {
+                margin-bottom: 0;
             }
         }
     }
 
+    // Bullet hangs into the left gutter, aligned with the first line.
+    ul > li::before {
+        content: "•";
+        position: absolute;
+        top: 0;
+        left: -0.55rem;
+        line-height: inherit;
+    }
+
+    // Ordered lists use a counter: numbers are right-aligned so the period
+    // sits on a fixed column, mirroring the footnote-label treatment.
     ol {
-        list-style-type: decimal;
+        counter-reset: listitem;
+    }
 
-        li {
-            padding-left: 0.1rem;
+    ol > li {
+        counter-increment: listitem;
+    }
 
-            // Handle block elements inside list items
-            > p {
-                margin-bottom: var(--s-2);
-
-                &:last-child {
-                    margin-bottom: 0;
-                }
-            }
-        }
+    ol > li::before {
+        content: counter(listitem) ".";
+        position: absolute;
+        top: 0;
+        left: -2rem;
+        width: 1.7rem;
+        text-align: right;
+        line-height: inherit;
     }
 
     li {
@@ -853,7 +893,7 @@ body > footer {
         word-break: break-word;
 
         [data-theme="dark"] & {
-            color: var(--gray-500);
+            color: var(--gray-400);
             background-color: var(--gray-850);
         }
     }
@@ -888,6 +928,9 @@ body > footer {
         code {
             font-size: inherit;
             color: var(--c-pre-text);
+            [data-theme="dark"] & {
+                color: var(--c-pre-text);
+            }
             background-color: transparent !important;
             padding: 0;
             border-radius: 0;
@@ -1021,8 +1064,86 @@ body > footer {
     figcaption {
         font-size: var(--t-sm);
         color: var(--c-text-muted);
-        text-align: center;
+        text-align: left;
         margin-top: var(--s-2);
+    }
+
+    // Footnote citations — the standard citation component. Superscript
+    // anchors in the body jump to the caption-styled references block that
+    // follows the closing horizontal rule. Each definition renders as a
+    // numbered list entry: the label sits in a fixed gutter with a period,
+    // and the text wraps to the same column so the block reads as an
+    // ordered list.
+    sup.footnote-reference {
+        // Slightly smaller than the default sup (smaller = 0.83em) so the
+        // citation markers recede a bit more from the surrounding text.
+        font-size: 0.72em;
+        line-height: 0;
+    }
+
+    sup.footnote-reference a {
+        color: var(--c-text-muted);
+    }
+
+    // Adjacent citations (e.g. [^a][^b]) render as back-to-back superscripts;
+    // separate them with a comma that inherits the same size and vertical
+    // position as the numbers. Only the second+ citation in a run gets it,
+    // so there is no trailing comma.
+    sup.footnote-reference + sup.footnote-reference::before {
+        content: ", ";
+    }
+
+    .footnote-definition {
+        display: flex;
+        gap: 0 var(--s-1);
+        font-size: var(--t-sm);
+        color: var(--c-text-muted);
+        text-align: left;
+        // Tighten the reference list: kill the global p bottom margin that
+        // would otherwise inflate the gap between entries, and keep only a
+        // small margin-top between rows.
+        margin-top: 0.125rem;
+
+        .footnote-definition-label {
+            flex-shrink: 0;
+            min-width: 1.6em;
+            text-align: right;
+            font-size: 1em;
+            line-height: inherit;
+            vertical-align: baseline;
+
+            &::after {
+                content: ".";
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+
+                &:hover,
+                &:focus {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        p {
+            flex: 1;
+            margin-bottom: 0;
+
+            // Citation links stay underlined even without hover so the
+            // reference reads as a link list, not just muted text.
+            a {
+                color: inherit;
+                text-decoration: underline;
+                text-underline-offset: 0.15em;
+
+                &:hover,
+                &:focus {
+                    color: var(--c-link-hover);
+                }
+            }
+        }
     }
 
     .mermaid {
@@ -1136,14 +1257,22 @@ svg[id^="mermaid-"] {
 
 // Mermaid dark-mode node fill overrides (match Triangle of Forgetting palette)
 // Decision rhombuses render as <polygon>, not <rect>, so target both.
+// Aura-consensus uses e1f5ff (witness) / ffe1e1 (initiator) fills, so those
+// join the blue and coral families respectively.
 [data-theme="dark"] svg[id^="mermaid-"] {
     // Blue family → muted cyan
     rect[style*="e1f5fe" i],
     polygon[style*="e1f5fe" i],
+    rect[style*="e1f5ff" i],
+    polygon[style*="e1f5ff" i],
     rect[style*="b3e5fc" i],
     polygon[style*="b3e5fc" i],
     rect[style*="81d4fa" i],
-    polygon[style*="81d4fa" i] {
+    polygon[style*="81d4fa" i],
+    rect[style*="e3f2fd" i],
+    polygon[style*="e3f2fd" i],
+    rect[style*="e8eaf6" i],
+    polygon[style*="e8eaf6" i] {
         fill: #2a3d42 !important;
     }
 
@@ -1151,7 +1280,9 @@ svg[id^="mermaid-"] {
     rect[style*="fff3e0" i],
     polygon[style*="fff3e0" i],
     rect[style*="ffe0b2" i],
-    polygon[style*="ffe0b2" i] {
+    polygon[style*="ffe0b2" i],
+    rect[style*="ffcc80" i],
+    polygon[style*="ffcc80" i] {
         fill: #4a3a20 !important;
     }
 
@@ -1163,9 +1294,11 @@ svg[id^="mermaid-"] {
         fill: #2d3a2a !important;
     }
 
-    // Red → muted coral
+    // Red → muted coral (also ffe1e1, the aura-consensus initiator fill)
     rect[style*="ffcdd2" i],
-    polygon[style*="ffcdd2" i] {
+    polygon[style*="ffcdd2" i],
+    rect[style*="ffe1e1" i],
+    polygon[style*="ffe1e1" i] {
         fill: #4a2a2a !important;
     }
 }
@@ -1232,16 +1365,52 @@ svg[id^="mermaid-"] {
 // =============================================================================
 // TikZ Figures (client-side TikZJax, {% tikz %} shortcode)
 // =============================================================================
-// TikZJax replaces the shortcode's <script type="text/tikz"> with an inline SVG.
+// TikZJax replaces the shortcode's <script type="text/tikz"> with an inline SVG
+// wrapped in a fixed-size (pt) div. That wrapper is neutralized below so
+// --fig-w and max-width govern sizing, and the figure otherwise borrows the
+// Mermaid treatment: same vertical rhythm, fade-in, centering, overflow.
 // TikZ renders in black ink on transparency, so dark mode inverts it, matching
 // the Mermaid handling above. A figure's width can be set per figure with the
 // shortcode's fig_w argument (--fig-w), like the ep-presentation deck.
 
 .tikz-fig {
-    display: flex;
-    justify-content: center;
+    margin-top: var(--s-6);
+    margin-bottom: var(--s-6);
+    padding: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    cursor: pointer;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s ease-in;
+
+    @media (min-width: 640px) {
+        margin-top: var(--s-8);
+        margin-bottom: var(--s-8);
+    }
+
+    &[data-processed="true"] {
+        opacity: 1;
+    }
+
+    // Engine wrapper: display:flex blockifies the SVG and its fixed pt size
+    // would clamp --fig-w. Drop both so the SVG is a normal inline-block.
+    .tikz-fig-body > div {
+        display: block !important;
+        width: auto !important;
+        height: auto !important;
+    }
+
+    // Engine's 0-height page box; let it size to its content.
+    .page {
+        height: auto !important;
+    }
 
     svg {
+        // The engine absolutely positions the SVG against a 0-height "page"
+        // box; make it flow normally so centering, margins, and --fig-w apply.
+        position: static !important;
+        display: inline-block;
         width: var(--fig-w, auto);
         max-width: 100%;
         height: auto;
@@ -1250,6 +1419,20 @@ svg[id^="mermaid-"] {
             filter: invert(1);
         }
     }
+
+    // Captions match the site's image/Mermaid figure-caption styling: small,
+    // muted, left-aligned, with a little air below the figure.
+    figcaption {
+        font-size: var(--t-sm);
+        color: var(--c-text-muted);
+        text-align: left;
+        margin-top: var(--s-2);
+    }
+}
+
+// TikZ figures keep their black-ink inversion inside the lightbox in dark mode.
+[data-theme="dark"] .lightbox-content.tikz svg {
+    filter: invert(1);
 }
 
 // =============================================================================

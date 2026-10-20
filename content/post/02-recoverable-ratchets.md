@@ -71,8 +71,15 @@ graph TD
         R --> L4[Leaf: Device D]
         B1 --> L1[Leaf: Device A]
         B1 --> L2[Leaf: Device B]
+        style R fill:#fff3e0
+        style B1 fill:#ffe0b2
+        style L1 fill:#e1f5fe
+        style L2 fill:#e1f5fe
+        style L3 fill:#e1f5fe
+        style L4 fill:#e1f5fe
     end
     R -.->|"KDF(root, channel, epoch)"| K[Channel Base Key]
+    style K fill:#c8e6c9
 ```
 
 Branch nodes define threshold policies. Leaf nodes hold device signing shares. External parties see only the root commitment. Key derivation uses the root to produce channel base keys.

@@ -10,9 +10,9 @@ manifest:
 serve: manifest
     zola serve
 
-# build and serve (rebuilds first, then starts dev server)
+# build and serve (rebuilds first, then starts dev server; drafts previewed locally)
 build-serve: manifest
-    zola build && zola serve
+    zola build && zola serve --drafts
 
 # build site to public/
 build: manifest

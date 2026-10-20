@@ -186,6 +186,24 @@
         if (document.querySelector('script[type="text/tikz"]')) {
             document.write('<link rel="stylesheet" href="{{ base }}tikzjax/fonts.css">');
             document.write('<script src="{{ base }}tikzjax/tikzjax.js"><\/script>');
+
+            // Mermaid-style fade-in: mark a figure processed once its SVG renders.
+            const tikzObserver = new MutationObserver(() => {
+                document.querySelectorAll('.tikz-fig:not([data-processed])').forEach(fig => {
+                    if (fig.querySelector('svg')) {
+                        fig.setAttribute('data-processed', 'true');
+                    }
+                });
+            });
+            document.addEventListener('DOMContentLoaded', () => {
+                tikzObserver.observe(document.body, { childList: true, subtree: true });
+                // Catch up in case the engine rendered before we started watching.
+                document.querySelectorAll('.tikz-fig:not([data-processed])').forEach(fig => {
+                    if (fig.querySelector('svg')) {
+                        fig.setAttribute('data-processed', 'true');
+                    }
+                });
+            });
         }
     </script>
     <script>
@@ -285,6 +303,11 @@
                     'activationBkgColor': nodeBgColor,
                     'sequenceNumberColor': white,
 
+                    // Sequence note boxes (yellow in light, muted olive in dark)
+                    'noteBkgColor': isDark ? '#3d3a26' : '#fff5ad',
+                    'noteTextColor': isDark ? '#FCFCFA' : '#333333',
+                    'noteBorderColor': isDark ? '#8b8b8a' : '#e4db95',
+
                     // Special colors (dark mode uses 0x96f palette)
                     'activeTaskBkgColor': isDark ? '#49CAE4' : blue600,    // 0x96f cyan
                     'activeTaskBorderColor': isDark ? '#3ab0c9' : blue700,
@@ -320,8 +343,26 @@
             const lightbox = document.getElementById('mermaidLightbox');
             const content = document.getElementById('lightboxContent');
             if (lightbox && content && diagram) {
-                content.innerHTML = diagram.innerHTML;
+                // Copy the SVG itself: Mermaid and the inline .svg-diagram may
+                // either be the SVG or contain one, while TikZ figures wrap it
+                // in a fixed-size div that would fight the lightbox sizing.
+                const svg = diagram.matches && diagram.matches('svg')
+                    ? diagram
+                    : (diagram.querySelector ? diagram.querySelector('svg') : null);
+                // TikZJax leaves the SVG absolutely positioned against its
+                // "page" box; strip that so the lightbox centers it like any
+                // other diagram.
+                if (svg && diagram.classList && diagram.classList.contains('tikz-fig')) {
+                    const clean = svg.cloneNode(true);
+                    clean.removeAttribute('style');
+                    content.innerHTML = clean.outerHTML;
+                } else {
+                    content.innerHTML = svg ? svg.outerHTML : diagram.innerHTML;
+                }
                 lightbox.dataset.figureIndex = diagram.dataset.figureIndex || '';
+                // TikZ renders in black ink on transparency; keep the page's
+                // dark-mode inversion inside the lightbox too.
+                content.classList.toggle('tikz', !!(diagram.classList && diagram.classList.contains('tikz-fig')));
                 lightbox.classList.add('active');
             }
         }
@@ -444,12 +485,12 @@
         // every figure (mermaid + svg-diagram) in document order so downloads
         // can be named "{slug}-{index}.svg".
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.svg-diagram').forEach(diagram => {
+            document.querySelectorAll('.svg-diagram, .tikz-fig').forEach(diagram => {
                 diagram.addEventListener('click', function() {
                     openMermaidLightbox(this);
                 });
             });
-            const figures = document.querySelectorAll('.mermaid, .svg-diagram');
+            const figures = document.querySelectorAll('.mermaid, .svg-diagram, .tikz-fig');
             figures.forEach((el, i) => {
                 el.setAttribute('data-figure-index', String(i + 1));
             });
@@ -542,6 +583,32 @@
                 if (typeof mermaid !== 'undefined' && document.querySelector('.mermaid')) {
                     location.reload();
                 }
+            });
+        });
+    </script>
+    <script>
+        // Footnote back-links: each body citation gets a stable id (first
+        // occurrence per key), and each footnote label at the bottom is
+        // wrapped in an anchor pointing back to it, enabling two-way
+        // navigation between a citation and its reference entry.
+        document.addEventListener('DOMContentLoaded', () => {
+            const seen = {};
+            document.querySelectorAll('sup.footnote-reference a[href^="#"]').forEach((a) => {
+                const key = a.getAttribute('href').slice(1);
+                if (!key || seen[key]) return;
+                seen[key] = a;
+                a.id = 'fn-ref-' + key;
+            });
+            document.querySelectorAll('.footnote-definition').forEach((def) => {
+                const key = def.id;
+                const label = def.querySelector('.footnote-definition-label');
+                if (!key || !label || !seen[key]) return;
+                const link = document.createElement('a');
+                link.href = '#' + seen[key].id;
+                link.textContent = label.textContent;
+                link.setAttribute('aria-label', 'Jump back to citation ' + label.textContent.trim());
+                label.textContent = '';
+                label.appendChild(link);
             });
         });
     </script>

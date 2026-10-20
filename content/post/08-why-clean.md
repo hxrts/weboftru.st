@@ -1,155 +1,69 @@
 +++
-title = "Why are Neural Networks Clean?"
-date = 2026-10-18
-description = "On recursive generalization, heritable circuits, and the structure that makes future learning possible."
+title = "Why Are Neural Networks Clean?"
+date = 2026-10-20
+description = "On selection, inheritance, and the evolutionary organization of neural circuits."
 slug = "why-clean"
 draft = true
 +++
 
-*On recursive generalization, heritable circuits, and the structure that makes future learning possible.*
+*On selection, inheritance, and the evolutionary organization of neural circuits.*
 
-Nick Cammarata’s [*Neural Networks Are Already Clean*](https://already-clean.goodfire.com/) argues that neural representations may be more coherent than they appear. New capabilities often develop by extending existing circuits rather than constructing entirely separate ones. Neural circuits have developmental histories. Established mechanisms attract learning signals and become foundations for further learning.
+## The organization of learning
 
-This raises a more fundamental question. **What makes a representation valuable beyond the function it performs today?** A mathematical perspective suggests that a representation’s importance lies partly in what it currently computes. More deeply, it lies in what its existence makes possible to learn next, tying neural learning to heredity, selection, and the geometry of future possibilities.
+A neural network is a history of learning made operational. Every gradient update acts on circuitry shaped by earlier training. Its organization therefore invites a developmental explanation. Why do some mechanisms become foundations for later computations, while others remain isolated solutions?
 
-## A feature is a distinction, not a noun
+In *Neural Networks Are Already Clean*, Nick Cammarata presents an atlas of surprisingly organized neural mechanisms.[^cammarata] His vision models contain related computations for animal faces, fur, dog faces, and particular breeds. In larger models, neurons associated with pale, wavy, and head-side ears feed a more specialized hanging-ear neuron. This branching organization gives us a concrete aspect of neural “cleanliness” to explain.
 
-A neuron is better understood by the distinction it makes available than by the category it names. What can downstream mechanisms do differently because it exists? Suppose a network compresses internal states into a representation. That representation is sufficient for a downstream computation precisely when everything the computation needs can be recovered from it.
+Ordinary training objectives reward predictive performance. Reusable dog-ear machinery receives credit through its contribution to that performance, yet it can become a foundation for further specialization. An evolutionary perspective suggests a mechanism for this developmental advantage. Learning modifies inherited circuitry, and the resulting structure shapes opportunities for subsequent learning.
 
-Mathematically, if the representation is $q$ and the downstream computation is $f$, sufficiency means that there exists some $\bar f$ such that
+## Learning changes the machinery that learns
 
-$$
-f=\bar f\circ q.
-$$
+Evolutionary theory distinguishes the generation of variation from the selection of variants for continuation. In neural training, the loss function and data distribution determine which errors matter. Gradients and optimizers translate these errors into parameter updates, while architecture and existing weights shape the available directions of change. Satrajit Chatterjee's coherent-gradients hypothesis proposes that aligned gradients reinforce changes benefiting several examples at once.[^coherent]
 
-This is called *quotient descent*. Two internal states can look identical through $q$ and still require different treatment downstream. A representation that fails to distinguish them has erased something important. The key is that sufficiency is **relative to what consumes the representation**.
+Consider an ear detector useful for distinguishing several dog breeds. When examples from those breeds support similar parameter changes, their gradients reinforce one another across training updates. A detector specific to one breed may receive useful reinforcement less often, giving the shared mechanism an advantage. This advantage depends on gradient alignment, since signals from different examples can also conflict or cancel.
 
-A neuron responding to both cats and cars may look polysemantic against human labels, yet be perfectly coherent if its downstream consumers care about pointed shapes.
+A reliable detector can offer downstream computations an easier route to reducing error than developing ear sensitivity independently. New consumers create further routes for learning signals to reach the detector, potentially reinforcing its shared role. As this pathway reduces relevant errors, the gradients supporting redundant alternatives may weaken. **Reuse can become self-reinforcing**, with early discoveries shaping competition among later learning pathways.
 
-Instead of a uniquely correct dictionary of concepts, we can ask which distinctions a network preserves, which computations consume them, and which transformations respect them. But should we consider only today's computations, or also those that might emerge through future learning?
+## What previous learning makes possible
 
-## Two networks can do the same thing and learn differently
+Now imagine training introduces finer breed distinctions into a network with an established ear detector. A new classifier might learn to read that signal by adjusting a few downstream connections, while an independent detector could require coordinated changes across several layers. The existing pathway already supplies sensitivity to relevant visual structure, allowing subsequent updates to concentrate on its use in a new decision. This offers a plausible optimization advantage for reuse, conditional on the signal being suitable and accessible to the new classifier.
 
-Consider a tiny two-layer linear network:
+The dog-ear family in Cammarata's larger ConvNeXt models illustrates such computational dependencies.[^cammarata] A specialized hanging-ear response draws on more general mechanisms. These connections motivate a developmental hypothesis, while establishing its history requires observations across training checkpoints. Comparing models at different scales reveals organization without tracing that history directly.
 
-$$
-f_{a,b}(x)=abx.
-$$
+Imagine two equally accurate breed classifiers, one with shared ear-processing circuitry and the other with separate mechanisms for each breed. Under matched training conditions, the shared network might learn a new breed faster by extending its detector. This counterfactual prediction depends on shared visual structure between old and new breeds. **Equal present accuracy can conceal different capacities for future learning**, because inherited organization changes the work needed to reach a new solution.
 
-Its function depends only on the product $ab$, so the weights $(1,1)$ and $(2,\frac12)$ implement identical input-output behavior. Yet gradient descent generally updates these parameterizations differently. The change in output depends on $ab$ and on $a^2+b^2$, the sensitivity to parameter changes.
+## The Price equation: selection and transmission
 
-For this model under squared-error gradient descent, the two quantities
-
-$$
-u=ab,\qquad s=a^2+b^2
-$$
-
-form an exact closed dynamical system. Together they predict subsequent learning under the declared family of training objectives. The current output $u$ alone is not.
-
-**Two representations can be functionally equivalent while being inequivalent under learning.** The geometry of current behavior is not necessarily the geometry of future learning. A representation may discard distinctions irrelevant to every current output, only for them to matter when the network meets new training. A complete theory must distinguish sufficiency for what a network currently computes from sufficiency for how it can subsequently change.
-
-## Retained circuits can change the space of possibilities
-
-Cammarata’s recursive generalization suggests networks frequently extend existing circuits rather than construct unrelated alternatives. There are two fundamentally different ways this could help learning.
-
-The first is straightforward, since an existing circuit already receives useful gradients and has established readers. The second is deeper, because **the presence of an existing circuit changes which new solutions can be constructed at all.**
-
-Suppose learning capability C requires two components, A and B, neither sufficient alone. Retaining A enables the construction of B, which opens the path to C. A gains value from the future it makes accessible, not from its present function.
-
-Formally, starting from an inventory of retained structures, iterated construction rules yield an *accessible closure* that contains everything constructible from that inventory. Different inventories can compute identical outputs while having different closures. **Learning can change not only a model’s position within a fixed space of possibilities, but the space of possibilities available to its future learning process.**
-
-Retained representations act as scaffolds, prerequisites, and reusable constructors, with value that appears only in later generations of learning.
-
-## The Price equation: selection, inheritance, and novelty
-
-The Price equation, George Price’s 1970 covariance identity, decomposes the change in a population’s mean trait into selection and transmission:
+George Price introduced an identity separating change through differential weighting from change during transmission.[^price] Here, $z$ is an ancestor's measured trait and $w$ its descendant weight. The change $\Delta z$ is its descendants' mean trait minus its own. The two terms distinguish selection from changes within lineages, including refinement and recombination.[^price1972][^frank1997]
 
 ```math
-\Delta\bar z = \underbrace{\frac{\operatorname{Cov}(w,z)}{\bar w}}_{\text{selection}} + \underbrace{\frac{\mathbb E[w\Delta z]}{\bar w}}_{\text{transmission}}.
+\Delta\bar z
+=
+\underbrace{\frac{\operatorname{Cov}(w,z)}{\bar w}}_{\text{selection}}
++
+\underbrace{\frac{\mathbb E[w\Delta z]}{\bar w}}_{\text{transmission}}.
 ```
 
-Here $w$ is descendant weighting, $z$ a trait, and $\Delta z$ the change between parents and descendants. For neural learning this distinguishes circuits gaining influence, inherited circuits changing function, and new structures entering the population.
+Suppose we identify circuits consistently across training checkpoints and measure $z$ as the breadth of downstream computations supported by their outputs. Circuit ancestry is a proposed measurement framework, and consuming an earlier circuit's output alone does not establish descent. An explicit correspondence across checkpoints must account for every descendant, including circuits formed through splitting or combination. Let $w$ count descendant units attributed to each ancestor, allowing fractional attribution for shared ancestry, and let $\bar z$ denote mean breadth across units.
 
-Selection and transmission act in sequence.
+An increase in mean reuse can arise because already broad ear circuits leave more descendants, or because descendants acquire a broader range of consumers than their ancestors. The first history produces positive selection through greater representation of reusable circuitry, while the second produces positive transmission through changes within lineages. Distinguishing them requires tracking both the relative continuation of broad and narrow circuits and the changing breadth of their descendants. Specialization can contribute negatively through transmission, and one equally weighted descendant per circuit makes the selection term vanish.
 
-{% tikz(fig_w="520px") %}
-\usetikzlibrary{arrows.meta,decorations.markings}
-\begin{tikzpicture}[
-    x=1cm, y=1cm,
-    >={Stealth[length=4pt,width=3pt]},
-    every node/.style={font=\rmfamily\footnotesize},
-  ]
-  \node[draw, minimum width=1.2cm, minimum height=0.7cm] (p) at (0,0) {parents $\bar z$};
-  \node[draw, minimum width=1.2cm, minimum height=0.7cm] (s) at (2.5,0) {selected};
-  \node[draw, minimum width=1.2cm, minimum height=0.7cm] (o) at (5.0,0) {descendant $\bar z+\Delta\bar z$};
-  \draw[->] (p.east) -- node[above] {selection} (s.west);
-  \draw[->] (s.east) -- node[above] {transmission} (o.west);
-\end{tikzpicture}
-{% end %}
+## Branching, reuse, and interference
 
-Crucially, the Price equation prescribes no winner and no learning algorithm. It is an accounting identity, and that is what makes it useful. It tells us which distinctions must be retained to explain a given population change.
+In the proposed mechanism, reinforcing gradients establish shared ear-sensitive circuitry for later breed decisions to recruit. New consumers supply learning signals and opportunities for further specialization. Under an explicit lineage model, preferential continuation could preserve broadly useful mechanisms, while changes within their descendants extend their range of uses. The Price equation distinguishes these developmental histories, while the gradient hypothesis proposes how training might favor them.
 
-The trait need not be present-day accuracy. It might measure whether a mechanism supports a future computation or how much work adaptation requires. These are distinct traits with no common fitness score.
+Two breed classifiers may benefit from incompatible changes to a shared ear detector, creating interference through their common dependency. Branching could accommodate those demands by preserving broadly useful distinctions in the detector and absorbing breed-specific adjustments into separate downstream pathways. This division would give branching a second advantage: new computations could reuse an established signal while specializing its interpretation for different decisions. The outcome remains conditional, since interference can also produce forgetting or duplication instead of compatible extensions.
 
-**A representation sufficient for the population’s current average behavior need not be sufficient to preserve the population’s selection and transmission dynamics.**
+Under this hypothesis, circuits with stronger aligned gradient support should acquire new consumers more often under comparable conditions. Perturbing an established detector should sometimes alter later breed specialization, even after restoring present accuracy. Checkpoint studies and controlled interventions could distinguish this mechanism from alternatives involving architecture or data structure. The possibility worth investigating is that **learning builds the machinery of its own future learning**, with each solution changing the conditions for the next.
 
-## Selection can be invisible today and decisive tomorrow
+---
 
-Consider two observable classes, A and B. A secretly mixes mechanisms of selection weight 1 and 3 while B keeps weight 2. Both occupy half the population with mean weight 2, and after one round the observable proportions are unchanged. Yet within A the weight-3 mechanisms have grown, raising its mean to 2½, so in the next generation A grows to 5/9.
+[^cammarata]: Cammarata, N. (2026). [*Neural Networks Are Already Clean*](https://already-clean.goodfire.com/). Goodfire.
 
-**Selection was invisible at the level of current observations, yet it changed the future observable dynamics.** This illustrates why present behavioral equivalence does not imply equivalence under future learning.
+[^coherent]: Chatterjee, S. (2020). [*Coherent Gradients: An Approach to Understanding Generalization in Gradient Descent-based Optimization*](https://arxiv.org/abs/2002.10657).
 
-A representation can erase distinctions with no immediate observable consequence that still shape a response to later pressure. The question is can we characterize the erased information?
+[^price]: Price, G. R. (1970). [*Selection and Covariance*](https://doi.org/10.1038/227520a0). *Nature*, 227, 520–521.
 
-## The hidden geometry of selection
+[^price1972]: Price, G. R. (1972). [Extension of covariance selection mathematics](https://doi.org/10.1111/j.1469-1809.1957.tb01874.x). *Annals of Human Genetics*, 35, 485–490.
 
-In continuous-time population selection, the rate of change of a trait’s mean is its covariance with the selection field. This is Fisher’s fundamental theorem in continuous-time form, generalized by Price to arbitrary traits:
-
-$$
-\frac{d}{dt}\mathbb E[z] =
-\operatorname{Cov}(f,z).
-$$
-
-When the population is compressed into observable classes, the selection field splits into a component visible at the class level and one varying within classes. Under the Fisher–Rao geometry these components are orthogonal, so the squared magnitude of the hidden component is exactly
-
-$$
-\mathbb E[\operatorname{Var}(f\mid q)].
-$$
-
-This is the average selection variance concealed within the representation’s equivalence classes. Hidden variation may not affect present motion, yet it determines how motion changes. Under fixed exponential selection, conditional fitness variance sets the rate at which a class’s effective fitness changes.
-
-The hidden distinctions can therefore appear as the *curvature* of the population’s future response, and the decomposition is compositional. The variance lost by a coarse representation is the sum of what was lost at each stage.
-
-Hidden variance is not automatically useful. But it is real dynamical structure that a present-day behavioral description fails to capture, and a circuit’s internal variation may be invisible to current consumers yet consequential for how later circuits form.
-
-## Robustness belongs to populations, not isolated features
-
-Evolutionary theory also reveals a gap between maximizing individual mechanisms and preserving a system’s ability to adapt. Suppose a future capability requires both mechanisms A and B.
-
-If descendants are independently sampled with equal probabilities of A and B, the chance of retaining both is one half. A transmission process that always retains one of each preserves the capability with certainty. Both processes keep identical individual proportions but differ completely in collective robustness. Their difference lies in **joint inheritance structure**, not in average fitness.
-
-This matters when representations are complementary, since selecting each mechanism independently by current usefulness can destroy combinations that matter later. In a finite population undergoing independent replacement, every generation carries a nonzero probability of losing a required complementary type. Even adaptive selection cannot guarantee its preservation. Protecting a retained copy or preserving a bundle alters that result.
-
-The relevant object of learning may not be an individual feature or a distribution of feature strengths. It may be an organized population of complementary capabilities whose collective structure determines what remains possible.
-
-## Does preserving future learning require remembering everything?
-
-If a representation must preserve all possible future responses to selection and transmission, must it retain every detail of the underlying population? Under finite, explicitly specified models, the answer is surprisingly often no.
-
-For a finite hereditary type space with declared selection and transmission laws and protected observable traits, one can construct the coarsest representation preserving the separate Price terms under every permitted continuation. Infinitely many action sequences are possible, yet the equivalence conditions reduce to a finite-dimensional algebraic construction.
-
-A related result applies under continuously varying selection pressure. The first derivative gives the immediate Price response, and higher derivatives give its change under further pressure. Under the relevant finite-type assumptions, the entire hierarchy admits a finite defining signature.
-
-**Preserving all future selection responses does not necessarily mean remembering the complete past. It means retaining the distinctions that future selection and transmission can reveal.** This is not a claim that arbitrary networks admit small, finite implementations.
-
-Rather, it establishes future-learning sufficiency as a mathematically well-defined goal with exact solutions in restricted settings. It also reads coherent features as stable compressions of distinctions that remain equivalent under a particular family of future transformations.
-
-## Clean circuits may be distinctions that survived
-
-None of this proves that real networks always organize into clean, human-legible circuits, or that gradient descent prefers reusable features. Cammarata’s observations are empirical, and the connection to actual architectures remains open, yet together they suggest a different way to understand the organization interpretability research uncovers.
-
-A clean circuit is a distinction, not a noun. It matters because what consumes it can do something different, and sufficiency is relative to its consumers. Evolution gives this claim its fullest reading, expanding the consumer set to future learning itself. A feature survives when later generations keep depending on the distinctions it makes.
-
-This is what the Price equation tracks when the trait is a distinction. Selection retains some distinctions while dissolving others, and the hidden variance a representation erases is exactly what future selection could still reveal. Robustness then belongs to distinctions in bundles, to the joint inheritance structure that keeps complementary distinctions available for later construction. And we need not remember everything, because a finite defining signature preserves the distinctions that future selection can expose.
-
-**The deepest object of learning may not be any particular representation, but the structured capacity a network builds to continue learning.** A circuit may be useful today, and more valuable because other circuits grow from it. It is the visible trace of distinctions that kept paying off. The possibility opened by *Neural Networks Are Already Clean* is that representations look organized because existing structure organizes the creation of new structure, and that the nouns we find were distinctions all along.
+[^frank1997]: Frank, S. A. (1997). [The Price Equation, Fisher’s Fundamental Theorem, Kin Selection, and Causal Analysis](https://stevefrank.org/reprints-pdf/97Evol-Causal.pdf). *Evolution*, 51(6), 1712–1729.
