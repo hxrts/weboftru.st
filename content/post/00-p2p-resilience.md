@@ -1,14 +1,12 @@
 +++
-title = "Patterns for P2P Resilience: Learnings from Aura Protocol"
+title = "Patterns for P2P Resilience"
 date = 2026-04-21
 description = "Design patterns for resilient encrypted P2P networks"
 slug = "p2p-resilience"
-draft = false
 
 [extra]
 cover_image = "/images/pixillation.jpg"
 cover_caption = "<em>Pixillation</em>, Lillian Schwartz and Ken Knowlton (1970)"
-unlisted = true
 +++
 
 
@@ -37,7 +35,7 @@ Aura starts with several under-studied design considerations, which the system t
 
 The [local-first](https://www.inkandswitch.com/essay/local-first/) paradigm treats devices as authoritative for state and identity. Once we assume any combination of devices can be lost or compromised, authority must live in the network rather than on a device. A CRDT resolves concurrent data updates, but authority changes fall outside that scope. Changing membership, rotating keys, or transferring ownership requires bounded agreement before dependent operations can proceed.
 
-My last post, [Triangle of Forgetting](/post/triangle-of-forgetting/), sharpens this tradeoff: monotone convergence, temporal secrecy, and dynamic membership cannot be jointly guaranteed. Aura addresses the authority leg with threshold signatures, so an authority can be one actor with many devices or many actors acting as one. Facts grow by join, and capabilities shrink by meet. Every operation must satisfy both, preserving CRDT-style availability where it fits.
+My last post, [Triangle of Forgetting](/post/triangle-of-forgetting/), sharpens this tradeoff: monotone convergence, temporal secrecy, and dynamic membership cannot be jointly guaranteed. Aura addresses the authority leg with threshold signatures, so an authority can be one actor with many devices or many actors acting as one.[^authority] Facts grow by join, and capabilities shrink by meet. Every operation must satisfy both, preserving CRDT-style availability where it fits.
 
 
 ## Web of Trust
@@ -63,11 +61,11 @@ Aura brings together several protocols: distributed key generation, key resharin
 
 A choreography describes a protocol from a global perspective, capturing the complete interaction between participants. The compiler projects this global view into local implementations, so the pieces fit together correctly. A well-formed global choreography guarantees that no local projection deadlocks or waits on messages that never arrive.
 
-This inverts the typical pattern of writing each participant independently and verifying correctness through testing. You design the coordination once, and the tooling generates implementations guaranteed to interoperate. Choreographies produce session-typed channels, where the session type specifies the exact sequence of messages. The type checker ensures each participant adheres to the protocol.
+This inverts the typical pattern of writing each participant independently and verifying correctness through testing. You design the coordination once, and the tooling generates implementations guaranteed to interoperate. Choreographies produce session-typed channels, where the session type specifies the exact sequence of messages. The type checker ensures each participant adheres to the protocol.[^choreography]
 
 ## Safe Protocol Evolution
 
-A censored P2P application cannot assume a central app store will push a fix. Upgrades propagate through the same P2P topology as everything else, so peers end up running different versions at different points in a protocol's lifecycle. Without formal guarantees on how versions compose, an application can silently break, become unrecoverable, or violate its own protocol invariants. The developer cannot observe the failure or deploy a fix.
+A censored P2P application cannot assume a central app store will push a fix. Upgrades propagate through the same P2P topology as everything else, so peers end up running different versions at different points in a protocol's lifecycle.[^maintenance] Without formal guarantees on how versions compose, an application can silently break, become unrecoverable, or violate its own protocol invariants. The developer cannot observe the failure or deploy a fix.
 
 Aura addresses this with two formally verified primitives. The `link` operation safely combines protocols at build time, and `delegate` transfers session endpoints at runtime. Both preserve *coherence*: the two ends of a channel always agree on what message comes next. The Reconfiguration Harmony theorem proves that local behavior stays consistent across upgrade boundaries.
 
@@ -89,7 +87,7 @@ Secure messaging is usually framed as a cryptography problem. But when state and
 
 Aura has different requirements. All ratchet state must be deterministically recoverable from replicated facts, with no device-specific secrets. All devices must converge to the same ratchet position after syncing, and out-of-order delivery must work without head-of-line blocking.
 
-Aura uses a dual-window ratchet that maintains overlapping valid ranges across transitions. Message sends use CRDT merge for availability. Epoch bumps use a certified single-winner transition, letting one successor become live before later consensus makes it durable. Removal and emergency transitions can instead require stricter cutover.
+Aura uses a dual-window ratchet that maintains overlapping valid ranges across transitions. Message sends use CRDT merge for availability. Epoch bumps use a certified single-winner transition, letting one successor become live before later consensus makes it durable. Removal and emergency transitions can instead require stricter cutover.[^amp]
 
 ```mermaid
 flowchart TD
@@ -154,12 +152,9 @@ The patterns above follow from a set of hard design constraints that most protoc
 Aura is free and open source. All core operations are functional, though some areas still need polish. If you are building in this space, I encourage you to try the software or incorporate these ideas into your own project. My hope is that Aura can help improve the resilience of deployed networks.
 
 
-## Further Reading
+---
 
-- [Authority and Identity](https://hxrts.com/aura/102_authority_and_identity.html) - Threshold signatures, account model
-- [Social Architecture](https://hxrts.com/aura/115_social_architecture.html) - Homes, neighborhoods
-- [MPST and Choreography](https://hxrts.com/aura/110_mpst_and_choreography.html) - Session types, choreographic programming
-- [Consensus](https://hxrts.com/aura/108_consensus.html) - Fast path and fallback protocol
-- [Relational Contexts](https://hxrts.com/aura/114_relational_contexts.html) - Guardian binding
-- [AMP Protocol](https://hxrts.com/aura/112_amp.html) - Dual-window ratcheting details
-- [Distributed Maintenance Architecture](https://hxrts.com/aura/116_maintenance.html) - OTA upgrades
+[^authority]: [Authority and Identity](https://hxrts.com/aura/102_authority_and_identity.html), covering threshold signatures and the account authority model.
+[^choreography]: [MPST and Choreography](https://hxrts.com/aura/110_mpst_and_choreography.html), covering session types, protocol projection, and choreographic programming.
+[^maintenance]: [Distributed Maintenance Architecture](https://hxrts.com/aura/116_maintenance.html), covering peer-to-peer update propagation and upgrade activation.
+[^amp]: [AMP Protocol](https://hxrts.com/aura/112_amp.html), covering dual-window ratcheting and certified epoch transitions.
