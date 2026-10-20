@@ -14,7 +14,7 @@ cover_caption = "<em>Pixillation</em>, Lillian Schwartz and Ken Knowlton (1970)"
 
 In December I attended [Splintercon](https://splintercon.net/paris/) in Paris, a conference organized by eQualitie and my friends [Katerina Kataeva](https://k-k.work/) and [Lai Yi Ohlsen](https://www.laiyiohlsen.com/). The focus of the event was so-called "Splinternets," isolated portions of the internet, often created by repressive governments. The conference included in-depth presentations on Chinese and Russian internet censorship regimes, from backdoored cryptography and state-sponsored botnets to hardware exports and foreign policy. In light of recent events, there was also a special focus on Iran's proliferating internet censorship apparatus.
 
-The event brought together a very special group: academic researchers studying internet shutdowns, investigative journalists reporting on mass surveillance, human rights advocates, representatives from prominent internet infrastructure companies, and a contingent of engineers building encrypted P2P networks and mesh networking tools.
+The event brought together academic researchers studying internet shutdowns, investigative journalists reporting on mass surveillance, human rights advocates, representatives from prominent internet infrastructure companies, and a contingent of engineers building encrypted P2P networks and mesh networking tools.
 
 Out of necessity, private, P2P, and mesh technologies are starting to see real adoption in places like Iran. However, conversations at the event revealed large gaps that need to be bridged before bottom-up networks can survive internet shutdowns reliably. These are highly asymmetric environments where the regime controls physical infrastructure, monitors transmission channels, and mounts large-scale disinformation campaigns.
 
@@ -22,7 +22,7 @@ I've been building a variety of P2P research prototypes for the past few months,
 
 In this post I'll highlight a few software patterns from my recent experiments that could be of interest to developers working on encrypted P2P protocols that aim to resist internet censorship.
 
-*Note: In the interest of cultivating interesting research, these prototypes I've built often eschew pragmatism. Practitioners do not have the same luxury to indulge idealism. That said, these constraints have served as a creative forcing function, and the resulting decisions are noteworthy for taking a road less travelled.*
+*In the interest of cultivating interesting research, these prototypes I've built often eschew pragmatism. Practitioners do not have the same luxury to indulge idealism. That said, these constraints have served as a creative forcing function, and the resulting decisions are noteworthy for taking a road less travelled.*
 
 
 ## Beyond Local-first
@@ -57,7 +57,7 @@ The tradeoff is a new privacy surface. Aura separates service trust from communi
 
 ## Composing Protocols
 
-Aura brings together several protocols: distributed key generation, key resharing, BFT consensus, rendezvous, and authority management. These need to compose well and remain upgrade-safe, especially on networks with heterogeneous software versions. Race conditions, deadlocks, and ordering bugs are easy to introduce and hard to detect. Aura uses choreographic programming so these protocols are correct by construction.
+Aura brings together distributed key generation, key resharing, BFT consensus, rendezvous, and authority management. These protocols need to compose well and remain upgrade-safe, especially on networks with heterogeneous software versions. Race conditions, deadlocks, and ordering bugs are easy to introduce and hard to detect. Aura uses choreographic programming so these protocols are correct by construction.
 
 A choreography describes a protocol from a global perspective, capturing the complete interaction between participants. The compiler projects this global view into local implementations, so the pieces fit together correctly. A well-formed global choreography guarantees that no local projection deadlocks or waits on messages that never arrive.
 
@@ -67,7 +67,7 @@ This inverts the typical pattern of writing each participant independently and v
 
 A censored P2P application cannot assume a central app store will push a fix. Upgrades propagate through the same P2P topology as everything else, so peers end up running different versions at different points in a protocol's lifecycle.[^maintenance] Without formal guarantees on how versions compose, an application can silently break, become unrecoverable, or violate its own protocol invariants. The developer cannot observe the failure or deploy a fix.
 
-Aura addresses this with two formally verified primitives. The `link` operation safely combines protocols at build time, and `delegate` transfers session endpoints at runtime. Both preserve *coherence*: the two ends of a channel always agree on what message comes next. The Reconfiguration Harmony theorem proves that local behavior stays consistent across upgrade boundaries.
+Aura addresses this with two formally verified primitives. The `link` operation safely combines protocols at build time, and `delegate` transfers session endpoints at runtime. Both preserve *coherence*, ensuring agreement between channel endpoints about the next message. The Reconfiguration Harmony theorem proves that local behavior stays consistent across upgrade boundaries.
 
 These guarantees live in [telltale](https://github.com/hxrts/telltale), a multi-party session types library mechanized in Lean 4. Unusually for session-types work, telltale is both formally verified and deployable. Aura uses it to keep upgrade guarantees intact in networks developers cannot reach.
 
@@ -131,7 +131,7 @@ flowchart TD
 
 If state can be lost, it will be lost. Aura designs for recovery from first principles.
 
-For messaging, this means trading per-message forward secrecy for deterministic recovery. Signal-style ratchets derive keys from processing history and store skipped keys explicitly for out-of-order messages. Aura derives keys deterministically from replicated journal state, able to rederive any key within the skip window without tracking which messages were skipped. Recovery requires no coordination: load journal facts, reduce to current state, rederive keys.
+For messaging, this means trading per-message forward secrecy for deterministic recovery. Signal-style ratchets derive keys from processing history and store skipped keys explicitly for out-of-order messages. Aura derives keys deterministically from replicated journal state, able to rederive any key within the skip window without tracking which messages were skipped. Recovery proceeds without coordination by loading journal facts, reducing them to current state, and rederiving keys.
 
 For identity, recovery relationships are cryptographic. A guardian binding captures commitment hashes, recovery parameters, and the consensus proof that both parties agreed. The recovery delay (24 hours by default) gives the account owner time to challenge fraudulent recovery attempts. When a guardian approves recovery, they create a grant capturing the old and new commitments, the operation, and the consensus proof.
 
@@ -140,14 +140,14 @@ For identity, recovery relationships are cryptographic. A guardian binding captu
 
 If an attacker can observe failures, they can probe capabilities by watching what gets rejected. To preserve privacy, denied operations should be invisible.
 
-Aura enforces this by checking everything locally before sending. Before any message crosses the network, it passes through a guard chain: capability verification, flow budget charging, journal coupling, and leakage tracking. If any check fails, the operation is blocked with no packet emitted. An observer cannot distinguish "operation denied" from "operation never attempted."
+Aura enforces this by checking everything locally before sending. Before any message crosses the network, it passes through a guard chain of capability verification, flow budget charging, journal coupling, and leakage tracking. If any check fails, the operation is blocked with no packet emitted. An observer cannot distinguish "operation denied" from "operation never attempted."
 
-Leakage tracking deserves special mention. Separate from flow budgets that limit spam, Aura tracks how much metadata each observer class learns: relationship peers see content by consent, gossip neighbors see only encrypted envelopes, and external observers see network patterns. Each class has its own budget, and exhausting it blocks operations that would leak to that class until the budget refreshes.
+Aura tracks metadata exposure separately from the flow budgets used to limit spam. Relationship peers see content by consent, while gossip neighbors see only encrypted envelopes. External observers see network patterns. Exhausting an observer class's budget blocks further exposure to that class until its budget refreshes.
 
 
 ## Aura Transmission
 
-The patterns above follow from a set of hard design constraints that most protocols are unwilling to accept: zero reliance on dedicated servers, robustness to device loss, and E2E encryption with bounded forward secrecy. These constraints reflect the adversarial conditions placed on mesh networks and P2P protocols during internet shutdowns.
+The patterns above follow from hard constraints on infrastructure, recovery, and privacy. Aura combines zero reliance on dedicated servers, robustness to device loss, and E2E encryption with bounded forward secrecy. These constraints reflect the adversarial conditions placed on mesh networks and P2P protocols during internet shutdowns.
 
 Aura is free and open source. All core operations are functional, though some areas still need polish. If you are building in this space, I encourage you to try the software or incorporate these ideas into your own project. My hope is that Aura can help improve the resilience of deployed networks.
 
