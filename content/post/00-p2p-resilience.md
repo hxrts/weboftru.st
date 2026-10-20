@@ -145,7 +145,7 @@ Aura enforces this by checking everything locally before sending. Before any mes
 Aura tracks metadata exposure separately from the flow budgets used to limit spam. Relationship peers see content by consent, while gossip neighbors see only encrypted envelopes. External observers see network patterns. Exhausting an observer class's budget blocks further exposure to that class until its budget refreshes.
 
 
-## Aura Transmission
+## Radiating
 
 The patterns above follow from hard constraints on infrastructure, recovery, and privacy. Aura combines zero reliance on dedicated servers, robustness to device loss, and E2E encryption with bounded forward secrecy. These constraints reflect the adversarial conditions placed on mesh networks and P2P protocols during internet shutdowns.
 
@@ -154,7 +154,7 @@ Aura is free and open source. All core operations are functional, though some ar
 
 ---
 
-[^authority]: [Authority and Identity](https://hxrts.com/aura/102_authority_and_identity.html), covering threshold signatures and the account authority model.
-[^choreography]: [MPST and Choreography](https://hxrts.com/aura/110_mpst_and_choreography.html), covering session types, protocol projection, and choreographic programming.
-[^maintenance]: [Distributed Maintenance Architecture](https://hxrts.com/aura/116_maintenance.html), covering peer-to-peer update propagation and upgrade activation.
-[^amp]: [AMP Protocol](https://hxrts.com/aura/112_amp.html), covering dual-window ratcheting and certified epoch transitions.
+[^authority]: [Authority and Identity](https://hxrts.com/aura/102_authority_and_identity.html), covers threshold signatures and account authority model.
+[^choreography]: [MPST and Choreography](https://hxrts.com/aura/110_mpst_and_choreography.html), covers session types and choreographic programming.
+[^maintenance]: [Distributed Maintenance](https://hxrts.com/aura/116_maintenance.html), covers peer-to-peer update propagation and upgrade activation.
+[^amp]: [AMP Protocol](https://hxrts.com/aura/112_amp.html), covers dual-window ratcheting and epoch transitions.
