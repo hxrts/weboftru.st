@@ -149,7 +149,7 @@ Aura tracks metadata exposure separately from the flow budgets used to limit spa
 
 The patterns above follow from hard constraints on infrastructure, recovery, and privacy. Aura combines zero reliance on dedicated servers, robustness to device loss, and E2E encryption with bounded forward secrecy. These constraints reflect the adversarial conditions placed on mesh networks and P2P protocols during internet shutdowns.
 
-Aura is free and open source. All core operations are functional, though some areas still need polish. If you are building in this space, I encourage you to try the software or incorporate these ideas into your own project. My hope is that Aura can help improve the resilience of deployed networks.
+Aura is free and open source. All core operations are functional, though some areas still need polish. If you are building in this space, I encourage you to try the software or incorporate these ideas into your own project. My hope is that Aura can help inspire more resiliant patterns in deployed networks that need to operate in adverse environments.
 
 
 ---
