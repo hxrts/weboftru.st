@@ -11,9 +11,9 @@ cover_alt = "The Manhattan Transcripts, Bernard Tschumi Architects (1976-1981)"
 cover_caption = "The Manhattan Transcripts, Bernard Tschumi Architects (1976-1981)"
 +++
 
-Losing a device should not mean losing an account, and taking over one device should not grant control of an identity. Aura distributes account authority across devices and trusted relationships to make both failures survivable.[^architecture] A sensitive change therefore requires agreement among peers who may connect only intermittently. How can that agreement feel immediate when they are available and remain achievable when coordination is interrupted?[^consensus]
+Losing a device should not mean losing an account. Taking over a device shouldn't mean controlling an identity. Aura distributes account authority across devices and trusted relationships to make these failures survivable.[^architecture] Such an exchange requires agreement among peers who may connect only intermittently. How can that agreement feel immediate when peers are available, but remain achievable when coordination is interrupted?[^consensus]
 
-These decisions place two demands on the protocol. When witnesses are available and agree on the starting state, authorization should take one round trip after warm-up. When an initiator disappears or communication breaks down, authenticated contributions should remain available for peers to recover and combine. Aura therefore optimizes the fast path for latency and the fallback for resilience to interrupted coordination.
+This desired UX places two demands on the protocol. When witnesses are available and agree on the starting state, authorization should take one round trip after warm-up. When an initiator disappears or communication breaks down, authenticated contributions should remain available for peers to recover and combine. Aura therefore optimizes the fast path for latency and the fallback for resilience to interrupted coordination.
 
 Both paths produce a verifiable commit fact for one operation and its prestate. That fact enters the same convergent journal as other updates. Coordination stays scoped to the decision, while the surrounding system continues to support offline work.
 
@@ -152,7 +152,7 @@ MergeEvidence(delta):
 
 Evidence travels as deltas attached to protocol messages and through anti-entropy synchronization. Peers deduplicate proofs by stable identity and track which evidence each recipient has acknowledged. Set union accepts unseen valid proofs regardless of arrival order or timestamp. Reconnecting peers can recover the accumulated evidence through synchronization.
 
-## Resilience Through Fallback
+## Resilient Fallback
 
 The fallback preserves useful work beyond the initiator's lifetime. A timeout, state mismatch, or conflicting proposal triggers direct exchange among witnesses. They retain authenticated votes and evidence, allowing another peer to assemble a certificate from available compatible shares. Recovery proceeds through repeated gossip with bounded fanout.
 
@@ -187,7 +187,7 @@ On GossipTick(cid):
 
 Completion requires every share named in a signing package with at least `t` signers to become available in a communicating component. Gossip spreads those shares until an aggregator can collect them. Split votes or a missing package signer can prevent completion, even after connectivity returns. Recovery beyond share dissemination requires additional rules that preserve the safety of any certificate already formed.
 
-## What Survives a Disruption
+## Surviving Disruption
 
 Interrupted communication changes the conditions for progress. Under partial synchrony, messages between honest peers arrive within a bounded delay `Δ` after a global stabilization time `GST`. With usable cached commitments and prompt replies from every package signer, an honest initiator decides after one round trip and broadcasts the certificate for witness finalization. Fallback instead relies on fair delivery and peer selection to bring a complete compatible share set to an honest aggregator.
 
