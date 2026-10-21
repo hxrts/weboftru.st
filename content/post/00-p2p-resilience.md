@@ -22,7 +22,7 @@ I've been building a variety of P2P research prototypes for the past few months,
 
 In this post I'll highlight a few software patterns from my recent experiments that could be of interest to developers working on encrypted P2P protocols that aim to resist internet censorship.
 
-*In the interest of cultivating interesting research, these prototypes I've built often eschew pragmatism. Practitioners do not have the same luxury to indulge idealism. That said, these constraints have served as a creative forcing function, and the resulting decisions are noteworthy for taking a road less travelled.*
+*These prototypes prioritize research value over practicality. Production systems have to care about robustness and reliability in ways that research prototypes don't. The constraints I chose for experimentation have nevertheless shaped the design in useful ways, and the resulting choices are worth explaining on their own terms.*
 
 
 ## Beyond Local-first

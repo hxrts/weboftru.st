@@ -1,0 +1,80 @@
+{% raw %}
+\usetikzlibrary{arrows.meta,backgrounds,calc}
+\tikzset{
+  learning/.style={x=1cm,y=1cm,scale=.8,transform shape,>={Stealth[length=4.6pt,width=3.6pt]},every node/.style={font=\sffamily\footnotesize}},
+  time/.style={font=\sffamily\bfseries\footnotesize},
+  emphasis/.style={font=\sffamily\bfseries\footnotesize},
+  feature/.style={circle,draw,fill=black,minimum size=4.6pt,inner sep=0pt,line width=.65pt},
+  potential/.style={feature,fill=white,fill opacity=1},
+  susceptibility/.style={minimum size=#1pt},
+  flow/.style={->,line width=.85pt},
+  schematic/.style={->,line width=.7pt},
+  boundary/.style={draw=black!65,line width=.8pt,dash pattern=on .1pt off 2.5pt,line cap=round},
+  readout/.style={draw,line width=.65pt,fill=white,inner sep=4pt,align=center},
+  trait/.style={circle,draw,fill=none,minimum size=10pt,inner sep=0pt,line width=.65pt}
+}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+% One shared stage boundary for every learning diagram.
+\newcommand{\stageoval}[1]{\draw[boundary] (#1) ellipse (.7cm and 1.85cm);}
+% Center every group with the same .8cm center-to-center pitch.
+\def\learningpitch{.8}
+\newcommand{\stacknode}[6][]{
+  \node[#1] (#2) at (#3,{#4+\learningpitch*((#5+1)/2-#6)}) {};
+}
+\newcommand{\rightstacklabel}[4]{
+  \rightlabel{#1}{\learningpitch*((#2+1)/2-#3)}{#4}
+}
+% Keep labels a fixed .12cm beyond the curved edge of the first or last oval.
+\newcommand{\rightlabel}[3]{
+  \pgfmathsetmacro{\labeldy}{#2}
+  \pgfmathsetmacro{\labelx}{9+0.7*sqrt(1-(\labeldy/1.85)^2)+.12}
+  \pgfmathsetmacro{\labely}{#1+#2}
+  \node[anchor=west,align=left] at (\labelx,\labely) {#3};
+}
+\newcommand{\leftlabel}[2]{
+  \pgfmathsetmacro{\labelx}{-0.7*sqrt(1-(#1/1.85)^2)-.12}
+  \node[anchor=east,align=center] at (\labelx,#1) {#2};
+}
+% Offset white copies form a compact halo around label glyphs without a box.
+\newcommand{\halolabel}[3]{
+  \foreach \dx/\dy in {-0.45pt/0pt,0.45pt/0pt,0pt/-0.45pt,0pt/0.45pt,-0.32pt/-0.32pt,-0.32pt/0.32pt,0.32pt/-0.32pt,0.32pt/0.32pt}{
+    \node[#1,text=white,xshift=\dx,yshift=\dy] at (#2) {#3};
+  }
+  \node[#1] at (#2) {#3};
+}
+% Fixed horizontal extents; the narrow end matches the .85pt black line.
+\newcommand{\pressureband}[5]{
+  \path[fill=black!40,draw=none]
+    ($(#4)+(0,#5pt)$) .. controls ($(#3)+(0,#5pt)$) and ($(#2)+(0,.425pt)$) .. ($(#1)+(-.42,.425pt)$)
+    -- ($(#1)+(-.42,-.425pt)$) .. controls ($(#2)+(0,-.425pt)$) and ($(#3)+(0,-#5pt)$) .. ($(#4)+(0,-#5pt)$) -- cycle;
+}
+\newcommand{\learningaxis}[1]{
+  \begin{pgfonlayer}{background}
+    \path[fill=black!40,draw=none]
+      ($(.42,#1)+(0,4pt)$) -- ($(9,#1)+(0,.425pt)$)
+      -- ($(9,#1)+(0,-.425pt)$) -- ($(.42,#1)+(0,-4pt)$) -- cycle;
+  \end{pgfonlayer}
+  \draw[flow,line cap=round] (0,#1) -- (9,#1);
+  \node[text=black!65] at ($(4.5,#1)+(0,.4)$) {Band width indicates learning pressure};
+  \node at ($(4.5,#1)+(0,-.5)$) {Development};
+}
+\newcommand{\learninglegend}[1]{
+  \node[potential,susceptibility=4.6] at (.3,#1) {};
+  \node[anchor=west] at (.55,#1) {Lower susceptibility};
+  \node[potential,susceptibility=10] at ($(.3,#1)+(0,-.6)$) {};
+  \node[anchor=west] at ($(.55,#1)+(0,-.6)$) {Higher susceptibility};
+  \node[feature,susceptibility=7.4] at (5.3,#1) {};
+  \node[anchor=west] at (5.6,#1) {Established mechanism};
+  \node[potential,susceptibility=7.4] at ($(5.3,#1)+(0,-.6)$) {};
+  \node[anchor=west] at ($(5.6,#1)+(0,-.6)$) {Candidate mechanism};
+}
+
+% Opaque trait rings mask connection lines before restoring the instantiated dot.
+\newcommand{\dogtrait}[1]{
+  \begin{pgfonlayer}{foreground}
+    \node[trait,fill=white] at (#1.center) {};
+    \node[feature] at (#1.center) {};
+  \end{pgfonlayer}
+}
+{% endraw %}

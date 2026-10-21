@@ -1,7 +1,7 @@
 +++
 title = "Why Are Neural Networks Clean?"
 date = 2026-10-20
-description = "Evolutionary structure of neural circuits."
+description = "How inherited neural processes shape subsequent learning."
 slug = "why-clean"
 draft = true
 
@@ -10,427 +10,381 @@ cover_image = "/images/byte-neuron.png"
 cover_caption = "Byte Magazine, August 1979"
 +++
 
-## The organization of learning
+## Learning by extension
 
-A neural network is a history of learning made operational. Training examples pass through circuitry shaped by earlier examples, generating predictions and signals for further change. This activity continually modifies the pathways that channel subsequent learning. What can watching a mechanism grow reveal about the distinctions it eventually makes?
+A neuron's strange associations can become intelligible through its learning history. A network learns by sedimentation and erosion, retaining some distinctions and reshaping others. Training data flows through inherited pathways and generates feedback that changes the circuitry. How does this history organize what the network can learn next?
 
-In *Neural Networks Are Already Clean*, Nick Cammarata follows a neuron through a retrained InceptionV1 model.[^cammarata] It begins by responding to yellow flowers in photographs sometimes containing dogs. Its responses spread toward green objects and dogs without flowers, eventually extending to broccoli. Cammarata calls this branching process recursive generalization.
+In *Neural Networks Are Already Clean*, Nick Cammarata follows a neuron through a retrained InceptionV1 model.[^cammarata] Early in training, the neuron responds to yellow flowers, sometimes pictured alongside dogs. It later responds to green objects and dogs pictured without flowers, then extends to broccoli. He calls this recursive generalization, as related extensions become starting points for further extensions.
 
-Calling this a flower neuron describes some of its responses. Its computational role lies in the distinctions those responses make available downstream. Training can develop several aspects of that inherited organization, with each extension changing the possibilities for subsequent learning. Recursive generalization gives us a visible history of that process.
+For Cammarata, cleanliness concerns intelligible organization even when a neuron crosses familiar categories. A neuron participates in a process that groups some inputs together and distinguishes others. Its connections form pathways through which these distinctions change downstream activity. Training reshapes both the distinctions and the pathways carrying their effects.
 
-## Learning changes the machinery that learns
+{% tikz(learning=true, fig_w="620px", caption="<strong>Observed responses.</strong> One neuron's response repertoire changes during training, offering a starting point for investigating its computational role. Dots mark observed response categories, and dotted ovals group responses within the same neuron. Thin arrows schematize proposed relationships between the observed extensions. Equal dot sizes leave response strength and susceptibility unspecified.") %}
+\begin{tikzpicture}[learning]
+\node[time] at (0,2.45) {EARLY};
+\node[time] at (4.5,2.45) {INTERMEDIATE};
+\node[time] at (9,2.45) {LATE};
+\foreach \x in {0,4.5,9} { \stageoval{\x,0} }
+\stacknode[feature]{a}{0}{0}{1}{1}
+\stacknode[feature]{b}{4.5}{0}{2}{1}
+\stacknode[feature]{c}{4.5}{0}{2}{2}
+\stacknode[feature]{d}{9}{0}{3}{1}
+\stacknode[feature]{e}{9}{0}{3}{2}
+\stacknode[feature]{f}{9}{0}{3}{3}
+\leftlabel{0}{Yellow f{}lowers\\sometimes dogs}
+\halolabel{above=5pt}{b}{Green objects}
+\halolabel{below=5pt,align=center}{c}{Dogs\\without f{}lowers}
+\rightstacklabel{0}{3}{1}{Green}
+\rightstacklabel{0}{3}{2}{Broccoli}
+\rightstacklabel{0}{3}{3}{Dogs}
+\begin{pgfonlayer}{background}
+\draw[schematic] (a.center) .. controls ($(a.center)+(1.62,0)$) and ($(b.center)+(-1.35,0)$) .. (b.west);
+\draw[schematic] (a.center) .. controls ($(a.center)+(1.62,0)$) and ($(c.center)+(-1.35,0)$) .. (c.west);
+\draw[schematic] (b.center) .. controls ($(b.center)+(1.62,0)$) and ($(d.center)+(-1.35,0)$) .. (d.west);
+\draw[schematic] (b.center) .. controls ($(b.center)+(1.62,0)$) and ($(e.center)+(-1.35,0)$) .. (e.west);
+\draw[schematic] (c.center) .. controls ($(c.center)+(1.62,0)$) and ($(f.center)+(-1.35,0)$) .. (f.west);
+\end{pgfonlayer}
+\draw[flow,line cap=round] (0,-2.65) -- (9,-2.65);
+\node at (4.5,-3.15) {Development};
+\pgfresetboundingbox
+\path[use as bounding box] (-1.6,-3.55) rectangle (11.2,2.9);
+\end{tikzpicture}
+{% end %}
 
-Each training example activates pathways that contribute to a prediction. The resulting error generates gradients through the participating circuitry, and the optimizer translates them into updates. Errors create pressure for change, while existing connections and parameter sensitivities channel the response. Satrajit Chatterjee's coherent-gradients hypothesis proposes that aligned gradients reinforce changes benefiting several examples at once.[^coherent]
+## Why familiar pathways get a head start
 
-A learned distinction settles something for its current readers while other differences remain available in the surrounding representation. We can call those remaining possibilities a residual relative to the present computation. In the flower example, signals for color, texture, or context might support later extensions. Further learning can use them only where the relevant information remains accessible.
+A process might group views of the same shape together while separating different shapes. Composing such processes can support object recognition, actions, or contextual judgments. Error generates gradients through the participating circuitry, and the optimizer translates them into updates. Satrajit Chatterjee's coherent-gradients hypothesis proposes that examples favoring compatible parameter changes reinforce those changes together.[^coherent]
 
-Evolutionary theory distinguishes the generation of variation from the selection of variants for continuation. In Cammarata's circuit-ecology account, an already responsive pathway can offer a shorter route to reducing error than developing an independent detector across several layers. Repeated training can strengthen its contribution, while reduced errors may weaken the gradients supporting competing alternatives. The flow of training activity changes the pathways available to subsequent learning, making the order of discovery consequential.
+A flower-responsive mechanism may already respond weakly to vegetation, animals, or shared textures. During inference, those responses could influence downstream activity and contribute to the prediction. During training, compatible gradients from flower and green-object examples could reinforce that contribution, as Chatterjee's hypothesis suggests. An extension toward green objects could then become a foothold for broccoli responses, a proposed route requiring further causal evidence.
 
-{% tikz(fig_w="620px", caption="Several candidate distinctions can recruit one established feature, reinforcing its reuse through shared learning signals. An alternative may receive less support as relevant errors are reduced. Black arrows show possible development, and grey arrows show the proposed pressure acting through inherited features. Solid dots are learned distinctions, while white dots are candidate distinctions not yet learned.") %}
-\usetikzlibrary{arrows.meta,backgrounds,calc}
-\begin{tikzpicture}[x=1cm,y=1cm,>={Stealth[length=4.6pt,width=3.6pt]},every node/.style={font=\sffamily\footnotesize},time/.style={font=\sffamily\bfseries\footnotesize},emphasis/.style={font=\sffamily\bfseries\footnotesize},feature/.style={circle,draw,fill=black,minimum size=4.6pt,inner sep=0pt,line width=.65pt},potential/.style={feature,fill=white,fill opacity=1},flow/.style={->,line width=.85pt},pressure/.style={-{Stealth[length=13pt,width=16pt]},draw=black!15,line width=8pt,line cap=round},boundary/.style={draw=black!65,line width=.8pt,dash pattern=on .1pt off 2.5pt,line cap=round}]
-\pgfdeclarelayer{foreground}
-\pgfsetlayers{background,main,foreground}
-\newcommand{\pressureband}[4]{
-  \path[fill=black!15,draw=none]
-    ($(#1)+(0,2.625pt)$) .. controls ($(#2)+(0,2.625pt)$) and ($(#3)+(0,4pt)$) .. ($(#4)+(0,4pt)$)
-    -- ($(#4)+(0,-4pt)$) .. controls ($(#3)+(0,-4pt)$) and ($(#2)+(0,-2.625pt)$) .. ($(#1)+(0,-2.625pt)$) -- cycle;
-}
-\newcommand{\pressurehead}[2]{
-  \path[fill=black!15,draw=none]
-    ($(#1)+(0,4pt)$) -- ($(#2)+(.42cm,4pt)$) -- ($(#2)+(.42cm,8pt)$)
-    -- (#2.center) -- ($(#2)+(.42cm,-8pt)$) -- ($(#2)+(.42cm,-4pt)$)
-    -- ($(#1)+(0,-4pt)$) -- cycle;
-}
+Cammarata's circuit-ecology hypothesis proposes that existing pathways capture learning signals ahead of competitors built from scratch. Reducing the remaining error may weaken the gradients available to alternatives. We move from one neuron's responses to interactions among mechanisms, parts of the circuitry with contributions we can trace or test. Competition describes a causal hypothesis about optimization, while Price selection requires an additional population and weighting rule.
+
+{% tikz(learning=true, fig_w="620px", caption="<strong>Proposed mechanism.</strong> An established flower-responsive circuit mechanism may support new learning ahead of a competing candidate, with input labels identifying contexts for their proposed later uses. Filled circles denote established mechanisms, white circles candidates, and larger circles greater susceptibility under a comparable learning signal. Black arrows show possible developmental dependencies, while the widest points of horizontally aligned grey bands indicate hypothetical learning pressure over each interval. Sizes and widths indicate hypothetical categories shared with the later mechanism diagrams.") %}
+\begin{tikzpicture}[learning]
 \node[time] at (0,3) {PAST};
-\node at (0,2.60) {inherited features};
+\node at (0,2.60) {inherited mechanisms};
 \node[time] at (4.5,3) {PRESENT};
-\node at (4.5,2.60) {feature population};
+\node at (4.5,2.60) {available mechanisms};
 \node[time] at (9,3) {FUTURE};
-\node at (9,2.60) {potential distinctions};
-\foreach \x in {0,4.5,9} \draw[boundary] (\x,0) ellipse (.7cm and 1.65cm);
-\node[feature] (a) at (0,0.6) {};
-\node[feature] (b) at (0,-1.1) {};
-\node[feature] (d) at (4.5,0.6) {};
-\node[feature] (e) at (4.5,-1.1) {};
-\node[feature] (f) at (9,1.2) {};
-\node[feature] (g) at (9,0.55) {};
-\node[feature] (h) at (9,-0.1) {};
-\node[feature] (i) at (9,-1.1) {};
-\coordinate (ahead) at (0.42,0.6);
-\coordinate (r1a) at (1.620,0.6);
-\coordinate (r1b) at (3.150,0.6);
+\node at (9,2.60) {candidate mechanisms};
+\foreach \x in {0,4.5,9} { \stageoval{\x,0} }
+\stacknode[feature,susceptibility=7.4]{a}{0}{0}{2}{1}
+\stacknode[feature,susceptibility=10]{b}{0}{0}{2}{2}
+\stacknode[feature,susceptibility=4.6]{d}{4.5}{0}{2}{1}
+\stacknode[feature,susceptibility=10]{e}{4.5}{0}{2}{2}
+\stacknode[feature,susceptibility=7.4]{f}{9}{0}{4}{1}
+\stacknode[feature,susceptibility=4.6]{g}{9}{0}{4}{2}
+\stacknode[feature,susceptibility=10]{h}{9}{0}{4}{3}
+\stacknode[feature,susceptibility=7.4]{i}{9}{0}{4}{4}
+\coordinate (ahead) at ($(a.center)+(0.42,0)$);
+\coordinate (r1a) at ($(a.center)+(1.62,0)$);
+\coordinate (r1b) at ($(d.center)+(-1.35,0)$);
 \draw[flow] (a.center) .. controls (r1a) and (r1b) .. (d.west);
-\coordinate (bhead) at (0.42,-1.1);
-\coordinate (r2a) at (1.620,-1.1);
-\coordinate (r2b) at (3.150,-1.1);
+\coordinate (bhead) at ($(b.center)+(0.42,0)$);
+\coordinate (r2a) at ($(b.center)+(1.62,0)$);
+\coordinate (r2b) at ($(e.center)+(-1.35,0)$);
 \draw[flow] (b.center) .. controls (r2a) and (r2b) .. (e.west);
-\coordinate (djoin) at (5.55,0.6);
+\coordinate (djoin) at ($(d.center)+(1.05,0)$);
 \draw[line width=.85pt] (d.center) -- (djoin);
-\coordinate (dhead) at (4.92,0.6);
-\coordinate (r3a) at (6.792,0.6);
-\coordinate (r3b) at (7.965,1.2);
+\coordinate (dhead) at ($(d.center)+(0.42,0)$);
+\coordinate (r3a) at ($(d.center)+(2.292,0)$);
+\coordinate (r3b) at ($(f.center)+(-1.035,0)$);
 \draw[flow] (djoin) .. controls (r3a) and (r3b) .. (f.west);
-\coordinate (r4a) at (6.792,0.6);
-\coordinate (r4b) at (7.965,0.55);
+\coordinate (r4a) at ($(d.center)+(2.292,0)$);
+\coordinate (r4b) at ($(g.center)+(-1.035,0)$);
 \draw[flow] (djoin) .. controls (r4a) and (r4b) .. (g.west);
-\coordinate (r5a) at (6.792,0.6);
-\coordinate (r5b) at (7.965,-0.1);
+\coordinate (r5a) at ($(d.center)+(2.292,0)$);
+\coordinate (r5b) at ($(h.center)+(-1.035,0)$);
 \draw[flow] (djoin) .. controls (r5a) and (r5b) .. (h.west);
-\coordinate (ehead) at (4.92,-1.1);
-\coordinate (r6a) at (6.120,-1.1);
-\coordinate (r6b) at (7.650,-1.1);
+\coordinate (ehead) at ($(e.center)+(0.42,0)$);
+\coordinate (r6a) at ($(e.center)+(1.62,0)$);
+\coordinate (r6b) at ($(i.center)+(-1.35,0)$);
 \draw[flow] (e.center) .. controls (r6a) and (r6b) .. (i.west);
 \begin{pgfonlayer}{background}
-  \pressureband{d.center}{r1b}{r1a}{ahead}
-  \pressurehead{ahead}{a}
-  \pressureband{e.center}{r2b}{r2a}{bhead}
-  \pressurehead{bhead}{b}
-  \pressureband{f.center}{r3b}{r3a}{djoin}
-  \pressureband{g.center}{r4b}{r4a}{djoin}
-  \pressureband{h.center}{r5b}{r5a}{djoin}
-  \pressurehead{djoin}{d}
-  \pressureband{i.center}{r6b}{r6a}{ehead}
-  \pressurehead{ehead}{e}
+  \pressureband{d.center}{r1b}{r1a}{ahead}{6}
+  \pressureband{e.center}{r2b}{r2a}{bhead}{2}
+  \pressureband{f.center}{r3b}{r3a}{dhead}{6}
+  \pressureband{g.center}{r4b}{r4a}{dhead}{4}
+  \pressureband{h.center}{r5b}{r5a}{dhead}{2}
+  \pressureband{i.center}{r6b}{r6a}{ehead}{2}
 \end{pgfonlayer}
-\node[align=center] at (2.25,1.55) {Established\\feature};
-\node[align=center,text=black!40] at (6.75,1.55) {Reinforcing\\shared signals};
-\node[align=center] at (2.25,-1.95) {Competing\\candidate};
-\node[align=center,text=black!40] at (6.75,-1.95) {Less shared\\support};
-\coordinate (axisleft) at (0,-3.70);
-\coordinate (axisright) at (9,-3.70);
-\coordinate (axishead) at (.42,-3.70);
-\coordinate (axisa) at (6,-3.70);
-\coordinate (axisb) at (3,-3.70);
-\begin{pgfonlayer}{background}
-  \path[fill=black!15,draw=none]
-    ($(axisright)+(0,.425pt)$) .. controls ($(axisa)+(0,.425pt)$) and ($(axisb)+(0,4pt)$) .. ($(axishead)+(0,4pt)$)
-    -- ($(axishead)+(0,-4pt)$) .. controls ($(axisb)+(0,-4pt)$) and ($(axisa)+(0,-.425pt)$) .. ($(axisright)+(0,-.425pt)$) -- cycle;
-  \pressurehead{axishead}{axisleft}
-\end{pgfonlayer}
-\draw[flow,line cap=round] ($(axisleft)+(1pt,0)$) -- (axisright);
-\node at (4.5,-3.32) {Development};
-\node[text=black!40] at (4.5,-4.20) {Training pressure};
+\node[align=center] at (2.25,1.55) {Flower / green\\pathway};
+\node[align=center,text=black!65] at (6.75,1.55) {Reinforcing\\shared signals};
+\node[align=center] at (2.25,-1.95) {Independent\\green pathway};
+\node[align=center,text=black!65] at (6.75,-1.95) {Less shared\\support};
+\rightstacklabel{0}{4}{1}{Green}
+\rightstacklabel{0}{4}{2}{Dogs}
+\rightstacklabel{0}{4}{3}{Broccoli}
+\rightstacklabel{0}{4}{4}{Green}
+\learningaxis{-3.90}
 \begin{pgfonlayer}{foreground}
-  \foreach \name in {b,e,f,g,h,i} \node[potential] at (\name) {};
+  \node[feature,susceptibility=7.4] at (a.center) {};
+  \node[potential,susceptibility=10] at (b.center) {};
+  \node[feature,susceptibility=4.6] at (d.center) {};
+  \node[potential,susceptibility=10] at (e.center) {};
+  \node[potential,susceptibility=7.4] at (f.center) {};
+  \node[potential,susceptibility=4.6] at (g.center) {};
+  \node[potential,susceptibility=10] at (h.center) {};
+  \node[potential,susceptibility=7.4] at (i.center) {};
 \end{pgfonlayer}
+\learninglegend{-5.05}
 \pgfresetboundingbox
-\path[use as bounding box] (-1.6,-4.70) rectangle (10.6,3.4);
+\path[use as bounding box] (-1.6,-6.15) rectangle (11.2,3.45);
 \end{tikzpicture}
 {% end %}
 
-## What learning makes possible
+## One beginning, different futures
 
-The flower example also shows how development can diverge. Cammarata compares neurons in InceptionV1 and ConvNeXt trained on the same data, both initially responsive to rapeseed fields.[^cammarata] Both pick up responses to balls and fruit early in training. The ConvNeXt neuron later relinquishes those associations, while the InceptionV1 neuron spreads toward dogs and broccoli and largely loses its initial field response.
+Cammarata compares InceptionV1 and ConvNeXt neurons trained on the same data, both initially responsive to rapeseed fields.[^cammarata] Balls and fruit enter their strongest responses early in training. Those associations later recede from the ConvNeXt neuron's strongest images. Dogs and broccoli become prominent in the InceptionV1 neuron's responses as fields recede.
 
-These trajectories give related beginnings different futures. A later computation can build on an earlier distinction only through information that remains available in the forward flow of activity. Useful composition therefore depends on the representation passed downstream, including relationships among its signals. The observed branches trace changes within a neuron's response pattern, with broadening and displacement as well as specialization.
+The images reveal which associations rank among the neuron's strongest responses at each checkpoint. Displaced associations may retain weaker responses. Architecture and learning history both vary here, so isolating inherited circuitry's causal contribution requires a controlled comparison.
 
-Imagine two networks making the same flower distinction through different internal arrangements. Their present predictions may agree, yet their connections and parameter sensitivities offer different routes for subsequent learning. A change invisible to the current readout can therefore alter how easily a new distinction develops. Present agreement can conceal different developmental possibilities, even under the same training objective.
+Two networks can make the same flower prediction through processes that distinguish inputs differently along the way. Those internal distinctions can give later training different starting points, with connectivity and parameter sensitivity shaping the resulting updates. With architecture and subsequent training conditions fixed, we could test the effects of inherited arrangements on the development of related responses. Agreement on the present prediction can therefore coexist with different opportunities for later learning.
 
-{% tikz(fig_w="620px", caption="A counterfactual comparison holds present predictions and incoming data constant. Distinct histories leave separate routes for developing the same candidate distinctions. In history A, existing features provide direct routes, while history B requires further reorganization for the unconnected candidates. These schematic possibilities illustrate a hypothesis about learning, separate from the observed InceptionV1 and ConvNeXt trajectories.") %}
-\usetikzlibrary{arrows.meta,backgrounds,calc}
-\begin{tikzpicture}[x=1cm,y=1cm,>={Stealth[length=4.6pt,width=3.6pt]},every node/.style={font=\sffamily\footnotesize},time/.style={font=\sffamily\bfseries\footnotesize},emphasis/.style={font=\sffamily\bfseries\footnotesize},feature/.style={circle,draw,fill=black,minimum size=4.6pt,inner sep=0pt,line width=.65pt},potential/.style={feature,fill=white,fill opacity=1},flow/.style={->,line width=.85pt},pressure/.style={-{Stealth[length=13pt,width=16pt]},draw=black!15,line width=8pt,line cap=round},boundary/.style={draw=black!65,line width=.8pt,dash pattern=on .1pt off 2.5pt,line cap=round}]
-\pgfdeclarelayer{foreground}
-\pgfsetlayers{background,main,foreground}
-\newcommand{\pressureband}[4]{
-  \path[fill=black!15,draw=none]
-    ($(#1)+(0,2.625pt)$) .. controls ($(#2)+(0,2.625pt)$) and ($(#3)+(0,4pt)$) .. ($(#4)+(0,4pt)$)
-    -- ($(#4)+(0,-4pt)$) .. controls ($(#3)+(0,-4pt)$) and ($(#2)+(0,-2.625pt)$) .. ($(#1)+(0,-2.625pt)$) -- cycle;
-}
-\newcommand{\pressurehead}[2]{
-  \path[fill=black!15,draw=none]
-    ($(#1)+(0,4pt)$) -- ($(#2)+(.42cm,4pt)$) -- ($(#2)+(.42cm,8pt)$)
-    -- (#2.center) -- ($(#2)+(.42cm,-8pt)$) -- ($(#2)+(.42cm,-4pt)$)
-    -- ($(#1)+(0,-4pt)$) -- cycle;
-}
+{% tikz(learning=true, fig_w="620px", caption="<strong>Controlled counterfactual.</strong> Different inherited circuit mechanisms may offer different routes to learning despite identical present predictions, with architecture, new data, and training objective held fixed. Readout boxes show the matched flower prediction, while future input labels identify contexts in which candidate mechanisms would act. Circle fill, size, and grey bands follow the mechanism diagram, with susceptibility and pressure varying independently. This is a controlled counterfactual with stipulated developmental dependencies and magnitudes, distinct from the observed architecture comparison.") %}
+\begin{tikzpicture}[learning]
 \node[time] at (0,3) {PAST};
-\node at (0,2.60) {inherited features};
+\node at (0,2.60) {inherited mechanisms};
 \node[time] at (4.5,3) {PRESENT};
-\node at (4.5,2.60) {feature population};
+\node at (4.5,2.60) {available mechanisms};
 \node[time] at (9,3) {FUTURE};
-\node at (9,2.60) {potential distinctions};
-\foreach \base in {0,-4.2} {
-  \foreach \x in {0,4.5,9} \draw[boundary] (\x,\base) ellipse (.7cm and 1.25cm);
+\node at (9,2.60) {candidate mechanisms};
+\foreach \base in {0,-5.2} {
+  \foreach \x in {0,4.5,9} { \stageoval{\x,\base} }
 }
 \node[emphasis] at (2.25,1.53) {History A};
-\node[emphasis] at (2.25,-2.67) {History B};
-\node[feature] (a) at (0,0) {};
-\node[feature] (b) at (4.5,0.55) {};
-\node[feature] (c) at (4.5,-0.55) {};
-\node[feature] (d) at (9,0.9) {};
-\node[feature] (e) at (9,0) {};
-\node[feature] (f) at (9,-0.9) {};
-\node[feature] (g) at (0,-3.55) {};
-\node[feature] (h) at (0,-4.85) {};
-\node[feature] (i) at (4.5,-3.4) {};
-\node[feature] (j) at (4.5,-4.2) {};
-\node[feature] (k) at (4.5,-5) {};
-\node[feature] (l) at (9,-3.3) {};
-\node[feature] (m) at (9,-4.2) {};
-\node[feature] (n) at (9,-5.1) {};
-\coordinate (ajoin) at (1.05,0);
+\node[emphasis] at (2.25,-3.05) {History B};
+\stacknode[feature,susceptibility=7.4]{a}{0}{0}{1}{1}
+\stacknode[feature,susceptibility=4.6]{b}{4.5}{0}{2}{1}
+\stacknode[feature,susceptibility=10]{c}{4.5}{0}{2}{2}
+\stacknode[feature,susceptibility=7.4]{d}{9}{0}{3}{1}
+\stacknode[feature,susceptibility=4.6]{e}{9}{0}{3}{2}
+\stacknode[feature,susceptibility=10]{f}{9}{0}{3}{3}
+\stacknode[feature,susceptibility=4.6]{g}{0}{-5.2}{2}{1}
+\stacknode[feature,susceptibility=10]{h}{0}{-5.2}{2}{2}
+\stacknode[feature,susceptibility=7.4]{i}{4.5}{-5.2}{3}{1}
+\stacknode[feature,susceptibility=10]{j}{4.5}{-5.2}{3}{2}
+\stacknode[feature,susceptibility=4.6]{k}{4.5}{-5.2}{3}{3}
+\stacknode[feature,susceptibility=10]{l}{9}{-5.2}{3}{1}
+\stacknode[feature,susceptibility=7.4]{m}{9}{-5.2}{3}{2}
+\stacknode[feature,susceptibility=4.6]{n}{9}{-5.2}{3}{3}
+\coordinate (ajoin) at ($(a.center)+(1.05,0)$);
 \draw[line width=.85pt] (a.center) -- (ajoin);
-\coordinate (ahead) at (0.42,0);
-\coordinate (r1a) at (2.292,0);
-\coordinate (r1b) at (3.465,0.55);
+\coordinate (ahead) at ($(a.center)+(0.42,0)$);
+\coordinate (r1a) at ($(a.center)+(2.292,0)$);
+\coordinate (r1b) at ($(b.center)+(-1.035,0)$);
 \draw[flow] (ajoin) .. controls (r1a) and (r1b) .. (b.west);
-\coordinate (r2a) at (2.292,0);
-\coordinate (r2b) at (3.465,-0.55);
+\coordinate (r2a) at ($(a.center)+(2.292,0)$);
+\coordinate (r2b) at ($(c.center)+(-1.035,0)$);
 \draw[flow] (ajoin) .. controls (r2a) and (r2b) .. (c.west);
-\coordinate (bjoin) at (5.55,0.55);
+\coordinate (bjoin) at ($(b.center)+(1.05,0)$);
 \draw[line width=.85pt] (b.center) -- (bjoin);
-\coordinate (bhead) at (4.92,0.55);
-\coordinate (r3a) at (6.792,0.55);
-\coordinate (r3b) at (7.965,0.9);
+\coordinate (bhead) at ($(b.center)+(0.42,0)$);
+\coordinate (r3a) at ($(b.center)+(2.292,0)$);
+\coordinate (r3b) at ($(d.center)+(-1.035,0)$);
 \draw[flow] (bjoin) .. controls (r3a) and (r3b) .. (d.west);
-\coordinate (r4a) at (6.792,0.55);
-\coordinate (r4b) at (7.965,0);
+\coordinate (r4a) at ($(b.center)+(2.292,0)$);
+\coordinate (r4b) at ($(e.center)+(-1.035,0)$);
 \draw[flow] (bjoin) .. controls (r4a) and (r4b) .. (e.west);
-\coordinate (chead) at (4.92,-0.55);
-\coordinate (r5a) at (6.120,-0.55);
-\coordinate (r5b) at (7.650,-0.9);
+\coordinate (chead) at ($(c.center)+(0.42,0)$);
+\coordinate (r5a) at ($(c.center)+(1.62,0)$);
+\coordinate (r5b) at ($(f.center)+(-1.35,0)$);
 \draw[flow] (c.center) .. controls (r5a) and (r5b) .. (f.west);
-\coordinate (gjoin) at (1.05,-3.55);
+\coordinate (gjoin) at ($(g.center)+(1.05,0)$);
 \draw[line width=.85pt] (g.center) -- (gjoin);
-\coordinate (ghead) at (0.42,-3.55);
-\coordinate (r6a) at (2.292,-3.55);
-\coordinate (r6b) at (3.465,-3.4);
+\coordinate (ghead) at ($(g.center)+(0.42,0)$);
+\coordinate (r6a) at ($(g.center)+(2.292,0)$);
+\coordinate (r6b) at ($(i.center)+(-1.035,0)$);
 \draw[flow] (gjoin) .. controls (r6a) and (r6b) .. (i.west);
-\coordinate (r7a) at (2.292,-3.55);
-\coordinate (r7b) at (3.465,-4.2);
+\coordinate (r7a) at ($(g.center)+(2.292,0)$);
+\coordinate (r7b) at ($(j.center)+(-1.035,0)$);
 \draw[flow] (gjoin) .. controls (r7a) and (r7b) .. (j.west);
-\coordinate (hhead) at (0.42,-4.85);
-\coordinate (r8a) at (1.620,-4.85);
-\coordinate (r8b) at (3.150,-5);
+\coordinate (hhead) at ($(h.center)+(0.42,0)$);
+\coordinate (r8a) at ($(h.center)+(1.62,0)$);
+\coordinate (r8b) at ($(k.center)+(-1.35,0)$);
 \draw[flow] (h.center) .. controls (r8a) and (r8b) .. (k.west);
-\coordinate (jhead) at (4.92,-4.2);
-\coordinate (r9a) at (6.120,-4.2);
-\coordinate (r9b) at (7.650,-4.2);
+\coordinate (jhead) at ($(j.center)+(0.42,0)$);
+\coordinate (r9a) at ($(j.center)+(1.62,0)$);
+\coordinate (r9b) at ($(m.center)+(-1.35,0)$);
 \draw[flow] (j.center) .. controls (r9a) and (r9b) .. (m.west);
 \begin{pgfonlayer}{background}
-  \pressureband{b.center}{r1b}{r1a}{ajoin}
-  \pressureband{c.center}{r2b}{r2a}{ajoin}
-  \pressurehead{ajoin}{a}
-  \pressureband{d.center}{r3b}{r3a}{bjoin}
-  \pressureband{e.center}{r4b}{r4a}{bjoin}
-  \pressurehead{bjoin}{b}
-  \pressureband{f.center}{r5b}{r5a}{chead}
-  \pressurehead{chead}{c}
-  \pressureband{i.center}{r6b}{r6a}{gjoin}
-  \pressureband{j.center}{r7b}{r7a}{gjoin}
-  \pressurehead{gjoin}{g}
-  \pressureband{k.center}{r8b}{r8a}{hhead}
-  \pressurehead{hhead}{h}
-  \pressureband{m.center}{r9b}{r9a}{jhead}
-  \pressurehead{jhead}{j}
+  \pressureband{b.center}{r1b}{r1a}{ahead}{6}
+  \pressureband{c.center}{r2b}{r2a}{ahead}{2}
+  \pressureband{d.center}{r3b}{r3a}{bhead}{6}
+  \pressureband{e.center}{r4b}{r4a}{bhead}{4}
+  \pressureband{f.center}{r5b}{r5a}{chead}{2}
+  \pressureband{i.center}{r6b}{r6a}{ghead}{2}
+  \pressureband{j.center}{r7b}{r7a}{ghead}{6}
+  \pressureband{k.center}{r8b}{r8a}{hhead}{4}
+  \pressureband{m.center}{r9b}{r9a}{jhead}{4}
 \end{pgfonlayer}
-\node[align=center] at (4.5,-1.65) {Same bloom\\prediction};
-\node[align=center] at (9,-1.65) {Direct reuse};
-\node[align=center] at (4.5,-5.95) {Same bloom\\prediction};
-\node[align=center] at (9,-5.95) {Further\\reorganization};
-\node[align=center] at (0,-5.95) {Distinct\\history};
-\coordinate (axisleft) at (0,-7.75);
-\coordinate (axisright) at (9,-7.75);
-\coordinate (axishead) at (.42,-7.75);
-\coordinate (axisa) at (6,-7.75);
-\coordinate (axisb) at (3,-7.75);
-\begin{pgfonlayer}{background}
-  \path[fill=black!15,draw=none]
-    ($(axisright)+(0,.425pt)$) .. controls ($(axisa)+(0,.425pt)$) and ($(axisb)+(0,4pt)$) .. ($(axishead)+(0,4pt)$)
-    -- ($(axishead)+(0,-4pt)$) .. controls ($(axisb)+(0,-4pt)$) and ($(axisa)+(0,-.425pt)$) .. ($(axisright)+(0,-.425pt)$) -- cycle;
-  \pressurehead{axishead}{axisleft}
-\end{pgfonlayer}
-\draw[flow,line cap=round] ($(axisleft)+(1pt,0)$) -- (axisright);
-\node at (4.5,-7.37) {Development};
-\node[text=black!40] at (4.5,-8.25) {Training pressure};
+\node[readout] at (4.5,-2.3) {Flower prediction};
+\node[align=center] at (9,-2.3) {Direct reuse};
+\node[readout] at (4.5,-7.6) {Flower prediction};
+\node[align=center] at (9,-7.5) {Further\\reorganization};
+\node[align=center] at (0,-7.5) {Distinct\\history};
+\foreach \base in {0,-5.2} {
+  \rightstacklabel{\base}{3}{1}{Green}
+  \rightstacklabel{\base}{3}{2}{Dogs}
+  \rightstacklabel{\base}{3}{3}{Broccoli}
+}
+\learningaxis{-9.45}
 \begin{pgfonlayer}{foreground}
-  \foreach \name in {d,e,f,l,m,n} \node[potential] at (\name) {};
+  \node[feature,susceptibility=7.4] at (a.center) {};
+  \node[feature,susceptibility=4.6] at (b.center) {};
+  \node[feature,susceptibility=10] at (c.center) {};
+  \node[potential,susceptibility=7.4] at (d.center) {};
+  \node[potential,susceptibility=4.6] at (e.center) {};
+  \node[potential,susceptibility=10] at (f.center) {};
+  \node[feature,susceptibility=4.6] at (g.center) {};
+  \node[feature,susceptibility=10] at (h.center) {};
+  \node[feature,susceptibility=7.4] at (i.center) {};
+  \node[feature,susceptibility=10] at (j.center) {};
+  \node[feature,susceptibility=4.6] at (k.center) {};
+  \node[potential,susceptibility=10] at (l.center) {};
+  \node[potential,susceptibility=7.4] at (m.center) {};
+  \node[potential,susceptibility=4.6] at (n.center) {};
 \end{pgfonlayer}
+\learninglegend{-10.60}
 \pgfresetboundingbox
-\path[use as bounding box] (-1.6,-8.70) rectangle (10.6,3.4);
+\path[use as bounding box] (-1.6,-11.70) rectangle (11.2,3.45);
 \end{tikzpicture}
 {% end %}
 
-## Selection and transmission
+## Selection and variation
 
-George Price introduced an identity separating change through differential weighting from change during transmission.[^price] Here, $z$ is an ancestor's measured trait and $w$ its descendant weight. The change $\Delta z$ is its descendants' mean trait minus its own. The two terms distinguish selection from changes within lineages, including refinement and recombination.[^price1972][^frank1997]
+Earlier mechanisms can gain more downstream uses, and the responses carried into those uses can change. For a population of attributed uses, George Price's identity separates differential recruitment from response change, which we will call variation (the standard transmission term).[^price] Let $z_i$ measure an earlier mechanism's response on a fixed image assay and $w_i$ its attributed descendant weight. For each earlier mechanism, $\Delta z_i$ is its descendants' mean response minus its own, and $\Delta\bar z$ is the change in the population mean.[^price1972][^frank1997]
 
 ```math
 \Delta\bar z
 =
 \underbrace{\frac{\operatorname{Cov}(w,z)}{\bar w}}_{\text{selection}}
 +
-\underbrace{\frac{\mathbb E[w\Delta z]}{\bar w}}_{\text{transmission}}.
+\underbrace{\frac{\mathbb E[w\Delta z]}{\bar w}}_{\text{variation}}.
 ```
 
-For the flower example, $z$ could measure mean activation on field images minus mean activation on fixed non-field controls. Following neuron coordinates across checkpoints gives each ancestor one equally weighted descendant, placing all observed change under transmission. A nonzero selection term requires an explicit population, ancestry rule, and differential descendant weighting. The equation accounts for change under those choices, while the gradient hypothesis concerns its cause.
+For the tracked flower neuron, $z$ could indicate responsiveness to dogs without flowers, using a fixed image assay and response threshold throughout training. Under an equally weighted correspondence between neuron coordinates at successive checkpoints, $w=1$ and the selection term is zero. Changes in their dog responsiveness would enter entirely through variation. This assay tracks one aspect of the process, while interventions would test the responses' effects on downstream activity during inference.
 
-{% tikz(fig_w="620px", caption="Fractions give the learned share of each population. Selection increases the representation of an already learned distinction, while transmission turns an unlearned candidate into a learned distinction. Both reach three quarters through distinct changes. Grey arrows suggest causal training pressure, while the Price equation accounts for change under declared lineages.") %}
-\usetikzlibrary{arrows.meta,backgrounds,calc}
-\begin{tikzpicture}[x=1cm,y=1cm,>={Stealth[length=4.6pt,width=3.6pt]},every node/.style={font=\sffamily\footnotesize},time/.style={font=\sffamily\bfseries\footnotesize},emphasis/.style={font=\sffamily\bfseries\footnotesize},feature/.style={circle,draw,fill=black,minimum size=4.6pt,inner sep=0pt,line width=.65pt},potential/.style={feature,fill=white,fill opacity=1},flow/.style={->,line width=.85pt},pressure/.style={-{Stealth[length=13pt,width=16pt]},draw=black!15,line width=8pt,line cap=round},boundary/.style={draw=black!65,line width=.8pt,dash pattern=on .1pt off 2.5pt,line cap=round}]
-\pgfdeclarelayer{foreground}
-\pgfsetlayers{background,main,foreground}
-\newcommand{\pressureband}[4]{
-  \path[fill=black!15,draw=none]
-    ($(#1)+(0,2.625pt)$) .. controls ($(#2)+(0,2.625pt)$) and ($(#3)+(0,4pt)$) .. ($(#4)+(0,4pt)$)
-    -- ($(#4)+(0,-4pt)$) .. controls ($(#3)+(0,-4pt)$) and ($(#2)+(0,-2.625pt)$) .. ($(#1)+(0,-2.625pt)$) -- cycle;
-}
-\newcommand{\pressurehead}[2]{
-  \path[fill=black!15,draw=none]
-    ($(#1)+(0,4pt)$) -- ($(#2)+(.42cm,4pt)$) -- ($(#2)+(.42cm,8pt)$)
-    -- (#2.center) -- ($(#2)+(.42cm,-8pt)$) -- ($(#2)+(.42cm,-4pt)$)
-    -- ($(#1)+(0,-4pt)$) -- cycle;
-}
-\newcommand{\diagonalfraction}[2]{\textsuperscript{#1}\kern-.12em/\kern-.12em\textsubscript{#2}}
-\tikzset{fraction/.style={anchor=north,inner sep=0pt,outer sep=0pt}}
-\node[time] at (0,3) {PAST};
-\node at (0,2.60) {ancestor population};
-\node[time] at (4.5,3) {PRESENT};
-\node at (4.5,2.60) {developing population};
-\node[time] at (9,3) {FUTURE};
-\node at (9,2.60) {descendant population};
-\node[emphasis] at (4.5,1.8) {Selection};
-\node[emphasis] at (4.5,-2.40) {Transmission};
-\foreach \base in {0,-4.2} {
-  \foreach \x in {0,4.5,9} \draw[boundary] (\x,\base) ellipse (.7cm and 1.3cm);
-}
-\node[feature] (a) at (0,0.65) {};
-\node[feature] (b) at (0,-0.65) {};
-\node[feature] (c) at (4.5,0.65) {};
-\node[feature] (d) at (4.5,-0.65) {};
-\node[feature] (e) at (9,0.9) {};
-\node[feature] (f) at (9,0.3) {};
-\node[feature] (g) at (9,-0.3) {};
-\node[feature] (h) at (9,-0.9) {};
-\node[feature] (i) at (0,-3.30) {};
-\node[feature] (j) at (0,-3.90) {};
-\node[feature] (k) at (0,-4.50) {};
-\node[feature] (l) at (0,-5.10) {};
-\node[feature] (m) at (4.5,-3.30) {};
-\node[feature] (n) at (4.5,-3.90) {};
-\node[feature] (o) at (4.5,-4.50) {};
-\node[feature] (q) at (4.5,-5.10) {};
-\node[feature] (r) at (9,-3.30) {};
-\node[feature] (t) at (9,-3.90) {};
-\node[feature] (u) at (9,-4.50) {};
-\node[feature] (v) at (9,-5.10) {};
-\coordinate (ahead) at (0.42,0.65);
-\coordinate (r1a) at (1.620,0.65);
-\coordinate (r1b) at (3.150,0.65);
-\draw[flow] (a.center) .. controls (r1a) and (r1b) .. (c.west);
-\coordinate (bhead) at (0.42,-0.65);
-\coordinate (r2a) at (1.620,-0.65);
-\coordinate (r2b) at (3.150,-0.65);
-\draw[flow] (b.center) .. controls (r2a) and (r2b) .. (d.west);
-\coordinate (chead) at (4.92,0.65);
-\coordinate (r3a) at (6.120,0.65);
-\coordinate (r3b) at (7.650,0.9);
-\draw[flow] (c.center) .. controls (r3a) and (r3b) .. (e.west);
-\coordinate (djoin) at (5.55,-0.65);
-\draw[line width=.85pt] (d.center) -- (djoin);
-\coordinate (dhead) at (4.92,-0.65);
-\coordinate (r4a) at (6.792,-0.65);
-\coordinate (r4b) at (7.965,0.3);
-\draw[flow] (djoin) .. controls (r4a) and (r4b) .. (f.west);
-\coordinate (r5a) at (6.792,-0.65);
-\coordinate (r5b) at (7.965,-0.3);
-\draw[flow] (djoin) .. controls (r5a) and (r5b) .. (g.west);
-\coordinate (r6a) at (6.792,-0.65);
-\coordinate (r6b) at (7.965,-0.9);
-\draw[flow] (djoin) .. controls (r6a) and (r6b) .. (h.west);
-\coordinate (ihead) at (0.42,-3.30);
-\coordinate (r7a) at (1.620,-3.30);
-\coordinate (r7b) at (3.150,-3.30);
-\draw[flow] (i.center) .. controls (r7a) and (r7b) .. (m.west);
-\coordinate (jhead) at (0.42,-3.90);
-\coordinate (r8a) at (1.620,-3.90);
-\coordinate (r8b) at (3.150,-3.90);
-\draw[flow] (j.center) .. controls (r8a) and (r8b) .. (n.west);
-\coordinate (khead) at (0.42,-4.50);
-\coordinate (r9a) at (1.620,-4.50);
-\coordinate (r9b) at (3.150,-4.50);
-\draw[flow] (k.center) .. controls (r9a) and (r9b) .. (o.west);
-\coordinate (lhead) at (0.42,-5.10);
-\coordinate (r10a) at (1.620,-5.10);
-\coordinate (r10b) at (3.150,-5.10);
-\draw[flow] (l.center) .. controls (r10a) and (r10b) .. (q.west);
-\coordinate (mhead) at (4.92,-3.30);
-\coordinate (r11a) at (6.120,-3.30);
-\coordinate (r11b) at (7.650,-3.30);
-\draw[flow] (m.center) .. controls (r11a) and (r11b) .. (r.west);
-\coordinate (nhead) at (4.92,-3.90);
-\coordinate (r12a) at (6.120,-3.90);
-\coordinate (r12b) at (7.650,-3.90);
-\draw[flow] (n.center) .. controls (r12a) and (r12b) .. (t.west);
-\coordinate (ohead) at (4.92,-4.50);
-\coordinate (r13a) at (6.120,-4.50);
-\coordinate (r13b) at (7.650,-4.50);
-\draw[flow] (o.center) .. controls (r13a) and (r13b) .. (u.west);
-\coordinate (qhead) at (4.92,-5.10);
-\coordinate (r14a) at (6.120,-5.10);
-\coordinate (r14b) at (7.650,-5.10);
-\draw[flow] (q.center) .. controls (r14a) and (r14b) .. (v.west);
+To study inheritance through downstream use, we could register flower-related mechanisms and fix the task set and causal attribution rule before calculating the decomposition. Interventions and causal tracing would test how the later network uses those mechanisms during inference. Each later record would carry an assay response and a weight measuring attributed use of an earlier mechanism. Equal baseline weights and fixed rules for inclusion, shared credit, and newly formed routes would make this accounting reproducible.
+
+{% tikz(learning=true, fig_w="620px", caption="<strong>Accounting decomposition.</strong> Differential recruitment and acquired dog responsiveness contribute separately to the change in the attributed-use population. Every filled dot is an instantiated mechanism or use record, and an outer ring marks dog responsiveness on the fixed assay. Arrows stipulate attribution, while reweighting holds baseline responses fixed. Percentages show the proportion responding to dogs, rather than population size. Selection measures differential recruitment; variation measures response change within inherited uses, rather than diversity in the final population. The middle column is an accounting step that reweights baseline traits while holding their values fixed, rather than an intermediate training checkpoint.") %}
+\begin{tikzpicture}[learning]
+\node[time] at (0,3) {BASELINE};
+\node at (0,2.6) {50\% dog-responsive};
+\node[time] at (4.5,3) {AFTER RECRUITMENT};
+\node at (4.5,2.6) {75\% dog-responsive};
+\node[time] at (9,3) {AFTER VARIATION};
+\node at (9,2.6) {100\% dog-responsive};
+\foreach \x in {0,4.5,9} { \stageoval{\x,0} }
+\stacknode[feature]{a}{0}{0}{2}{1}
+\stacknode[feature]{b}{0}{0}{2}{2}
+\stacknode[feature]{c}{4.5}{0}{4}{1}
+\stacknode[feature]{d}{4.5}{0}{4}{2}
+\stacknode[feature]{e}{4.5}{0}{4}{3}
+\stacknode[feature]{f}{4.5}{0}{4}{4}
+\stacknode[feature]{g}{9}{0}{4}{1}
+\stacknode[feature]{h}{9}{0}{4}{2}
+\stacknode[feature]{i}{9}{0}{4}{3}
+\stacknode[feature]{j}{9}{0}{4}{4}
 \begin{pgfonlayer}{background}
-  \pressureband{c.center}{r1b}{r1a}{ahead}
-  \pressurehead{ahead}{a}
-  \pressureband{d.center}{r2b}{r2a}{bhead}
-  \pressurehead{bhead}{b}
-  \pressureband{e.center}{r3b}{r3a}{chead}
-  \pressurehead{chead}{c}
-  \pressureband{f.center}{r4b}{r4a}{djoin}
-  \pressureband{g.center}{r5b}{r5a}{djoin}
-  \pressureband{h.center}{r6b}{r6a}{djoin}
-  \pressurehead{djoin}{d}
-  \pressureband{m.center}{r7b}{r7a}{ihead}
-  \pressurehead{ihead}{i}
-  \pressureband{n.center}{r8b}{r8a}{jhead}
-  \pressurehead{jhead}{j}
-  \pressureband{o.center}{r9b}{r9a}{khead}
-  \pressurehead{khead}{k}
-  \pressureband{q.center}{r10b}{r10a}{lhead}
-  \pressurehead{lhead}{l}
-  \pressureband{r.center}{r11b}{r11a}{mhead}
-  \pressurehead{mhead}{m}
-  \pressureband{t.center}{r12b}{r12a}{nhead}
-  \pressurehead{nhead}{n}
-  \pressureband{u.center}{r13b}{r13a}{ohead}
-  \pressurehead{ohead}{o}
-  \pressureband{v.center}{r14b}{r14a}{qhead}
-  \pressurehead{qhead}{q}
+\draw[flow] (a.center) .. controls ($(a.center)+(1.6,0)$) and ($(c.center)+(-1.4,0)$) .. ($(c.west)+(-2.7pt,0)$);
+\draw[flow] (a.center) .. controls ($(a.center)+(1.6,0)$) and ($(d.center)+(-1.4,0)$) .. ($(d.west)+(-2.7pt,0)$);
+\draw[flow] (a.center) .. controls ($(a.center)+(1.6,0)$) and ($(e.center)+(-1.4,0)$) .. ($(e.west)+(-2.7pt,0)$);
+\draw[flow] (b.center) .. controls ($(b.center)+(1.6,0)$) and ($(f.center)+(-1.4,0)$) .. (f.west);
+\draw[flow] (c.center) -- ($(g.west)+(-2.7pt,0)$);
+\draw[flow] (d.center) -- ($(h.west)+(-2.7pt,0)$);
+\draw[flow] (e.center) -- ($(i.west)+(-2.7pt,0)$);
+\draw[flow] (f.center) -- ($(j.west)+(-2.7pt,0)$);
 \end{pgfonlayer}
-\foreach \x/\share in {0/{\diagonalfraction{1}{2}},4.5/{\diagonalfraction{1}{2}},9/{\diagonalfraction{3}{4}}}
-  \node[fraction] at (\x,-1.45) {\share};
-\foreach \x/\share in {0/{\diagonalfraction{1}{2}},4.5/{\diagonalfraction{3}{4}},9/{\diagonalfraction{3}{4}}}
-  \node[fraction] at (\x,-5.65) {\share};
-\coordinate (axisleft) at (0,-7.40);
-\coordinate (axisright) at (9,-7.40);
-\coordinate (axishead) at (.42,-7.40);
-\coordinate (axisa) at (6,-7.40);
-\coordinate (axisb) at (3,-7.40);
-\begin{pgfonlayer}{background}
-  \path[fill=black!15,draw=none]
-    ($(axisright)+(0,.425pt)$) .. controls ($(axisa)+(0,.425pt)$) and ($(axisb)+(0,4pt)$) .. ($(axishead)+(0,4pt)$)
-    -- ($(axishead)+(0,-4pt)$) .. controls ($(axisb)+(0,-4pt)$) and ($(axisa)+(0,-.425pt)$) .. ($(axisright)+(0,-.425pt)$) -- cycle;
-  \pressurehead{axishead}{axisleft}
-\end{pgfonlayer}
-\draw[flow,line cap=round] ($(axisleft)+(1pt,0)$) -- (axisright);
-\node at (4.5,-7.02) {Development};
-\node[text=black!40] at (4.5,-7.90) {Training pressure};
-\begin{pgfonlayer}{foreground}
-  \foreach \name in {a,c,e,i,j,m,r} \node[potential] at (\name) {};
-\end{pgfonlayer}
+\foreach \name in {a,c,d,e,g,h,i,j} { \dogtrait{\name} }
+
+
+\node[align=center] at (2.25,-2.45) {Trait share grows by \textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{4}\\through differential recruitment};
+\node[align=center] at (6.75,-2.45) {\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{4} of the population\\acquires trait via variation};
+\node[feature] (keyyes) at (1.2,-3.45) {};
+\dogtrait{keyyes}
+\node[anchor=west] at (1.5,-3.45) {Responds to dogs};
+\node[feature] at (6,-3.45) {};
+\node[anchor=west] at (6.3,-3.45) {No dog response};
 \pgfresetboundingbox
-\path[use as bounding box] (-1.6,-8.35) rectangle (10.6,3.4);
+\path[use as bounding box] (-1.6,-4) rectangle (10.6,3.45);
 \end{tikzpicture}
 {% end %}
 
-## Reading a network through its history
+## Learning through inheritance
 
-Following the flower neuron reveals how repeated training redirects activity through inherited distinctions. Under the proposed mechanism, existing responses make some extensions easier to optimize than others. Gradient reinforcement and competition could explain which available continuations become established. This predicts preferential growth along already responsive pathways, subject to testing through measured gradients and controlled interventions.
+The hypothetical accounting follows dog responsiveness as it extends beyond flower images. If a responsive mechanism supplies three later uses and a nonresponsive mechanism supplies one, differential recruitment raises the mean from one half to three quarters. Holding that recruitment fixed, acquired dog responsiveness in the latter use supplies the remaining quarter through variation. Price's contribution is to distinguish which earlier mechanisms gain downstream uses from how the responses carried into those uses change.
 
-The divergence between ConvNeXt and InceptionV1 shows both selective retention and displacement of earlier responses. A flower-sensitive pathway acquiring dog responses might help one reader while making flower detection harder for another. Differentiated downstream pathways could accommodate both uses, provided the shared signal retains the necessary distinctions. Inherited organization shapes which new capabilities can develop together, as well as the ease of developing each alone.
+An inherited mechanism can gain another downstream use while continuing to draw an existing distinction. Training can also change the distinction itself, altering which inputs produce different effects. Processes compose as one mechanism's output changes another's response. These connections route activity during inference and carry gradients during training.
 
-Watching a network develop reveals how its history shapes its responsiveness to new training. The same error can produce different changes through circuitry organized by different pasts. Recursive generalization may trace how repeated flows of training activity open some developmental routes while narrowing others. Learning builds the machinery of its own future learning.
+This view makes cleanliness a question about how distinctions develop and guide other computations. Interpretability can therefore connect a mechanism's effects during inference with the learning history behind its recruitment. Such histories could explain why established pathways accelerate some kinds of learning and constrain others. Learning builds the machinery of its own future learning.
+
+{% tikz(learning=true, fig_w="620px", caption="<strong>Learning through inheritance.</strong> Circuit mechanisms can acquire new roles across training, change their responses, and support the composition of processes during learning. Filled circles denote established mechanisms and white circles candidates, with larger circles indicating greater susceptibility to change. Black arrows show proposed developmental dependencies, including multiple inherited mechanisms supporting one candidate, while input labels name possible response contexts. Grey bands retain the earlier figures' illustrative learning-pressure scale within this hypothetical account of circuit development.") %}
+\begin{tikzpicture}[learning]
+\node[time] at (0,3) {PAST};
+\node at (0,2.60) {inherited mechanisms};
+\node[time] at (4.5,3) {PRESENT};
+\node at (4.5,2.60) {recruited and reshaped};
+\node[time] at (9,3) {FUTURE};
+\node at (9,2.60) {further composition};
+\foreach \x in {0,4.5,9} { \stageoval{\x,0} }
+\stacknode[feature,susceptibility=7.4]{a}{0}{0}{2}{1}
+\stacknode[feature,susceptibility=10]{b}{0}{0}{2}{2}
+\stacknode[feature,susceptibility=4.6]{c}{4.5}{0}{3}{1}
+\stacknode[feature,susceptibility=7.4]{d}{4.5}{0}{3}{2}
+\stacknode[feature,susceptibility=10]{e}{4.5}{0}{3}{3}
+\stacknode[potential,susceptibility=7.4]{f}{9}{0}{4}{1}
+\stacknode[potential,susceptibility=4.6]{g}{9}{0}{4}{2}
+\stacknode[potential,susceptibility=10]{h}{9}{0}{4}{3}
+\stacknode[potential,susceptibility=7.4]{i}{9}{0}{4}{4}
+\coordinate (ahead) at ($(a.center)+(0.42,0)$);
+\coordinate (bhead) at ($(b.center)+(0.42,0)$);
+\coordinate (r1a) at ($(a.center)+(1.62,0)$);
+\coordinate (r1b) at ($(c.center)+(-1.35,0)$);
+\coordinate (r2b) at ($(d.center)+(-1.35,0)$);
+\coordinate (r3a) at ($(b.center)+(1.62,0)$);
+\coordinate (r3b) at ($(e.center)+(-1.35,0)$);
+\coordinate (chead) at ($(c.center)+(0.42,0)$);
+\coordinate (dhead) at ($(d.center)+(0.42,0)$);
+\coordinate (ehead) at ($(e.center)+(0.42,0)$);
+\coordinate (r4a) at ($(c.center)+(1.62,0)$);
+\coordinate (r4b) at ($(f.center)+(-1.35,0)$);
+\coordinate (r5b) at ($(g.center)+(-1.35,0)$);
+\coordinate (r6a) at ($(d.center)+(1.62,0)$);
+\coordinate (r6b) at ($(h.center)+(-1.35,0)$);
+\coordinate (r7a) at ($(e.center)+(1.62,0)$);
+\coordinate (r8b) at ($(i.center)+(-1.35,0)$);
+\begin{pgfonlayer}{background}
+  \pressureband{c.center}{r1b}{r1a}{ahead}{6}
+  \pressureband{d.center}{r2b}{r1a}{ahead}{4}
+  \pressureband{e.center}{r3b}{r3a}{bhead}{2}
+  \pressureband{f.center}{r4b}{r4a}{chead}{6}
+  \pressureband{g.center}{r5b}{r4a}{chead}{2}
+  \pressureband{h.center}{r6b}{r6a}{dhead}{4}
+  \pressureband{h.center}{r6b}{r7a}{ehead}{2}
+  \pressureband{i.center}{r8b}{r7a}{ehead}{4}
+  \draw[flow] (a.center) .. controls (r1a) and (r1b) .. (c.west);
+  \draw[flow] (a.center) .. controls (r1a) and (r2b) .. (d.west);
+  \draw[flow] (b.center) .. controls (r3a) and (r3b) .. (e.west);
+  \draw[flow] (c.center) .. controls (r4a) and (r4b) .. (f.west);
+  \draw[flow] (c.center) .. controls (r4a) and (r5b) .. (g.west);
+  \draw[flow] (d.center) .. controls (r6a) and (r6b) .. (h.west);
+  \draw[flow] (e.center) .. controls (r7a) and (r6b) .. (h.west);
+  \draw[flow] (e.center) .. controls (r7a) and (r8b) .. (i.west);
+\end{pgfonlayer}
+\node[align=center] at (2.25,1.85) {Recruit existing\\mechanisms};
+\node[align=center] at (6.75,2.05) {Reuse and\\compose};
+\node[align=center] at (2.25,-2.65) {Responses change\\as roles develop};
+\node[align=center] at (6.75,-2.65) {New combinations\\support further learning};
+\rightstacklabel{0}{4}{1}{Green}
+\rightstacklabel{0}{4}{2}{Dogs}
+\rightstacklabel{0}{4}{3}{Broccoli}
+\rightstacklabel{0}{4}{4}{Other\\contexts}
+\learningaxis{-4.35}
+\learninglegend{-5.5}
+\pgfresetboundingbox
+\path[use as bounding box] (-1.6,-6.7) rectangle (11.2,3.45);
+\end{tikzpicture}
+{% end %}
 
 ---
 

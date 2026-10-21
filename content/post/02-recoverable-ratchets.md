@@ -1,203 +1,172 @@
 +++
 title = "Recoverable Ratchets"
 date = 2025-01-09
-description = "The first post on Web of Trust"
+description = "Recoverable messaging, replicated identity, and selective agreement in Aura"
 slug = "recoverable-ratchets"
 draft = true
 +++
 
-Modern secure messaging protocols like [MLS](https://messaginglayersecurity.rocks/mls-architecture/draft-ietf-mls-architecture.html) emphasize cryptographic properties, key agreement, forward secrecy, post-compromise security, however when deployed in a distributed setting, it becomes apparent that, interleaved within the cryptographic protocol, lies a distributed systems problem. [TreeKEM](https://eprint.iacr.org/2025/410), and a number of other MLS-flavored protocols, work around these issues by adjusting core data structures or introducing new cryptographic primitives.
+Secure messaging joins cryptography with distributed state management. [MLS](https://www.rfc-editor.org/rfc/rfc9420.html) uses TreeKEM for group key agreement and sender ratchets for application messages. Concurrent updates, delayed delivery, device loss, and recovery require choices about how participants reconcile their views and retain secrets.
 
-We instead adopt a distributed systems lens, clarifying the system contract, and then working towards a protocol solution that satisfies these requirements.
+We approach these choices through Aura's distributed systems contract. The design described here targets recoverable messaging across replicated identities, with explicit boundaries between available message sends, certified transitions, and durable agreement.
 
 ## Background on Aura
 
-In [Aura](https://github.com/hxrts/aura), both state and identity are distributed. Multiple devices form a single authority. Facts replicate across nodes via CRDT journals. There is no central ordering service. This changes the problem. We need messaging with explicit safety, liveness, and partition tolerance.
+In [Aura](https://github.com/hxrts/aura), multiple devices form a single authority. Shared facts replicate through CRDT journals, and relational contexts hold shared state between authorities. No central service orders every operation.
 
-The Aura Messaging Protocol (AMP) brings a distributed systems lens to secure messaging. It provides the same cryptographic guarantees as TreeKEM-based protocols while supporting deterministic recovery from replicated state alone. See the [protocol specification](https://hxrts.com/aura/112_amp.html) for complete technical details and the [comparison section](#comparison-with-existing-protocols) for how AMP differs from MLS and Keyhive.
+The Aura Messaging Protocol (AMP) combines deterministic reduction of those facts with separately protected secret material. Its recovery contract covers shared protocol state, authorized retained message history, and safe resumption of sending. Recovery and secret deletion must follow the same retention policy.
 
 ## Requirements
 
-Aura's architecture imposes constraints that existing messaging protocols cannot satisfy.
-
 **Deterministic Recovery**
 
-Aura guarantees social recovery. Users must be able to reconstruct their identity from the network after catastrophic device loss. All ratchet state must be deterministically derivable from replicated facts.
+A recovering device reconstructs shared protocol state from replicated facts. Recovering decryption capability also requires authorized secret material, obtained through retained encrypted packages, surviving devices, or a recovery ceremony. Public journal facts alone cannot reveal confidential keys.
 
-The journal is the only durable state. Secrets derive from reduced journal state combined with authority keys. No device may maintain ratchet state that cannot be recovered by other devices in the authority.
+The recovery contract specifies which history remains recoverable and which secrets have deliberately been erased. A device must also obtain safe sending allocations before transmitting; reconstructing an old checkpoint must never permit reuse of an encryption key and nonce.
 
 **Multi-Device Authorities**
 
-An authority may contain multiple devices acting as a single opaque identity. External parties cannot observe which device sent a message. Devices can join or leave without visible membership changes.
+An authority presents one messaging identity while managing its devices internally. Adding a device need not add another member to every external messaging group. This abstraction concerns protocol identity; transport observations can still disclose metadata.
 
-The protocol must support concurrent message sends from different devices within the same authority. All devices must converge to the same ratchet position after merging facts.
+Devices must support concurrent sends, including during partitions, without reusing a key and nonce. Their send allocations must remain disjoint across independent runtimes, crashes, and recovery. Merging journals later reconciles shared state, but cannot undo a cryptographic collision that already occurred.
 
 **Selective Consistency**
 
-Some operations require eventual consistency. Others require strong agreement. The protocol must support both models and apply each where appropriate.
+Ordinary sends should remain available with valid keys, authorization, and an allocated sending range. Durable epoch changes require agreement bound to the exact parent state and successor. The protocol must distinguish a proposed transition, a certified live successor, and a durable successor.
 
-Message sends must tolerate concurrent activity and out-of-order delivery. Epoch transitions must produce a linear chain with no forks. The protocol cannot assume a central ordering service.
+Safety must hold through partitions. Progress requiring a quorum depends on sufficient authorized participants, available secret material, and the delivery assumptions in Aura's [distributed systems contract](https://hxrts.com/aura/004_distributed_systems_contract.html).
 
 **Expressive Authorization**
 
-Every message send must pass a guard before reaching the network. The guard chain enforces the authorization of capabilities and measurement of information flow budgets.
+Every outbound message passes capability, flow-budget, journal-coupling, and leakage checks before transport. Denied sends produce no outbound message. Budget allocations must remain safe when several devices send concurrently or become partitioned.
 
-These checks must integrate into the key derivation path. Authorization failure must prevent key derivation and budget accounting operations must be atomic with message sends.
+Accounting follows charge-before-send semantics. A network failure can occur after a durable charge, so retry and cancellation rules must state how that charge is treated. Successful remote delivery cannot be made atomic with a local journal update.
 
 ## Architectural Overview
 
-AMP combines a three-level key hierarchy, CRDT-based state management, and a dual window ratchet to achieve its design goals.
+AMP separates authority structure, channel key establishment, and message generations. Replicated facts identify the authorized state; secret material supplies the ability to encrypt and decrypt within that state.
 
 ### Key Hierarchy
 
-Despite the title, AMP does, in fact, use a tree, just not for ratcheting. The commitment tree defines Aura's authority structure and threshold policies. In contrast, TreeKEM protocols use binary trees for key distribution, where ratchet state derives from tree path updates. AMP separates these concerns: the tree handles identity, while a linear ratchet handles message keys.
+Aura uses a commitment tree to represent an authority's devices and threshold policies. Leaves hold device signing shares, and branches express threshold requirements. The public root commitment binds the authority's structure without revealing its internal device roster.
 
-AMP separates key evolution across three levels:
-
-1. Authority epochs - Rotate threshold key shares via DKG ceremony. This provides identity-level post-compromise security approximately daily or upon confirmed compromise.
-
-2. Channel epochs - Rotate channel base keys via consensus-finalized bumps. This provides channel-level post-compromise security after roughly 512 messages or upon detected anomalies.
-
-3. Ratchet generations - Derive per-message keys from the channel base key. This provides bounded forward secrecy within a skip window of 1024 generations.
-
-The commitment tree defines authority structure and allows for key derivation. Each authority maintains an internal tree, concealed from external parties. The channel base key derives from the tree root, channel identifier, and epoch.
+Channel keys require a separate secret foundation. The bootstrap epoch uses a dealer-generated secret distributed to authorized recipients. Later channel epochs derive their base keys through a threshold PRF backed by the members' key ceremony; the public tree root is binding context and cannot supply the secret input.
 
 ```mermaid
 graph TD
-    subgraph "Authority (opaque)"
-        R[Root: 2-of-3]
-        R --> B1[Branch: 1-of-2]
-        R --> L3[Leaf: Device C]
-        R --> L4[Leaf: Device D]
-        B1 --> L1[Leaf: Device A]
-        B1 --> L2[Leaf: Device B]
-        style R fill:#fff3e0
-        style B1 fill:#ffe0b2
-        style L1 fill:#e1f5fe
-        style L2 fill:#e1f5fe
-        style L3 fill:#e1f5fe
-        style L4 fill:#e1f5fe
-    end
-    R -.->|"KDF(root, channel, epoch)"| K[Channel Base Key]
-    style K fill:#c8e6c9
+    T[Authority commitment tree] -->|Authorizes devices and policies| M[Authorized members]
+    M --> D[Secret shares from key ceremony]
+    D -->|Threshold PRF bound to context, channel, epoch| K[Channel base key]
+    K -->|KDF bound to sender, epoch, generation| MK[Message key]
+    B[Dealer bootstrap secret] -->|Epoch 0| MK
 ```
 
-Branch nodes define threshold policies. Leaf nodes hold device signing shares. External parties see only the root commitment. Key derivation uses the root to produce channel base keys.
+Key evolution has three levels:
 
-### State and Consistency
+1. **Authority epochs** change authority key material and device policy. Healing a compromise of authority secrets also requires refreshing affected context secrets and removing the attacker's access.
+2. **Channel epochs** establish fresh channel base keys and bind them to authorized membership. An attacker holding only an earlier base key must not be able to derive the refreshed successor key.
+3. **Message generations** select message keys within an epoch. Their allocation prevents key/nonce reuse, while checkpoint windows bound ordinary out-of-order acceptance.
 
-This is where the distributed systems perspective becomes concrete. Journals store all authoritative state as monotone facts, including the channel checkpoints that anchor ratchet windows. The protocol must remain safe under network partitions and live under partial connectivity.
+The bootstrap secret is distributed over authenticated encrypted channels and stored separately from public journal facts. Later epoch derivation combines verified partial evaluations from a threshold of participants. Once a device holds an authorized epoch base key, individual message derivation is local.
 
-AMP achieves this through selective consistency. Message sends use CRDT merge for availability during partitions. Epoch bumps require consensus for linearizable agreement. The dual window ratchet bridges these modes by accepting messages from both current and previous epochs during transitions.
+### State and Agreement
 
-### Dual Ratchet
+Journals retain monotone facts about checkpoints, proposals, certificates, finalizations, and conflicts. Reduction derives the stable epoch and any live successor from the available evidence.
 
-The dual ratchet provides continuous coverage of 2W generations. Every checkpoint defines two consecutive windows. Window `A` spans generations `G` to `G+W`. Window `B` spans `G+W+1` to `G+2W`. Messages may arrive out of order by up to W generations without head-of-line blocking. During epoch transitions, both old and new epochs remain valid within their respective windows.
+An A1 proposal expresses a request and gives no authority to send under the successor. Exactly one valid, unsuppressed A2 certificate can expose a live successor for traffic. A3 consensus finalization establishes durability; the normal path finalizes the same transition that became live at A2.
 
-Before sending, a device merges the latest journal facts and reduces to the current channel state. It derives the message key from the channel base key, generation, and direction. The message header contains the context, channel, epoch, and generation. This header serves as additional authenticated data for AEAD encryption.
+Conflicting valid certificates suppress live successor exposure until explicit evidence resolves the conflict. Aura Consensus supplies agreement on an individual operation. Parent binding, transition validation, and sequencing compose those decisions into an epoch chain; independent consensus instances do not provide automatic global ordering.
 
-### Security Properties
+### Ratchet Windows
 
-The protocol provides bounded forward secrecy and strong post-compromise security. Forward secrecy is bounded by the skip window. An attacker who compromises a device learns at most W future message keys within the current epoch. Post-compromise security restores confidentiality through epoch bumps. Channel bumps heal channel-level compromise. Authority bumps heal identity-level compromise by rotating threshold key shares.
+Every checkpoint anchors two consecutive acceptance windows. For base generation `G` and window parameter `W`, window A spans `G` through `G+W`, and window B spans `G+W+1` through `G+2W`, with inclusive endpoints. Together they cover the interval from `G` through `G+2W`.
 
-### Trade-offs
+The default `W` is 1024. These windows tolerate delayed and reordered messages within the accepted range, including drift near checkpoint boundaries. They govern admission rather than the number of keys derivable from a captured secret.
 
-AMP trades per-message forward secrecy for deterministic recovery. Traditional double ratchets delete keys immediately after use. AMP must be able to rederive keys within the skip window to support recovery from journal state alone.
+Before sending, a device reduces the facts available to it, selects the authorized epoch, and reserves a unique sending generation. It derives a message key bound to the secret base key, context, channel, sender, epoch, and generation. The authenticated data binds the message header and sender, and the guard chain authorizes transport.
 
-Epoch transitions favor safety over liveness. Consensus must finalize a bump before the new epoch becomes canonical. The dual window design mitigates liveness failure up to a point by accepting messages from both the current and previous windows during transitions.
+Epoch overlap is policy-dependent. Normal and additive transitions permit stable-plus-successor overlap; removal and emergency transitions apply stricter acceptance rules. Historical decryption is a separate policy decision and must not let retained keys bypass sender exclusion or emergency traffic restrictions.
+
+### Security and Retention
+
+A device holding an epoch base key can derive that epoch's message keys from their public identifiers. Deleting a checkpoint or rejecting an old generation does not remove this ability. AMP therefore treats the epoch secret and its recoverable copies as the confidentiality boundary for retained history.
+
+Post-compromise healing requires fresh material unavailable to the attacker. Refreshing a channel can heal exposure of its old base key, provided the attacker no longer has authorized access to the new secret. Compromise of threshold shares or recovery credentials requires a stronger refresh and exclusion procedure; incrementing an epoch number is insufficient.
+
+Retention policy determines which earlier epochs remain readable. Emergency cryptoshred must remove the covered secrets and every retained route for reconstructing them, including recovery packages and relevant cached derivation material. It cannot protect plaintext or keys already copied by an attacker.
+
+This makes recovery an explicit trade-off. Retaining a secret preserves recoverable history and also preserves the exposure associated with that secret. Per-message forward secrecy would require an additional evolving-secret and deletion design, together with a compatible recovery horizon; it does not follow from generation-indexed key derivation.
 
 ### Epoch Lifecycle
 
 ```mermaid
 sequenceDiagram
-    participant A as Device A
+    participant A as Member A
     participant J as Journal
     participant C as Consensus
-    participant B as Device B
+    participant B as Member B
 
-    Note over A,B: Epoch 0 - Normal Messaging
-    loop Ratchet generations 0..512
-        A->>B: message(epoch=0, gen=N)
-    end
-
-    Note over A,B: Epoch Bump (gen ≥ 512)
-    A->>J: ProposedEpochBump(0→1)
-    A->>C: Start consensus
-    C->>J: CommittedEpochBump(0→1)
-
-    Note over A,B: Epoch 1 - Continue Messaging
-    loop Ratchet generations 0..512
-        A->>B: message(epoch=1, gen=M)
-    end
+    Note over A,B: Stable epoch e
+    A->>J: Propose successor bound to parent (A1)
+    Note over A,B: Establish authorized successor key material
+    A->>J: Certified transition (A2)
+    J-->>B: Replicate certificate
+    Note over A,B: One valid live successor permits traffic
+    A->>B: Message under successor epoch
+    A->>C: Finalize the bound transition
+    C->>J: Finalization evidence (A3)
+    J-->>B: Replicate durable successor
 ```
 
-Messages advance the ratchet generation within each epoch. When the spacing rule is satisfied, a device proposes an epoch bump. Consensus finalizes the bump and messaging continues under the new epoch with a fresh base key.
+Routine bumps become eligible when the current generation is at least `W/2` beyond the canonical checkpoint's base generation. With default settings, this minimum spacing is 512 generations. Eligibility is not a promise to rotate every 512 messages, and emergency transitions can bypass the spacing rule.
+
+Successor traffic requires both valid agreement evidence and the corresponding authorized secret material. Certification permits traffic before durability, while conflicts can suspend that permission. Quorum-dependent transitions can stall during partitions even while eligible ordinary sends remain available.
 
 ### Recovery
 
-Recovery is fully deterministic. A device that loses all local state can recover by loading the journal, reducing to the current epoch and checkpoint, and rederiving all keys. No coordination or retained mutable snapshots are required.
+Recovery first restores authority credentials and access to the appropriate replicated facts. Reduction reconstructs the stable epoch, any live transition, checkpoints, and policy. Authorized secret recovery then restores the retained decryption capability, potentially through interaction with other participants.
+
+Before sending resumes, the device establishes a fresh or safely restored allocation that cannot collide with earlier sends. Missing secrets, unavailable participants, and deliberately erased history have distinct outcomes. A journal checkpoint establishes protocol position; it does not establish possession of keys or permission to reuse a sending generation.
 
 ## Comparison with Existing Protocols
 
-Several protocols address secure group messaging in decentralized settings. MLS and its decentralized variants focus on TreeKEM-based key agreement. Keyhive adapts TreeKEM for CRDT-based coordination. Amigo pushes in the opposite direction, treating every operation as eventually convergent. These are excellent protocols with different trade-offs.
-
-The key difference is how each handles the distributed systems problem. MLS delegates ordering to a Delivery Service. Keyhive and Amigo use eventual consistency everywhere. None of them provides the selective consistency that Aura requires for both concurrent messaging and linearizable epoch transitions.
-
 ### MLS
 
-MLS requires a Delivery Service to enforce strict commit ordering. Members must process commits in sequence before using new epoch keys. This creates head-of-line blocking incompatible with concurrent multi-device sends.
+MLS supports concurrent application messages through separate sender ratchets and explicitly handles delayed and reordered delivery. Its epoch-changing commits require sequencing and a strategy for conflicting commits. A Delivery Service can assist with this coordination, but the protocol does not require every application message to pass through a centralized total order.
 
-Decentralized MLS relaxes ordering requirements by retaining key material for out-of-order processing. This degrades forward secrecy during fork retention. Fork resolution is delegated to the application layer rather than built into the protocol.
+MLS also specifies deletion of secrets to obtain forward secrecy. Restoring access to deleted message keys would change that security contract. Aura instead makes authorized history retention and recovery explicit parts of its messaging design. See [RFC 9420, sections 9, 14, and 15](https://www.rfc-editor.org/rfc/rfc9420.html).
 
-Both protocols derive ratchet state from processing history. Recovery requires retained epoch snapshots or puncture sets. Pure reduction from replicated facts is not possible without storing all intermediate states.
+### BeeKEM and Keyhive
 
-### BeeKEM
+[BeeKEM](https://www.inkandswitch.com/keyhive/notebook/02/) handles concurrent tree updates by retaining conflict keys and integrating their contributions through causally subsequent updates. That reconciliation is part of the protocol. It supports local-first collaboration without requiring a single agreed successor before every update can proceed.
 
-Keyhive uses BeeKEM, a decentralized TreeKEM variant. It tolerates concurrent updates through conflict keys that persist until pruned. The protocol provides eventual consistency for all operations.
+Keyhive combines this with a delegable access-control graph and effects such as pull, read, write, and admin. Aura uses its capability language and flow-budget enforcement as a broader application contract. The distinction is the authorization semantics and their integration with messaging, rather than the presence or absence of delegation.
 
-Eventual consistency cannot enforce linear epoch chains. Concurrent epoch proposals would create forks requiring application-level resolution. Epoch linearity is important for Aura because key rotation requires all participants to agree on the new key material before use. Aura's consensus-finalized bumps ensure exactly one committed bump per parent epoch.
-
-Keyhive has a simple fixed authorization model with read, write, admin, and pull permissions. Aura requires arbitrary capabilities that can be attenuated and delegated.
+BeeKEM's authors also distinguish its forward secrecy from Keyhive's document-history policy: retaining the ability to read earlier document chunks changes the application's secrecy properties. Aura must make the same distinction between key establishment and retained history.
 
 ### Amigo
 
-Amigo takes the opposite position to AMP. It favors eventual convergence for every operation, letting both messages and key rotations merge under causal structure without a consensus step. Cutoffs propagate through the network like any other update, and validity remains a local property until the system converges.
+[Amigo](https://spacelab-ccny.github.io/research/amigo/) targets mesh messaging under intermittent connectivity and uses a causal TreeKEM construction. Its authors describe both forward secrecy and post-compromise security. Causal reconciliation allows progress without requiring consensus on every key update.
 
-This suits harsh, partition-prone networks where consensus is expensive and connectivity is intermittent. The cost is a soft secrecy boundary. Old keys can remain effective past their designated cutoff on nodes that have not yet observed the rotation, so the moment of forgetting is blurred rather than crisp.
-
-AMP makes the opposite choice. Message sends remain CRDT-based for availability, while epoch transitions require consensus, so forgetting is sharp at the price of a coordination step.
+AMP chooses certified live transitions and consensus-backed durability for its channel state. This introduces coordination requirements in exchange for an explicit durable successor decision. Neither agreement nor causal convergence can make disconnected devices learn a cutoff instantly, or erase secrets already held by an adversary.
 
 ### Why AMP?
 
-Aura's recovery system requires pure reduction from facts. Existing protocols derive state from processing history with deleted intermediates. Retrofitting recovery would require storing all intermediate states or accepting that recovery loses message history.
+AMP's distinctive contract combines authority-level device abstraction, deterministic shared-state reduction, authorized secret recovery, and selective agreement. Ordinary messages can proceed using valid local authority, while transitions distinguish provisional requests, live certificates, and durable decisions.
 
-MLS requires strict ordering. Keyhive and Amigo provide only eventual consistency. AMP applies each consistency model where appropriate.
-
-Existing protocols do not provide hooks for authorization checks before key derivation.
-
-TreeKEM protocols expose group structure through tree operations. AMP derives keys from authority-scoped roots that hide internal device structure.
-
-| Requirement | MLS | Keyhive | Amigo | AMP |
-|-------------|-----|---------|-------|-----|
-| Pure recovery from facts | No | Partial | Partial | Yes |
-| Linear epoch chain | Via DS | No | No | Via consensus |
-| Concurrent sends | No | Yes | Yes | Yes |
-| Extensible authorization | No | No | No | Yes |
-| Opaque authority | No | No | No | Yes |
+The essential comparison is which state must converge, which decisions require agreement, and which secrets remain recoverable. Those choices determine availability, exposure, and the history a user can regain after losing devices.
 
 ## Conclusion
 
-Secure messaging is usually framed as a cryptographic problem. AMP reframes it as a distributed systems problem where both state and identity are replicated across nodes with no central coordinator.
+Recoverable messaging requires cryptography, replicated state, and secret retention to share one contract. Facts reconstruct the protocol view. Protected secret material restores decryption capability, and safe sending allocations prevent recovery from repeating an encryption key and nonce.
 
-The protocol demonstrates that deterministic recovery and post-compromise security are compatible. This requires explicit choices about safety, liveness, and partition tolerance at each layer. Message sends favor availability. Epoch transitions favor consistency. The dual window ratchet provides bounded forward secrecy while remaining fully recoverable from journal state.
-
-MLS assumes ordered delivery. Keyhive and Amigo assume eventual consistency everywhere. AMP applies each consistency model where the distributed systems requirements demand it.
+AMP applies different agreement requirements to ordinary sends and epoch transitions. Its windows tolerate asynchronous delivery; its key-refresh and retention policies define compromise recovery and historical exposure. Keeping those responsibilities explicit makes the recovery promise precise.
 
 ## See Also
 
-- [Aura Messaging Protocol Specification](https://hxrts.com/aura/112_amp.html) for complete technical details
-- [System Architecture](https://hxrts.com/aura/001_system_architecture.html) for broader system context
-- [Authority and Identity](https://hxrts.com/aura/102_authority_and_identity.html) for commitment tree operation details
-- [Journal System](https://hxrts.com/aura/105_journal.html) for CRDT journal mechanics
-- [Relational Contexts](https://hxrts.com/aura/114_relational_contexts.html) for shared state machines
-- [Distributed Systems Contract](https://hxrts.com/aura/004_distributed_systems_contract.html) for consistency guarantees
+- [Aura Messaging Protocol Specification](https://hxrts.com/aura/112_amp.html)
+- [System Architecture](https://hxrts.com/aura/001_system_architecture.html)
+- [Authority and Identity](https://hxrts.com/aura/102_authority_and_identity.html)
+- [Journal System](https://hxrts.com/aura/105_journal.html)
+- [Relational Contexts](https://hxrts.com/aura/114_relational_contexts.html)
+- [Distributed Systems Contract](https://hxrts.com/aura/004_distributed_systems_contract.html)
