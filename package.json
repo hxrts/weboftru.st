@@ -1,0 +1,13 @@
+{
+  "name": "weboftru.st",
+  "version": "1.0.0",
+  "description": "Build tools for weboftru.st",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "zola build && node scripts/render-tikz.mjs"
+  },
+  "devDependencies": {
+    "node-tikzjax": "^1.0.5"
+  }
+}

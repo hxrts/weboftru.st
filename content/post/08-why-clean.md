@@ -4,6 +4,10 @@ date = 2026-10-20
 description = "Evolutionary structure of neural circuits."
 slug = "why-clean"
 draft = true
+
+[extra]
+cover_image = "/images/byte-neuron.png"
+cover_caption = "Byte Magazine, August 1979"
 +++
 
 ## The organization of learning
@@ -91,8 +95,8 @@ Evolutionary theory distinguishes the generation of variation from the selection
 \end{pgfonlayer}
 \node[align=center] at (2.25,1.55) {Established\\feature};
 \node[align=center,text=black!40] at (6.75,1.55) {Reinforcing\\shared signals};
-\node[align=center] at (2.25,-2.1) {Competing\\candidate};
-\node[align=center,text=black!40] at (6.75,-2.1) {Less shared\\support};
+\node[align=center] at (2.25,-1.95) {Competing\\candidate};
+\node[align=center,text=black!40] at (6.75,-1.95) {Less shared\\support};
 \coordinate (axisleft) at (0,-3.70);
 \coordinate (axisright) at (9,-3.70);
 \coordinate (axishead) at (.42,-3.70);

@@ -455,8 +455,12 @@ body > footer {
             transition: opacity 0.3s ease;
         }
 
-        &.loaded img {
-            opacity: 1;
+        &.loaded {
+            background-color: transparent;
+
+            img {
+                opacity: 1;
+            }
         }
     }
 
@@ -1367,12 +1371,12 @@ svg[id^="mermaid-"] {
 }
 
 // =============================================================================
-// TikZ Figures (client-side TikZJax, {% tikz %} shortcode)
+// TikZ Figures ({% tikz %} shortcode, compiled to SVG at build time)
 // =============================================================================
-// TikZJax replaces the shortcode's <script type="text/tikz"> with an inline SVG
-// wrapped in a fixed-size (pt) div. That wrapper is neutralized below so
-// --fig-w and max-width govern sizing, and the figure otherwise borrows the
-// Mermaid treatment: same vertical rhythm, fade-in, centering, overflow.
+// Build-time rendering replaces the shortcode's <script type="text/tikz">
+// with an inline SVG. The wrapper is neutralized below so --fig-w and
+// max-width govern sizing, and the figure borrows the Mermaid treatment.
+// zola serve previews still use TikZJax's client-side renderer.
 // TikZ renders in black ink on transparency, so dark mode inverts it, matching
 // the Mermaid handling above. A figure's width can be set per figure with the
 // shortcode's fig_w argument (--fig-w), like the ep-presentation deck.
@@ -1397,8 +1401,8 @@ svg[id^="mermaid-"] {
         opacity: 1;
     }
 
-    // Engine wrapper: display:flex blockifies the SVG and its fixed pt size
-    // would clamp --fig-w. Drop both so the SVG is a normal inline-block.
+    // The client-side preview engine adds a fixed-size wrapper around its SVG.
+    // Neutralize it so the SVG is a normal inline-block in both render modes.
     .tikz-fig-body > div {
         display: block !important;
         width: auto !important;

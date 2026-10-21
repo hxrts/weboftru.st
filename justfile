@@ -12,11 +12,13 @@ serve: manifest
 
 # build and serve (rebuilds first, then starts dev server; drafts previewed locally)
 build-serve: manifest
-    zola build && zola serve --drafts
+    test -d node_modules/node-tikzjax || npm ci
+    npm run build && zola serve --drafts
 
 # build site to public/
 build: manifest
-    zola build
+    test -d node_modules/node-tikzjax || npm ci
+    npm run build
     @echo "Built to public/"
 
 # build site via nix to result/

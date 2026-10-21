@@ -8,6 +8,9 @@ CLAUDE.md
 # nix
 result
 
+# node
+node_modules/
+
 # zola
 public/
 static/processed_images/

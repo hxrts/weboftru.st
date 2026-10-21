@@ -1,4 +1,5 @@
-{# TikZ figure rendered client-side by TikZJax (vendored in static/tikzjax/).
+{# TikZ figure compiled to inline SVG after Zola builds the site. The
+   client-side TikZJax renderer remains available for `zola serve` previews.
    Usage in a post:
        {% tikz(fig_w="520px", caption="Optional caption, HTML allowed") %}
        \begin{tikzpicture}

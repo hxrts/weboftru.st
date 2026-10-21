@@ -17,10 +17,13 @@ blog style guide.
   so draft links and tags are absent from the published site automatically.
   No per-page ``unlisted`` extra is needed for drafts.
 
-## TikZ figures (client-side TikZJax)
+## TikZ figures (build-time SVG)
 
-Blog posts can render TikZ diagrams in the browser, mirroring the system in
-the sibling `../ep-presentation` repo (Slidev + `slidev-addon-tikzjax`).
+Blog posts can include TikZ diagrams, mirroring the system in the sibling
+`../ep-presentation` repo (Slidev + `slidev-addon-tikzjax`). Production builds
+compile them to inline SVG with `node-tikzjax`, so readers do not wait for
+browser-side TeX rendering. `zola serve` still uses the browser renderer for
+live previews.
 
 ### Usage
 
@@ -47,20 +50,25 @@ Wrap a picture in the `tikz` shortcode inside a post's markdown:
   inner double quotes in the argument.
 - The shortcode body is passed through byte-raw (markdown is not applied, and
   Tera autoescape is off), so write plain TikZ/TeX.
-- Do not add `\begin{document}`; TikZJax wraps the body itself. Use
+- Do not add `\begin{document}`; the build script wraps the body. Use
   `\usetikzlibrary{...}` for extra libraries (`arrows.meta`,
   `decorations.markings`).
 
 ### How it renders
 
-- `templates/shortcodes/tikz.html` emits `<figure class="tikz-fig">` +
-  `<div class="tikz-fig-body">` + `<script type="text/tikz">`, then an
-  optional `<figcaption>`.
-- `templates/base.html` loads `tikzjax.js` and `fonts.css` only when a page
-  contains a `text/tikz` script, using the same conditional-loading pattern
-  as the Mermaid loader.
-- The engine is TikZJax, a WebAssembly TeX port, vendored so figures work
-  offline and same-origin:
+- `templates/shortcodes/tikz.html` emits a source `<script type="text/tikz">`
+  for Zola previews and the build renderer, followed by an optional
+  `<figcaption>`.
+- `npm run build` runs `zola build` and then `scripts/render-tikz.mjs`, which
+  replaces each source script in the generated HTML with inline SVG and marks
+  the figure as processed.
+- Production pages avoid loading TikZJax and its WASM engine. The build step
+  adds the local font stylesheet only to pages with compiled figures, and the
+  browser fetches only the glyph fonts those SVGs use. `templates/base.html`
+  loads the preview engine only when an uncompiled `text/tikz` script is
+  present, as it is during `zola serve`.
+- The development fallback is TikZJax, a WebAssembly TeX port, vendored so
+  previews work offline and same-origin:
   - `static/tikzjax/tikzjax.js` — patched to locate the WASM and memory image
     relative to its own URL (stock builds hardcode an S3 base)
   - `static/tikzjax/3f69...wasm` — the TeX engine, plus
@@ -72,13 +80,12 @@ Wrap a picture in the `tikz` shortcode inside a post's markdown:
 - Dark mode inverts the SVG (`.tikz-fig svg { filter: invert(1) }`),
   matching the Mermaid handling.
 - Figures get the same layout treatment as Mermaid diagrams and figure
-  images: `s-6`/`s-8` margins, `overflow-x: auto`, fade-in on
-  `data-processed`, and centering. Clicking a figure opens the shared
+  images: `s-6`/`s-8` margins, `overflow-x: auto`, and centering. Clicking a figure opens the shared
   lightbox (bare SVG, `tikz` class preserved for dark-mode inversion);
   figure numbering includes `.tikz-fig`, so downloads are named
   `{slug}-{n}.svg`.
 
-### Engine layout quirk
+### Preview engine layout quirk
 
 The engine renders `<figure class="tikz-fig"><div style="width: …pt">` +
 `<div class="page" style="height:0">` + `<svg style="position:absolute">`
@@ -96,11 +103,11 @@ behave like Mermaid. If you touch the CSS, preserve those three overrides or
 - Avoid English words with an `ff` ligature in labels: the engine's SVG
   mapping mangles them ("offspring" renders as "o®spring"). Use
   "descendant" instead.
-- Rendering needs http(s): the engine is fetched at page load, so `file://`
-  previews show no figure (same limitation as the KaTeX CDN). The first
-  render of a figure is slow (browser compiles TeX).
+- Client-side preview rendering needs http(s): the engine is fetched at page
+  load, so `file://` previews show no figure. The first preview render is slow
+  because the browser compiles TeX; production pages use precompiled SVG.
 - Figure source lines count toward `wc -w` and are invisible to the
   `≤4 sentences per paragraph` audit, so keep them terse.
-- To verify a figure compiles without a browser, compile the same source with
-  `node-tikzjax` (available in `../ep-presentation/node_modules`):
-  `tex(source, { tikzLibraries: [...] })` then `dvi2svg`.
+- To verify build-time rendering, run `npm ci && npm run build`. To include
+  drafts in a local generated site, run `zola build --drafts` followed by
+  `node scripts/render-tikz.mjs`.

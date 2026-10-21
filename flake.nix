@@ -19,26 +19,23 @@
       in
       {
         packages = {
-          default = pkgs.stdenv.mkDerivation {
+          default = pkgs.buildNpmPackage {
             pname = "weboftrust";
             version = "0.1.0";
             src = ./.;
+            npmDepsHash = "sha256-dZ1huv3ZNGLYS34MHxiCQr8QK0jYM2VcrAFXHcWiZrQ=";
 
             nativeBuildInputs = [ pkgs.zola ];
 
-            buildPhase = ''
-              zola build
-            '';
-
-            installPhase = ''
-              cp -r public $out
-            '';
+            npmBuildScript = "build";
+            installPhase = "cp -r public $out";
           };
         };
 
         devShells.default = pkgs.mkShell {
           buildInputs = [
             pkgs.zola
+            pkgs.nodejs_22
             pkgs.just
             pkgs.git
             pkgs.libwebp
