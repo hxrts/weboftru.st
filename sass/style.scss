@@ -1268,6 +1268,13 @@ svg[id^="mermaid-"] {
 // Aura-consensus uses e1f5ff (witness) / ffe1e1 (initiator) fills, so those
 // join the blue and coral families respectively.
 [data-theme="dark"] svg[id^="mermaid-"] {
+    // Guardian 3 uses the muted blue fill for its unavailable state.
+    g.node[data-id="G3"] foreignObject div,
+    g.node[data-id="G3"] .nodeLabel {
+        color: var(--gray-100) !important;
+        fill: var(--gray-100) !important;
+    }
+
     // Blue family → muted cyan
     rect[style*="e1f5fe" i],
     polygon[style*="e1f5fe" i],
@@ -1309,6 +1316,7 @@ svg[id^="mermaid-"] {
     polygon[style*="ffe1e1" i] {
         fill: #4a2a2a !important;
     }
+
 }
 
 // =============================================================================

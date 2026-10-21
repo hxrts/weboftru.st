@@ -83,7 +83,7 @@ graph TD
         R --> S[Derived Domain State]
     end
 
-    style DB fill:#ffcdd2
+    style DB fill:#ffcdd2,color:#263238
     style J1 fill:#e1f5fe
     style J2 fill:#e1f5fe
     style J3 fill:#e1f5fe
@@ -301,7 +301,7 @@ graph TD
 
     style G1 fill:#e1f5fe
     style G2 fill:#e1f5fe
-    style G3 fill:#f5f5f5,stroke-dasharray:4 4
+    style G3 fill:#e1f5fe,stroke-dasharray:4 4
     style A fill:#b3e5fc
     style B fill:#81d4fa
     style C fill:#c8e6c9
