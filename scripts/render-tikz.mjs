@@ -2,6 +2,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import tikzjax from 'node-tikzjax';
+import '../static/tikzjax/ligatures.js';
 
 const tex2svg = tikzjax.default;
 
@@ -22,16 +23,18 @@ async function* htmlFiles(directory) {
 let figuresRendered = 0;
 for await (const htmlPath of htmlFiles(outputRoot)) {
     const html = await readFile(htmlPath, 'utf8');
-    const figurePattern = /<figure class=(?:"tikz-fig"|tikz-fig)([^>]*)>\s*<div class=(?:"tikz-fig-body"|tikz-fig-body)>\s*<script type=(?:"text\/tikz"|text\/tikz)>([\s\S]*?)<\/script>\s*<\/div>/g;
+    const figurePattern = /<figure\b(?=[^>]*\bclass=(?:"tikz-fig"|tikz-fig)(?=[\s>]))([^>]*)>\s*<div class=(?:"tikz-fig-body"|tikz-fig-body)>\s*<script type=(?:"text\/tikz"|text\/tikz)>([\s\S]*?)<\/script>\s*<\/div>/g;
     let renderedInPage = 0;
     const output = await replaceAsync(html, figurePattern, async (_match, attributes, source) => {
-        const svg = await tex2svg(`\\begin{document}${source}\\end{document}`);
+        const preparedSource = globalThis.preventFlLigatures(source);
+        const svg = await tex2svg(`\\begin{document}${preparedSource}\\end{document}`);
         if (!svg.startsWith('<svg')) {
             throw new Error(`TikZJax returned invalid SVG for ${htmlPath}`);
         }
         renderedInPage++;
         figuresRendered++;
-        return `<figure class="tikz-fig" data-processed="true"${attributes}><div class="tikz-fig-body">${svg}</div>`;
+        const retainedAttributes = attributes.replace(/\sclass=(?:"tikz-fig"|tikz-fig)(?=\s|$)/, '');
+        return `<figure class="tikz-fig" data-processed="true"${retainedAttributes}><div class="tikz-fig-body">${svg}</div>`;
     });
     if (/<script type=(?:"text\/tikz"|text\/tikz)>/.test(output)) {
         throw new Error(`Uncompiled TikZ source remains in ${htmlPath}; update the build renderer for the emitted markup`);

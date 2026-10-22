@@ -1,104 +1,162 @@
 {% raw %}
-\usetikzlibrary{arrows.meta,backgrounds,calc}
-\tikzset{
-  learning/.style={x=1cm,y=1cm,scale=.8,transform shape,>={Stealth[length=4.6pt,width=3.6pt]},every node/.style={font=\sffamily\footnotesize}},
-  time/.style={font=\sffamily\bfseries\footnotesize},
-  emphasis/.style={font=\sffamily\bfseries\footnotesize},
-  feature/.style={circle,draw,fill=black,minimum size=4.6pt,inner sep=0pt,line width=.65pt},
-  potential/.style={feature,fill=white,fill opacity=1},
-  susceptibility/.style={minimum size=#1pt},
-  flow/.style={->,line width=.85pt},
-  schematic/.style={->,line width=.7pt},
-  boundary/.style={draw=black!65,line width=.8pt,dash pattern=on .1pt off 2.5pt,line cap=round},
-  readout/.style={draw,line width=.65pt,fill=white,inner sep=4pt,align=center},
-  trait/.style={circle,draw,fill=none,minimum size=10pt,inner sep=0pt,line width=.65pt}
-}
-\pgfdeclarelayer{foreground}
-\pgfsetlayers{background,main,foreground}
+\usetikzlibrary{arrows.meta,backgrounds,calc}%
+\tikzset{%
+  learning/.style={x=1cm,y=1cm,scale=.8,transform shape,>={Stealth[length=4.6pt,width=3.6pt]},every node/.style={font=\sffamily\footnotesize}},%
+  time/.style={font=\sffamily\bfseries\footnotesize},%
+  emphasis/.style={font=\sffamily\bfseries\footnotesize},%
+  feature/.style={circle,draw,fill=black,minimum size=4.6pt,inner sep=0pt,line width=.65pt},%
+  potential/.style={feature,fill=white,fill opacity=1},%
+  activation/.style={minimum size=#1pt},%
+  flow/.style={->,line width=.85pt},%
+  schematic/.style={->,line width=.7pt},%
+  boundary/.style={draw=black!65,line width=.8pt,dash pattern=on .1pt off 2.5pt,line cap=round},%
+  readout/.style={draw,line width=.65pt,fill=white,inner sep=4pt,align=center},%
+  trait/.style={circle,draw,fill=none,minimum size=10pt,inner sep=0pt,line width=.65pt}%
+}%
+\pgfdeclarelayer{bottom}%
+\pgfdeclarelayer{foreground}%
+\pgfsetlayers{bottom,background,main,foreground}%
 % One shared stage boundary for every learning diagram.
-\newcommand{\stageoval}[1]{\draw[boundary] (#1) ellipse (.7cm and 1.85cm);}
+\newcommand{\stageoval}[1]{%
+  \begin{pgfonlayer}{bottom}%
+    \draw[boundary] (#1) ellipse (.7cm and 1.85cm);%
+  \end{pgfonlayer}%
+}%
+% Common vertical layout, relative to each row's oval centers.
+% Stage titles and subtitles stay above ovals; explanations occupy the footer.
+\newcommand{\stageheading}[3]{%
+  \node[time,anchor=base] at (#1,2.8) {#2};%
+  \node[anchor=base] at (#1,2.4) {#3};%
+}%
+\newcommand{\aboveannotation}[3]{%
+  \node[anchor=south,align=center,inner sep=0pt] at (#1,{#2+2.1}) {#3};%
+}%
+\newcommand{\belowannotation}[3]{%
+  \node[anchor=north,align=center,inner sep=0pt] at (#1,{#2-2.1}) {#3};%
+}%
+% A common width preserves the physical scale of spacing across figures.
+\newcommand{\diagramframe}[1]{%
+  \pgfresetboundingbox%
+  \path[use as bounding box] (-3.45,#1) rectangle (12.4,3.2);%
+}%
 % Center every group with the same .8cm center-to-center pitch.
-\def\learningpitch{.8}
-\newcommand{\stacknode}[6][]{
-  \node[#1] (#2) at (#3,{#4+\learningpitch*((#5+1)/2-#6)}) {};
-}
-\newcommand{\rightstacklabel}[4]{
-  \rightlabel{#1}{\learningpitch*((#2+1)/2-#3)}{#4}
-}
-% Keep labels a fixed .12cm beyond the curved edge of the first or last oval.
-\newcommand{\rightlabel}[3]{
-  \pgfmathsetmacro{\labeldy}{#2}
-  \pgfmathsetmacro{\labelx}{9+0.7*sqrt(1-(\labeldy/1.85)^2)+.12}
-  \pgfmathsetmacro{\labely}{#1+#2}
-  \node[anchor=west,align=left] at (\labelx,\labely) {#3};
-}
-\newcommand{\leftlabel}[2]{
-  \pgfmathsetmacro{\labelx}{-0.7*sqrt(1-(#1/1.85)^2)-.12}
-  \node[anchor=east,align=center] at (\labelx,#1) {#2};
-}
+\def\learningpitch{.8}%
+\newcommand{\stacknode}[6][]{%
+  \node[#1] (#2) at (#3,{#4+\learningpitch*((#5+1)/2-#6)}) {};%
+}%
+\newcommand{\rightstacklabel}[4]{%
+  \rightlabel{#1}{\learningpitch*((#2+1)/2-#3)}{#4}%
+}%
+% Keep labels approximately 4pt beyond the curved edge of the first or last oval.
+\newcommand{\rightlabel}[3]{%
+  \pgfmathsetmacro{\labeldy}{#2}%
+  \pgfmathsetmacro{\labelx}{9+0.7*sqrt(1-(\labeldy/1.85)^2)+.14}%
+  \pgfmathsetmacro{\labely}{#1+#2}%
+  \node[anchor=west,align=left,inner sep=0pt] at (\labelx,\labely) {#3};%
+}%
+\newcommand{\leftrowlabel}[3]{%
+  \pgfmathsetmacro{\labelx}{-0.7*sqrt(1-(#2/1.85)^2)-.14}%
+  \node[anchor=east,align=right,inner sep=0pt] at (\labelx,{#1+#2}) {#3};%
+}%
+\newcommand{\leftlabel}[2]{\leftrowlabel{0}{#1}{#2}}%
 % Offset white copies form a compact halo around label glyphs without a box.
-\newcommand{\halolabel}[3]{
-  \foreach \dx/\dy in {-0.45pt/0pt,0.45pt/0pt,0pt/-0.45pt,0pt/0.45pt,-0.32pt/-0.32pt,-0.32pt/0.32pt,0.32pt/-0.32pt,0.32pt/0.32pt}{
-    \node[#1,text=white,xshift=\dx,yshift=\dy] at (#2) {#3};
-  }
-  \node[#1] at (#2) {#3};
-}
+\newcommand{\halolabel}[3]{%
+  \foreach \dx/\dy in {-0.45pt/0pt,0.45pt/0pt,0pt/-0.45pt,0pt/0.45pt,-0.32pt/-0.32pt,-0.32pt/0.32pt,0.32pt/-0.32pt,0.32pt/0.32pt}{%
+    \node[inner sep=0pt,#1,text=white,xshift=\dx,yshift=\dy] at (#2) {#3};%
+  }%
+  \node[inner sep=0pt,#1] at (#2) {#3};%
+}%
+% Equal text clearance from the actual circle edge, independent of its size.
+\newcommand{\abovenodelabel}[2]{%
+  \halolabel{anchor=south,align=center}{$(#1.north)+(0,4pt)$}{#2}%
+}%
+\newcommand{\belownodelabel}[2]{%
+  \halolabel{anchor=north,align=center}{$(#1.south)+(0,-4pt)$}{#2}%
+}%
 % Fixed horizontal extents; the narrow end matches the .85pt black line.
-\newcommand{\pressureband}[5]{
-  \path[fill=black!40,draw=none]
-    ($(#4)+(0,#5pt)$) .. controls ($(#3)+(0,#5pt)$) and ($(#2)+(0,.425pt)$) .. ($(#1)+(-.42,.425pt)$)
-    -- ($(#1)+(-.42,-.425pt)$) .. controls ($(#2)+(0,-.425pt)$) and ($(#3)+(0,-#5pt)$) .. ($(#4)+(0,-#5pt)$) -- cycle;
-}
+\newcommand{\pressureband}[5]{%
+  \path[fill=black!40,draw=none]%
+    ($(#4)+(0,#5pt)$) .. controls ($(#3)+(0,#5pt)$) and ($(#2)+(0,.425pt)$) .. ($(#1)+(-.42,.425pt)$)%
+    -- ($(#1)+(-.42,-.425pt)$) .. controls ($(#2)+(0,-.425pt)$) and ($(#3)+(0,-#5pt)$) .. ($(#4)+(0,-#5pt)$) -- cycle;%
+}%
 % Suppression reverses the taper, retaining the same endpoints and magnitude.
-\newcommand{\suppressband}[5]{
-  \path[fill=black!40,draw=none]
-    ($(#4)+(0,.425pt)$) .. controls ($(#3)+(0,.425pt)$) and ($(#2)+(0,#5pt)$) .. ($(#1)+(-.42,#5pt)$)
-    -- ($(#1)+(-.42,-#5pt)$) .. controls ($(#2)+(0,-#5pt)$) and ($(#3)+(0,-.425pt)$) .. ($(#4)+(0,-.425pt)$) -- cycle;
-}
+\newcommand{\suppressband}[5]{%
+  \path[fill=black!40,draw=none]%
+    ($(#4)+(0,.425pt)$) .. controls ($(#3)+(0,.425pt)$) and ($(#2)+(0,#5pt)$) .. ($(#1)+(-.42,#5pt)$)%
+    -- ($(#1)+(-.42,-#5pt)$) .. controls ($(#2)+(0,-#5pt)$) and ($(#3)+(0,-.425pt)$) .. ($(#4)+(0,-.425pt)$) -- cycle;%
+}%
 % A plain developmental axis does not imply a pressure magnitude.
-\newcommand{\developmentaxis}[1]{
-  \draw[flow,line cap=round] (0,#1) -- (9,#1);
-  \node at ($(4.5,#1)+(0,-.5)$) {Development};
-}
-\newcommand{\learningaxis}[1]{
-  \begin{pgfonlayer}{background}
-    \path[fill=black!40,draw=none]
-      ($(.42,#1)+(0,4pt)$) -- ($(9,#1)+(0,.425pt)$)
-      -- ($(9,#1)+(0,-.425pt)$) -- ($(.42,#1)+(0,-4pt)$) -- cycle;
-  \end{pgfonlayer}
-  \developmentaxis{#1}
-  \node[text=black!65] at ($(4.5,#1)+(0,.4)$) {Band width indicates pressure magnitude};
-}
-% Susceptibility and status are used together only where both are encoded.
-\newcommand{\learninglegend}[1]{
-  \node[potential,susceptibility=4.6] at (.3,#1) {};
-  \node[anchor=west,align=left] at (.55,#1) {Lower training susceptibility};
-  \node[potential,susceptibility=10] at ($(.3,#1)+(0,-.6)$) {};
-  \node[anchor=west,align=left] at ($(.55,#1)+(0,-.6)$) {Higher training susceptibility};
-  \node[feature,susceptibility=7.4] at (5.3,#1) {};
-  \node[anchor=west] at (5.6,#1) {Established mechanism};
-  \node[potential,susceptibility=7.4] at ($(5.3,#1)+(0,-.6)$) {};
-  \node[anchor=west] at ($(5.6,#1)+(0,-.6)$) {Candidate mechanism};
-}
-% Signed pressure is introduced only where reinforcement and suppression differ.
-\newcommand{\pressuresignlegend}[1]{
-  \path[fill=black!40,draw=none]
-    ($(0,#1)+(0,4pt)$) -- ($(1,#1)+(0,.425pt)$)
-    -- ($(1,#1)+(0,-.425pt)$) -- ($(0,#1)+(0,-4pt)$) -- cycle;
-  \path[fill=black!40,draw=none]
-    ($(5,#1)+(0,.425pt)$) -- ($(6,#1)+(0,4pt)$)
-    -- ($(6,#1)+(0,-4pt)$) -- ($(5,#1)+(0,-.425pt)$) -- cycle;
-  \draw[flow] (0,#1) -- (1,#1);
-  \draw[flow] (5,#1) -- (6,#1);
-  \node[anchor=west] at (1.15,#1) {Reinforcing update (+)};
-  \node[anchor=west] at (6.15,#1) {Suppressing update (-)};
-}
-
-% Opaque trait rings mask connection lines before restoring the instantiated dot.
-\newcommand{\dogtrait}[1]{
-  \begin{pgfonlayer}{foreground}
-    \node[trait,fill=white] at (#1.center) {};
-    \node[feature] at (#1.center) {};
-  \end{pgfonlayer}
-}
+\newcommand{\developmentaxis}[1]{%
+  \draw[flow,line cap=round] (0,#1) -- (9,#1);%
+  \node[anchor=north] at ($(4.5,#1)+(0,-.25)$) {Development};%
+}%
+\newcommand{\learningaxis}[1]{%
+  \begin{pgfonlayer}{background}%
+    \path[fill=black!40,draw=none]%
+      ($(.42,#1)+(0,4pt)$) -- ($(9,#1)+(0,.425pt)$)%
+      -- ($(9,#1)+(0,-.425pt)$) -- ($(.42,#1)+(0,-4pt)$) -- cycle;%
+  \end{pgfonlayer}%
+  \developmentaxis{#1}%
+%
+}%
+% Legends share two columns: marker centers .3/5.3, text starts 1/6.
+% The .7cm row pitch accommodates two-line labels without crowding.
+\newcommand{\activationlegend}[2]{%
+  \node[feature,activation=#2] at (.3,#1) {};%
+  \node[anchor=west] at (1,#1) {Lower flower activation};%
+  \node[feature,activation=10] at ($(.3,#1)+(0,-.7)$) {};%
+  \node[anchor=west] at ($(1,#1)+(0,-.7)$) {Higher flower activation};%
+}%
+\newcommand{\statuslegend}[1]{%
+  \node[feature,activation=7.4] at (.3,#1) {};%
+  \node[anchor=west] at (1,#1) {Established mechanism};%
+  \node[potential,activation=7.4] at (5.3,#1) {};%
+  \node[anchor=west] at (6,#1) {Unrealized alternative};%
+}%
+\newcommand{\pressurekey}[3]{%
+  \begin{scope}[shift={(#1,#2)}]%
+    \ifnum #3>0%
+      \path[fill=black!40,draw=none]%
+        (0,4.5pt) -- (.5,.425pt) -- (.5,-.425pt) -- (0,-4.5pt) -- cycle;%
+    \else%
+      \path[fill=black!40,draw=none]%
+        (0,.425pt) -- (.5,4.5pt) -- (.5,-4.5pt) -- (0,-.425pt) -- cycle;%
+    \fi%
+    \draw[flow] (-.15,0) -- (.75,0);%
+  \end{scope}%
+}%
+\newcommand{\pressuremagnitudelegend}[1]{%
+  \pressurekey{0}{#1}{1}%
+  \node[anchor=west,align=left] at (1,#1) {Learning pressure\\(band width)};%
+}%
+\newcommand{\trainingeffectlegend}[1]{%
+  \pressurekey{5}{#1}{1}%
+  \node[anchor=west,align=left] at (6,#1) {Reinforcing\\learning pressure};%
+  \pressurekey{5}{#1-.7}{-1}%
+  \node[anchor=west,align=left] at (6,{#1-.7}) {Suppressing\\learning pressure};%
+}%
+\newcommand{\responselegend}[1]{%
+  \node[feature] at (.3,#1) {};%
+  \node[anchor=west] at (1,#1) {Observed response category};%
+  \draw[schematic] (5,#1) -- (5.6,#1);%
+  \node[anchor=west,align=left] at (6,#1) {Possible developmental link};%
+}%
+\newcommand{\traitlegend}[1]{%
+  \node[feature] (keyyes) at (.3,#1) {};%
+  \dogtrait{keyyes}%
+  \node[anchor=west] at (1,#1) {Responds to dogs};%
+  \node[feature] at (5.3,#1) {};%
+  \node[anchor=west] at (6,#1) {No dog response};%
+}%
+%% Opaque trait rings mask connection lines before restoring the instantiated dot.
+\newcommand{\dogtrait}[1]{%
+  \begin{pgfonlayer}{foreground}%
+    \node[trait,fill=white] at (#1.center) {};%
+    \node[feature] at (#1.center) {};%
+  \end{pgfonlayer}%
+}%
+% Discard definition-time glue before the picture, including library glue.
+\loop\ifdim\lastskip>0pt\unskip\repeat%
+\ignorespaces%
 {% endraw %}
+%
