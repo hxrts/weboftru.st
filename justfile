@@ -10,10 +10,10 @@ manifest:
 serve: manifest
     zola serve
 
-# build and serve (rebuilds first, then starts dev server; drafts previewed locally)
+# watch, rebuild TikZ SVGs, and serve a live preview including drafts
 build-serve: manifest
     test -d node_modules/node-tikzjax || npm ci
-    npm run build && zola serve --drafts
+    node scripts/serve-built.mjs
 
 # build site to public/
 build: manifest

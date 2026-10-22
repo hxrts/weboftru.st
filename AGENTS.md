@@ -7,7 +7,7 @@ blog style guide.
 
 ## Draft visibility in post lists
 
-- `zola serve --drafts` (used by `just build-serve`) includes drafts in the
+- `zola serve --drafts` and `just build-serve` include drafts in the
   post list on the homepage (`templates/index.html`) and the `/post/` section
   page (`templates/section.html`).
 - Zola exposes `page.draft` (true/false) to templates, so both templates wrap
@@ -24,6 +24,14 @@ Blog posts can include TikZ diagrams, mirroring the system in the sibling
 compile them to inline SVG with `node-tikzjax`, so readers do not wait for
 browser-side TeX rendering. `zola serve` still uses the browser renderer for
 live previews.
+
+`just build-serve` runs `scripts/serve-built.mjs`, which watches content,
+templates, Sass, static assets, syntax definitions, scripts, and `config.toml`.
+Each change triggers a draft Zola build followed by SVG compilation. The
+preview switches to the completed build and reloads connected browsers only
+after both succeed, keeping the previous preview available on failure. It
+serves at `http://127.0.0.1:1111` by default (`PORT` overrides the port) and uses
+temporary build directories that are removed when the server stops.
 
 ### Usage
 

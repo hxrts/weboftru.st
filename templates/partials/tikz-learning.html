@@ -99,54 +99,54 @@
   \developmentaxis{#1}%
 %
 }%
-% Legends share two columns: marker centers .3/5.3, text starts 1/6.
-% The .7cm row pitch accommodates two-line labels without crowding.
+% Legends share columns at 0cm and 5cm: marker centers .3/5.3, text starts .7/5.7.
+% The .7cm row pitch separates stacked legend entries.
 \newcommand{\activationlegend}[2]{%
   \node[feature,activation=#2] at (.3,#1) {};%
-  \node[anchor=west] at (1,#1) {Lower flower activation};%
+  \node[anchor=west] at (.7,#1) {Lower flower activation};%
   \node[feature,activation=10] at ($(.3,#1)+(0,-.7)$) {};%
-  \node[anchor=west] at ($(1,#1)+(0,-.7)$) {Higher flower activation};%
+  \node[anchor=west] at ($(.7,#1)+(0,-.7)$) {Higher flower activation};%
 }%
 \newcommand{\statuslegend}[1]{%
   \node[feature,activation=7.4] at (.3,#1) {};%
-  \node[anchor=west] at (1,#1) {Established mechanism};%
+  \node[anchor=west] at (.7,#1) {Established mechanism};%
   \node[potential,activation=7.4] at (5.3,#1) {};%
-  \node[anchor=west] at (6,#1) {Unrealized alternative};%
+  \node[anchor=west] at (5.7,#1) {Unrealized alternative};%
 }%
 \newcommand{\pressurekey}[3]{%
   \begin{scope}[shift={(#1,#2)}]%
     \ifnum #3>0%
       \path[fill=black!40,draw=none]%
-        (0,4.5pt) -- (.5,.425pt) -- (.5,-.425pt) -- (0,-4.5pt) -- cycle;%
+        (0,4.5pt) -- (.45,.425pt) -- (.45,-.425pt) -- (0,-4.5pt) -- cycle;%
     \else%
       \path[fill=black!40,draw=none]%
-        (0,.425pt) -- (.5,4.5pt) -- (.5,-4.5pt) -- (0,-.425pt) -- cycle;%
+        (0,.425pt) -- (.45,4.5pt) -- (.45,-4.5pt) -- (0,-.425pt) -- cycle;%
     \fi%
-    \draw[flow] (-.15,0) -- (.75,0);%
+    \draw[flow] (-.1,0) -- (.6,0);%
   \end{scope}%
 }%
 \newcommand{\pressuremagnitudelegend}[1]{%
   \pressurekey{0}{#1}{1}%
-  \node[anchor=west,align=left] at (1,#1) {Learning pressure\\(band width)};%
+  \node[anchor=west] at (.7,#1) {Learning pressure (band width)};%
 }%
 \newcommand{\trainingeffectlegend}[1]{%
   \pressurekey{5}{#1}{1}%
-  \node[anchor=west,align=left] at (6,#1) {Reinforcing\\learning pressure};%
+  \node[anchor=west] at (5.7,#1) {Learning pressure (reinforcing)};%
   \pressurekey{5}{#1-.7}{-1}%
-  \node[anchor=west,align=left] at (6,{#1-.7}) {Suppressing\\learning pressure};%
+  \node[anchor=west] at (5.7,{#1-.7}) {Learning pressure (suppressing)};%
 }%
 \newcommand{\responselegend}[1]{%
   \node[feature] at (.3,#1) {};%
-  \node[anchor=west] at (1,#1) {Observed response category};%
+  \node[anchor=west] at (.7,#1) {Observed response category};%
   \draw[schematic] (5,#1) -- (5.6,#1);%
-  \node[anchor=west,align=left] at (6,#1) {Possible developmental link};%
+  \node[anchor=west,align=left] at (5.7,#1) {Possible developmental link};%
 }%
 \newcommand{\traitlegend}[1]{%
   \node[feature] (keyyes) at (.3,#1) {};%
   \dogtrait{keyyes}%
-  \node[anchor=west] at (1,#1) {Responds to dogs};%
+  \node[anchor=west] at (.7,#1) {Responds to dogs};%
   \node[feature] at (5.3,#1) {};%
-  \node[anchor=west] at (6,#1) {No dog response};%
+  \node[anchor=west] at (5.7,#1) {No dog response};%
 }%
 %% Opaque trait rings mask connection lines before restoring the instantiated dot.
 \newcommand{\dogtrait}[1]{%
