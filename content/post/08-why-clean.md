@@ -11,13 +11,13 @@ cover_caption = "Byte Magazine, August 1979"
 
 ## Learning by extension
 
-A neuron's strange associations can become intelligible through its learning history. A network learns by sedimentation and erosion, retaining some distinctions and reshaping others. Each extension can change which further extensions become easier to learn. How does learning organize the conditions for its own continuation?
+A neuron's strange associations can become intelligible through its learning history. Ordinary generalization concerns how learned behavior extends beyond training examples. During further training, a mechanism can also acquire new responses and reshape the conditions for its next acquisition. How does one extension make another easier to learn?
 
-In *Neural Networks Are Already Clean*, Nick Cammarata follows a neuron through a retrained InceptionV1 model.[^cammarata] Early in training, the neuron responds to yellow flowers, sometimes pictured alongside dogs. It later responds to green objects and dogs pictured without flowers, then extends to broccoli. He calls this recursive generalization, as related extensions become starting points for further extensions.
+In *Neural Networks Are Already Clean*, Nick Cammarata follows a neuron through a retrained InceptionV1 model.[^cammarata] Early in training, the neuron responds to yellow flowers, sometimes pictured alongside dogs. It later responds to green objects and dogs pictured without flowers, then extends to broccoli. Cammarata calls this recursive generalization, as related extensions become starting points for further extensions.
 
-For Cammarata, cleanliness concerns intelligible organization even when a neuron crosses familiar categories. A neuron participates in a process that groups some inputs together and distinguishes others. Its connections form pathways through which these distinctions change downstream activity. We can build on this account by asking how extensions reshape future learning, and which earlier roles they can preserve.
+We will describe this developmental process as path formation, emphasizing how training reshapes the circuitry through which later learning proceeds. For Cammarata, cleanliness concerns intelligible organization across familiar categories. A neuron participates in processes that group some inputs and distinguish others, channeling their effects through downstream connections. The question is when acquiring a response opens a path that lowers the effort needed for another.
 
-{% tikz(learning=true, fig_w="620px", caption="<strong>Observed responses.</strong> One neuron's response repertoire changes during training, offering a starting point for investigating its computational role. Dots mark observed response categories, and dotted ovals group responses within the same neuron. Thin arrows schematize proposed relationships between the observed extensions. Equal dot sizes leave response strength and susceptibility unspecified.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>Observed responses.</strong> One neuron's response repertoire changes during training. Dots mark observed response categories, and dotted ovals group responses within the same neuron. Thin arrows schematize possible developmental relationships, motivating the path formation hypothesis without establishing that one response caused or eased the acquisition of another. Equal dot sizes leave response strength and susceptibility unspecified.") %}
 \begin{tikzpicture}[learning]
 \node[time] at (0,2.45) {EARLY};
 \node[time] at (4.5,2.45) {INTERMEDIATE};
@@ -51,13 +51,13 @@ For Cammarata, cleanliness concerns intelligible organization even when a neuron
 
 ## Why familiar pathways get a head start
 
-A process might group views of the same shape together while separating different shapes. Composing such processes can support object recognition, actions, or contextual judgments. Error generates gradients through the participating circuitry, and the optimizer translates them into updates. Satrajit Chatterjee's coherent-gradients hypothesis proposes that examples favoring compatible parameter changes reinforce those changes together.[^coherent]
+Error generates gradients through participating circuitry, and the optimizer translates them into updates. Satrajit Chatterjee's coherent-gradients hypothesis proposes that examples favoring compatible parameter changes reinforce those changes together.[^coherent] Cammarata's circuit-ecology hypothesis proposes that established pathways capture learning signals ahead of competitors built from scratch. Reducing the remaining error may weaken the gradients available to alternatives.
 
-A flower-responsive mechanism may already respond weakly to vegetation, animals, or shared textures. Compatible gradients could strengthen its contribution on green-object examples and change how subsequent examples modify it. Broccoli responses might then develop through this intermediate extension, a proposed route requiring causal evidence. Activation alone supplies no guarantee of useful learning, since downstream sensitivity, prediction error, and the optimizer shape the update.
+A flower-responsive mechanism may already respond weakly to vegetation, animals, or shared textures. Compatible gradients could strengthen green-object responses, changing which later examples recruit it and how they update it. That intermediate acquisition might open a route to broccoli responsiveness that the earlier flower circuitry did not readily support. Acquiring broccoli responsiveness could then rechannel learning again.
 
-Cammarata's circuit-ecology hypothesis proposes that existing pathways capture learning signals ahead of competitors built from scratch. Reducing the remaining error may weaken the gradients available to alternatives. We move from one neuron's responses to interactions among mechanisms, parts of the circuitry with contributions we can trace or test. An extension can change the pathways and sensitivities available to further training, making an already representable response easier to learn.
+Channeling gradients describes where learning signals pass through the network. Lowered resistance means a particular response requires less learning effort under comparable conditions, such as fewer optimization steps or examples. A response extension can redirect gradients without reducing that effort, since downstream sensitivity and optimizer dynamics also matter. Establishing an advantage requires a controlled comparison, as activation, gradient support, and susceptibility alone do not guarantee acquisition.
 
-{% tikz(learning=true, fig_w="620px", caption="<strong>Proposed mechanism.</strong> An established flower-responsive circuit mechanism may support new learning ahead of a competing candidate, with input labels identifying contexts for their proposed later uses. Filled circles denote established mechanisms, white circles candidates, and larger circles greater susceptibility under a comparable learning signal. Black arrows show possible developmental dependencies, while the widest points of horizontally aligned grey bands indicate hypothetical learning pressure over each interval. Sizes and widths indicate hypothetical categories shared with the later mechanism diagrams.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>Proposed mechanism.</strong> An established flower-responsive circuit mechanism may channel learning toward new responses ahead of a competing candidate. Filled circles denote established mechanisms, white circles candidates, and larger circles greater susceptibility on a scale shared with later mechanism diagrams. Black arrows show proposed developmental dependencies, while the widest points of horizontally aligned grey bands indicate hypothetical learning pressure over each interval. Greater support or susceptibility may lower the effort required for an extension, but neither alone guarantees acquisition.") %}
 \begin{tikzpicture}[learning]
 \node[time] at (0,3) {PAST};
 \node at (0,2.60) {inherited mechanisms};
@@ -135,11 +135,11 @@ Cammarata's circuit-ecology hypothesis proposes that existing pathways capture l
 
 Cammarata compares InceptionV1 and ConvNeXt neurons trained on the same data, both initially responsive to rapeseed fields.[^cammarata] Balls and fruit enter their strongest responses early in training. Those associations later recede from the ConvNeXt neuron's strongest images. Dogs and broccoli become prominent in the InceptionV1 neuron's responses as fields recede.
 
-The images reveal which associations rank among the neuron's strongest responses at each checkpoint. Displaced associations may retain weaker responses. Architecture and learning history both vary here, so the comparison alone cannot establish which inherited pathways caused the divergence. It raises a further question about which extensions can coexist with earlier computational roles.
+The images reveal which associations rank among the neuron's strongest responses at each checkpoint. Displaced associations may retain weaker responses. Architecture and learning history both vary here, so the comparison alone cannot establish which inherited pathways caused the divergence. The trajectories motivate investigating how path formation rechannels learning and which extensions can coexist with earlier roles.
 
-Strengthening a broccoli response could weaken a flower distinction that downstream processes still need. Retaining both roles might require a separate pathway or further reorganization. Two networks making the same flower prediction could therefore differ in the extensions they can acquire while preserving that performance. Inherited circuitry shapes both the ease of a new development and its compatibility with existing roles.
+Two networks can make the same flower prediction while differing in the additional learning required to acquire broccoli responsiveness. A controlled comparison would hold architecture, new data, and training conditions fixed while varying the inherited pathways. Strengthening a broccoli response could also weaken a flower distinction that downstream processes still need. Retaining both roles might require a separate pathway or further reorganization.
 
-{% tikz(learning=true, fig_w="620px", caption="<strong>Controlled counterfactual.</strong> Different inherited circuit mechanisms may offer different routes to learning despite identical present predictions, with architecture, new data, and training objective held fixed. Readout boxes show the matched flower prediction, while future input labels identify contexts in which candidate mechanisms would act. Circle fill, size, and grey bands follow the mechanism diagram, with susceptibility and pressure varying independently. This is a controlled counterfactual with stipulated developmental dependencies and magnitudes, distinct from the observed architecture comparison.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>Controlled counterfactual.</strong> Identical present predictions can coexist with different costs and routes for subsequent learning. Architecture, new data, and training objective are held fixed while inherited circuit mechanisms differ. Readout boxes show the matched flower prediction, and future labels identify contexts for candidate mechanisms. Circle fill, size, and bands retain the earlier conventions, with dependencies and relative training costs stipulated for this counterfactual.") %}
 \begin{tikzpicture}[learning]
 \node[time] at (0,3) {PAST};
 \node at (0,2.60) {inherited mechanisms};
@@ -217,9 +217,9 @@ Strengthening a broccoli response could weaken a flower distinction that downstr
   \pressureband{m.center}{r9b}{r9a}{jhead}{4}
 \end{pgfonlayer}
 \node[readout] at (4.5,-2.3) {Flower prediction};
-\node[align=center] at (9,-2.3) {Direct reuse};
+\node[align=center] at (9,-2.3) {Direct reuse\\less training};
 \node[readout] at (4.5,-7.6) {Flower prediction};
-\node[align=center] at (9,-7.5) {Further\\reorganization};
+\node[align=center] at (9,-7.5) {Reorganization\\more training};
 \node[align=center] at (0,-7.5) {Distinct\\history};
 \foreach \base in {0,-5.2} {
   \rightstacklabel{\base}{3}{1}{Green}
@@ -251,7 +251,7 @@ Strengthening a broccoli response could weaken a flower distinction that downstr
 
 ## Selection and variation
 
-A newly responsive mechanism may gain downstream recruitment that alters the gradients it receives during further training. For a population of attributed uses, George Price's identity separates differential recruitment from response change, here called variation (the standard transmission term).[^price] Let $z_i$ measure an earlier mechanism's response on a fixed image assay and $w_i$ its attributed descendant weight. For each earlier mechanism, $\Delta z_i$ is its descendants' mean response minus its own, and $\Delta\bar z$ is the change in the population mean.[^price1972][^frank1997]
+George Price's identity separates differential recruitment from changes in inherited responses, here called variation (the standard transmission term).[^price] In a specified population, selection measures differential descendant weighting under a declared ancestry rule. Let $z_i$ measure an earlier mechanism's response on a fixed image assay and $w_i$ its attributed descendant weight. For each earlier mechanism, $\Delta z_i$ is its descendants' mean response minus its own, and $\Delta\bar z$ is the change in the population mean.[^price1972][^frank1997]
 
 ```math
 \Delta\bar z
@@ -261,11 +261,11 @@ A newly responsive mechanism may gain downstream recruitment that alters the gra
 \underbrace{\frac{\mathbb E[w\Delta z]}{\bar w}}_{\text{variation}}.
 ```
 
-For the tracked flower neuron, $z$ could indicate responsiveness to dogs without flowers, using a fixed image assay and response threshold throughout training. Under an equally weighted correspondence between neuron coordinates at successive checkpoints, $w=1$ and the selection term is zero. Changes in their dog responsiveness would enter entirely through variation. This assay tracks one aspect of the process, while interventions would test the responses' effects on downstream activity during inference.
+For the tracked flower neuron, $z$ could indicate responsiveness to dogs without flowers, using a fixed image assay and response threshold throughout training. Under an equally weighted correspondence between neuron coordinates at successive checkpoints, $w=1$ and the selection term is zero. Changes in their dog responsiveness would enter entirely through variation. Gradient competition supplies a causal hypothesis, while a nonzero Price selection term requires differential descendant weighting.
 
-To study inheritance through downstream use, we could register flower-related mechanisms and fix the task set and causal attribution rule before calculating the decomposition. Inheritance here describes earlier mechanisms contributing to later computations, with descendant weights measuring attributed use. Each later record would carry an assay response and a weight under fixed rules for inclusion, shared credit, and newly formed routes. This accounting separates recruitment from response change, while establishing their proposed feedback requires evidence about the training dynamics.
+To study inheritance through downstream use, we could register flower-related mechanisms and fix the task set and causal attribution rule before calculating the decomposition. Inheritance here describes earlier mechanisms contributing to later computations, with descendant weights measuring attributed use. Equal baseline weights and fixed rules for inclusion, shared credit, and newly formed routes would make the accounting reproducible. Path formation and lowered resistance could affect recruitment and response change, while the identity accounts for their results independently of that causal hypothesis.
 
-{% tikz(learning=true, fig_w="620px", caption="<strong>Accounting decomposition.</strong> Differential recruitment and acquired dog responsiveness contribute separately to the change in the attributed-use population. Every filled dot is an instantiated mechanism or use record, and an outer ring marks dog responsiveness on the fixed assay. Arrows stipulate attribution, while reweighting holds baseline responses fixed. Percentages show the proportion responding to dogs, rather than population size. Selection measures differential recruitment; variation measures response change within inherited uses, rather than diversity in the final population. The middle column is an accounting step that reweights baseline traits while holding their values fixed, rather than an intermediate training checkpoint.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>Accounting decomposition.</strong> Differential recruitment and acquired dog responsiveness contribute separately to the change in the attributed-use population. Filled dots are instantiated mechanisms or use records, with an outer ring marking dog responsiveness on the fixed assay. Arrows stipulate attribution, and percentages show the proportion responding to dogs. The middle column reweights fixed baseline traits for selection, while variation measures response change within inherited uses rather than final diversity.") %}
 \begin{tikzpicture}[learning]
 \node[time] at (0,3) {BASELINE};
 \node at (0,2.6) {50\% dog-responsive};
@@ -311,13 +311,13 @@ To study inheritance through downstream use, we could register flower-related me
 
 ## Learning through inheritance
 
-The hypothetical accounting separates two changes in dog responsiveness. Differential recruitment raises its share from one half to three quarters, and acquired responsiveness supplies the remaining quarter through variation. Across training, these changes could reinforce each other as new responses attract recruitment and recruitment alters further learning. Price makes their contributions separately measurable under a declared correspondence, while the feedback remains a causal hypothesis.
+The illustration separates increased recruitment from changed responses, each adding a quarter to the responsive share. New responses may attract recruitment that redirects subsequent gradients and lowers the effort needed for another acquisition. Repetition could produce branching and recombining pathways, with Price accounting separating recruitment from response change. Shared pathways can also introduce interference, making some extensions costly to sustain alongside earlier roles.
 
-Which inherited distinctions make a later extension easier to acquire while preserving the roles already built upon them? We could intervene on a learned green-object pathway while matching current flower performance and subsequent training conditions. A change in where or how quickly broccoli responsiveness develops would support its proposed role as a developmental stepping stone. Matching flower performance would control one relevant behavior, while broader effects of the intervention would still need assessment.
+An established pathway can support several later developments, each altering the conditions for the others. A new downstream role may reinforce a useful distinction or redirect learning away from an earlier one. Lowered resistance is therefore specific to an acquisition and its training conditions. The resulting organization reflects which paths open together, which require reorganization, and which lose support.
 
-Cleanliness, in this view, concerns how intelligible distinctions develop, combine, and support further learning. Earlier extensions can reshape the learning signals a mechanism receives and the roles it can sustain together. Following that history could explain both the associations visible in a trained network and the routes through which they became learnable. Learning builds the machinery of its own future learning.
+Ordinary generalization describes learned behavior beyond its training examples. What Cammarata calls recursive generalization may arise when an acquisition opens pathways that make further responses easier to learn. Such path formation offers a developmental explanation of cleanliness, with evolutionary accounting distinguishing recruitment from changes in inherited responses. Learning builds the machinery of its own future learning.
 
-{% tikz(learning=true, fig_w="620px", caption="<strong>Learning through inheritance.</strong> Circuit mechanisms can acquire new roles and change their responses, reshaping the pathways available to subsequent learning. Their extensions may require reorganization to preserve earlier computational roles. Filled circles denote established mechanisms and white circles candidates, with larger circles indicating greater susceptibility to change. Black arrows show proposed developmental dependencies, including multiple inherited mechanisms supporting one candidate, while input labels name possible response contexts. Grey bands retain the earlier figures' illustrative learning-pressure scale within this hypothetical account of circuit development.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>Learning through inheritance.</strong> Path formation may channel learning through shared mechanisms, lowering the effort needed for some extensions while creating interference with other roles. Filled circles denote established mechanisms and white circles candidates, with size indicating susceptibility under a comparable signal. Black arrows show hypothetical developmental dependencies and recombination, while grey bands retain the earlier learning-pressure scale. Input labels name possible response contexts within this proposed account of path formation.") %}
 \begin{tikzpicture}[learning]
 \node[time] at (0,3) {PAST};
 \node at (0,2.60) {inherited mechanisms};
@@ -373,7 +373,7 @@ Cleanliness, in this view, concerns how intelligible distinctions develop, combi
 \node[align=center] at (2.25,1.85) {Recruit existing\\mechanisms};
 \node[align=center] at (6.75,2.05) {Reuse and\\compose};
 \node[align=center] at (2.25,-2.65) {Responses change\\as roles develop};
-\node[align=center] at (6.75,-2.65) {Extensions reshape\\further learning};
+\node[align=center] at (6.75,-2.65) {Extensions can ease\\further learning};
 \rightstacklabel{0}{4}{1}{Green}
 \rightstacklabel{0}{4}{2}{Dogs}
 \rightstacklabel{0}{4}{3}{Broccoli}
