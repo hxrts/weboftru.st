@@ -9,9 +9,9 @@ cover_image = "/images/byte-neuron.png"
 cover_caption = "Byte Magazine, August 1979"
 +++
 
-## Learning by extension
+## Learning forms pathways
 
-A neuron's strange associations can become intelligible through its learning history. Ordinary generalization concerns how learned behavior extends beyond training examples. During further training, a mechanism can also acquire new responses and reshape the conditions for its next acquisition. How does one extension make another easier to learn?
+A neuron's disparate responses can become intelligible through its learning history. Ordinary generalization concerns how learned behavior extends beyond training examples. During further training, a mechanism can also acquire new responses and reshape the conditions for its next acquisition. How does one extension make another easier to learn?
 
 In *Neural Networks Are Already Clean*, Nick Cammarata follows a neuron through a retrained InceptionV1 model.[^cammarata] Early in training, its strongest activations come from yellow-flower images, sometimes with dogs. Green objects and dogs without flowers appear among its strongest activations later, followed by broccoli. Cammarata calls this recursive generalization, as related extensions become starting points for further extensions.
 
@@ -131,7 +131,7 @@ Channeling gradients describes where learning signals pass through the network. 
 \end{tikzpicture}
 {% end %}
 
-## One beginning, different futures
+## Same prediction, different learning costs
 
 Cammarata compares InceptionV1 and ConvNeXt neurons trained on the same data, both initially responsive to rapeseed fields.[^cammarata] Images of balls and fruit rank among both neurons' strongest activations early in training. These categories later recede from ConvNeXt's top-activating images. Dogs and broccoli become prominent in InceptionV1's set as field images recede.
 
@@ -249,9 +249,9 @@ Two networks can make the same flower prediction while differing in the addition
 \end{tikzpicture}
 {% end %}
 
-## Selection and variation
+## Recruitment and response change
 
-A response history does not measure downstream recruitment, which George Price's identity separates from response change.[^price] Over equally weighted baseline mechanisms, $z_i$ is a response on a fixed assay, $w_i\geq0$ an attributed descendant weight, and $\Delta z_i$ the credit-weighted descendant mean minus $z_i$ (set to zero when $w_i=0$). Expectation and covariance use this baseline, with $\bar w=\mathbb E[w]>0$. The change from the baseline mean response to the later attributed-use mean is $\Delta\bar z$, decomposed into selection and variation (the standard transmission term).[^price1972][^frank1997]
+How might a useful new response change recruitment of its mechanism and redirect further learning? George Price's identity separates recruitment from response change (variation, the standard transmission term) under a specified correspondence.[^price] Over equally weighted baseline mechanisms, $z_i$ is a response on a fixed assay, $w_i\geq0$ an attributed descendant weight, and $\Delta z_i$ the credit-weighted descendant mean minus $z_i$ (set to zero when $w_i=0$). Expectation and covariance use this baseline with $\bar w=\mathbb E[w]>0$, and $\Delta\bar z$ measures the change from the baseline mean response to the later attributed-use mean.[^price1972][^frank1997]
 
 ```math
 \Delta\bar z
@@ -309,15 +309,15 @@ For downstream-use inheritance, fix baseline flower-related mechanisms, the task
 \end{tikzpicture}
 {% end %}
 
-## Learning through inheritance
+## How disparate responses become intelligible
 
 In the illustration, three later uses inherit dog responsiveness and one does not, raising the responsive share from 50% to 75% through recruitment. Acquired responsiveness in the fourth use brings it to 100%, so each term contributes 25 percentage points. During training, new responses may attract recruitment that redirects gradients and lowers the effort of another acquisition. Repeated recruitment and modification could produce branching and recombining pathways.
 
 Sharing a pathway can also create interference between its computational roles. A new downstream role may reinforce a useful distinction or redirect learning away from an earlier one. Lowered resistance is therefore specific to an acquisition and its training conditions. Preserving an earlier role may require new circuitry even when another response becomes easier to learn.
 
-Ordinary generalization describes learned behavior beyond its training examples. What Cammarata calls recursive generalization may arise when an acquisition opens pathways that make further responses easier to learn. This account connects cleanliness to understandable developmental dependencies and the computational roles they sustain. Learning builds the machinery of its own future learning.
+Ordinary generalization describes learned behavior beyond its training examples. Locally understandable extensions can accumulate into responses that appear unrelated when their history is hidden. Cleanliness could therefore reflect the path formation behind Cammarata's recursive generalization, as acquired pathways can make further responses easier to learn. Learning builds the machinery of its own future learning.
 
-{% tikz(learning=true, fig_w="620px", caption="<strong>Learning through inheritance.</strong> Path formation may channel learning through shared mechanisms, lowering the effort needed for some extensions while creating interference with other roles. Filled circles denote established mechanisms and white circles candidates, with size indicating susceptibility under a comparable signal. Black arrows show hypothetical developmental dependencies and recombination, while grey bands retain the earlier learning-pressure scale. Input labels name possible response contexts within this proposed account of path formation.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>Tracing developmental connections.</strong> One possible history links shared field contexts to green and dog responses, while green patterns and clustered textures jointly support a broccoli response. These hypothetical intermediate mechanisms illustrate how locally related acquisitions could produce disparate responses, without identifying the actual circuitry in Cammarata's neuron. Filled and white circles denote established and candidate mechanisms, with size indicating susceptibility under a comparable learning signal. Grey bands retain the hypothetical learning-pressure scale, and black arrows show proposed developmental dependencies.") %}
 \begin{tikzpicture}[learning]
 \node[time] at (0,3) {PAST};
 \node at (0,2.60) {inherited mechanisms};
@@ -328,9 +328,11 @@ Ordinary generalization describes learned behavior beyond its training examples.
 \foreach \x in {0,4.5,9} { \stageoval{\x,0} }
 \stacknode[feature,susceptibility=7.4]{a}{0}{0}{2}{1}
 \stacknode[feature,susceptibility=10]{b}{0}{0}{2}{2}
+\def\learningpitch{.9}
 \stacknode[feature,susceptibility=4.6]{c}{4.5}{0}{3}{1}
 \stacknode[feature,susceptibility=7.4]{d}{4.5}{0}{3}{2}
 \stacknode[feature,susceptibility=10]{e}{4.5}{0}{3}{3}
+\def\learningpitch{.8}
 \stacknode[potential,susceptibility=7.4]{f}{9}{0}{4}{1}
 \stacknode[potential,susceptibility=4.6]{g}{9}{0}{4}{2}
 \stacknode[potential,susceptibility=10]{h}{9}{0}{4}{3}
@@ -370,10 +372,15 @@ Ordinary generalization describes learned behavior beyond its training examples.
   \draw[flow] (e.center) .. controls (r7a) and (r6b) .. (h.west);
   \draw[flow] (e.center) .. controls (r7a) and (r8b) .. (i.west);
 \end{pgfonlayer}
-\node[align=center] at (2.25,1.85) {Recruit existing\\mechanisms};
-\node[align=center] at (6.75,2.05) {Reuse and\\compose};
-\node[align=center] at (2.25,-2.65) {Responses change\\as roles develop};
-\node[align=center] at (6.75,-2.65) {Extensions can ease\\further learning};
+\leftlabel{.4}{Flower cues}
+\leftlabel{-.4}{Texture cues}
+\halolabel{above=5pt}{c}{Field contexts}
+\halolabel{above=5pt}{d}{Green patterns}
+\halolabel{above=5pt}{e}{Clustered texture}
+\node[align=center] at (2.25,1.85) {Develop shared\\distinctions};
+\node[align=center] at (6.75,2.05) {Contextual\\extensions};
+\node[align=center] at (2.25,-2.65) {Extend visual\\responses};
+\node[align=center] at (6.75,-2.65) {Combine green\\and texture cues};
 \rightstacklabel{0}{4}{1}{Green}
 \rightstacklabel{0}{4}{2}{Dogs}
 \rightstacklabel{0}{4}{3}{Broccoli}
@@ -381,7 +388,7 @@ Ordinary generalization describes learned behavior beyond its training examples.
 \learningaxis{-4.35}
 \learninglegend{-5.5}
 \pgfresetboundingbox
-\path[use as bounding box] (-1.6,-6.7) rectangle (11.2,3.45);
+\path[use as bounding box] (-2.8,-6.7) rectangle (11.2,3.45);
 \end{tikzpicture}
 {% end %}
 
