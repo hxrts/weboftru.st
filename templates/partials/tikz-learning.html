@@ -49,25 +49,49 @@
     ($(#4)+(0,#5pt)$) .. controls ($(#3)+(0,#5pt)$) and ($(#2)+(0,.425pt)$) .. ($(#1)+(-.42,.425pt)$)
     -- ($(#1)+(-.42,-.425pt)$) .. controls ($(#2)+(0,-.425pt)$) and ($(#3)+(0,-#5pt)$) .. ($(#4)+(0,-#5pt)$) -- cycle;
 }
+% Suppression reverses the taper, retaining the same endpoints and magnitude.
+\newcommand{\suppressband}[5]{
+  \path[fill=black!40,draw=none]
+    ($(#4)+(0,.425pt)$) .. controls ($(#3)+(0,.425pt)$) and ($(#2)+(0,#5pt)$) .. ($(#1)+(-.42,#5pt)$)
+    -- ($(#1)+(-.42,-#5pt)$) .. controls ($(#2)+(0,-#5pt)$) and ($(#3)+(0,-.425pt)$) .. ($(#4)+(0,-.425pt)$) -- cycle;
+}
+% A plain developmental axis does not imply a pressure magnitude.
+\newcommand{\developmentaxis}[1]{
+  \draw[flow,line cap=round] (0,#1) -- (9,#1);
+  \node at ($(4.5,#1)+(0,-.5)$) {Development};
+}
 \newcommand{\learningaxis}[1]{
   \begin{pgfonlayer}{background}
     \path[fill=black!40,draw=none]
       ($(.42,#1)+(0,4pt)$) -- ($(9,#1)+(0,.425pt)$)
       -- ($(9,#1)+(0,-.425pt)$) -- ($(.42,#1)+(0,-4pt)$) -- cycle;
   \end{pgfonlayer}
-  \draw[flow,line cap=round] (0,#1) -- (9,#1);
-  \node[text=black!65] at ($(4.5,#1)+(0,.4)$) {Band width indicates learning pressure};
-  \node at ($(4.5,#1)+(0,-.5)$) {Development};
+  \developmentaxis{#1}
+  \node[text=black!65] at ($(4.5,#1)+(0,.4)$) {Band width indicates pressure magnitude};
 }
+% Susceptibility and status are used together only where both are encoded.
 \newcommand{\learninglegend}[1]{
   \node[potential,susceptibility=4.6] at (.3,#1) {};
-  \node[anchor=west] at (.55,#1) {Lower susceptibility};
+  \node[anchor=west,align=left] at (.55,#1) {Lower training susceptibility};
   \node[potential,susceptibility=10] at ($(.3,#1)+(0,-.6)$) {};
-  \node[anchor=west] at ($(.55,#1)+(0,-.6)$) {Higher susceptibility};
+  \node[anchor=west,align=left] at ($(.55,#1)+(0,-.6)$) {Higher training susceptibility};
   \node[feature,susceptibility=7.4] at (5.3,#1) {};
   \node[anchor=west] at (5.6,#1) {Established mechanism};
   \node[potential,susceptibility=7.4] at ($(5.3,#1)+(0,-.6)$) {};
   \node[anchor=west] at ($(5.6,#1)+(0,-.6)$) {Candidate mechanism};
+}
+% Signed pressure is introduced only where reinforcement and suppression differ.
+\newcommand{\pressuresignlegend}[1]{
+  \path[fill=black!40,draw=none]
+    ($(0,#1)+(0,4pt)$) -- ($(1,#1)+(0,.425pt)$)
+    -- ($(1,#1)+(0,-.425pt)$) -- ($(0,#1)+(0,-4pt)$) -- cycle;
+  \path[fill=black!40,draw=none]
+    ($(5,#1)+(0,.425pt)$) -- ($(6,#1)+(0,4pt)$)
+    -- ($(6,#1)+(0,-4pt)$) -- ($(5,#1)+(0,-.425pt)$) -- cycle;
+  \draw[flow] (0,#1) -- (1,#1);
+  \draw[flow] (5,#1) -- (6,#1);
+  \node[anchor=west] at (1.15,#1) {Reinforcing update (+)};
+  \node[anchor=west] at (6.15,#1) {Suppressing update (-)};
 }
 
 % Opaque trait rings mask connection lines before restoring the instantiated dot.
