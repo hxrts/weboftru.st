@@ -1,8 +1,8 @@
 +++
-title = "Why Are Neural Networks Clean?"
+title = "Cleanliness is Next to Godliness"
 date = 2026-10-20
-description = "How inherited neural processes shape subsequent learning."
-slug = "why-clean"
+description = "How neural networks build coherent structure."
+slug = "next-to-godliness"
 
 [extra]
 cover_image = "/images/byte-neuron.png"
@@ -217,6 +217,8 @@ To apply it, fix a population of earlier flower-related mechanisms, a set of tas
 +
 \underbrace{\frac{\mathbb E[w\Delta z]}{\bar w}}_{\text{variation}}.
 ```
+
+The equation is a mathematical decomposition of change and does not itself establish causality.
 
 The selection term is positive when mechanisms already responsive to dogs receive greater relative weight. Its sign gives the direction of this contribution, and its magnitude gives the shift in the mean response due to weighting. More total contribution alone does not imply a shift toward dog responsiveness. What matters is how contribution is distributed across the earlier traits.
 
