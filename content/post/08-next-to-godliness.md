@@ -11,13 +11,13 @@ cover_caption = "Byte Magazine, August 1979"
 
 ## Developmental flow
 
-What a neural network learns can change what it learns next. Each acquisition modifies circuitry that later training builds upon. Path-dependent progression often brings together seemingly disparate responses, making certain capabilities easier or harder to acquire. How do we make sense of this structure when learning itself is a moving target?
+What a neural network learns changes what it can learn next. Each acquisition modifies circuitry that later training builds upon. Path-dependent development can bring together seemingly disparate responses, while changing the acquisition cost of subsequent features. So how do we make sense of this structure when learning itself is a moving target?
 
-In *Neural Networks Are Already Clean*, Nick Cammarata tracks one such developmental history in a retrained InceptionV1 model.[^cammarata] A neuron initially responds most strongly to yellow-flower images that may or may not contain dogs. As training continues, the neuron responds strongly to green objects, dogs pictured without flowers, and eventually broccoli.
+In *Neural Networks Are Already Clean*, Nick Cammarata tracks one such developmental history in a retrained InceptionV1 model.[^cammarata] A neuron initially responds best to yellow-flower images, some with dogs. As training continues, the neuron begins responding to green objects, dogs alone, and eventually broccoli.
 
-Cammarata calls this "recursive generalization." As a neuron learns to respond to related inputs, the features it detects can provide a basis for learning others. He interprets neurons through the distinctions they draw for downstream computation, even when their responses cross familiar categories.[^cammarata] Cleanliness, in his account, means that varied responses have an intelligible computational role and developmental history.
+Cammarata calls this "recursive generalization." As a neuron learns to respond to related inputs, the features it detects can provide a basis for learning others. He interprets neurons through the distinctions they draw for downstream computation, even when their responses cross familiar categories.[^cammarata] Cleanliness is his shorthand for the intelligibility of a network’s own mechanisms, including why a single neuron responds to seemingly disparate inputs.
 
-Features are the learned patterns or distinctions that neural mechanisms implement. I use path formation to describe how training reshapes circuitry and changes what becomes easier to learn next. An acquired feature can change how later learning signals reach and modify that circuitry, making another feature easier to acquire. The flower timeline motivates this explanation, while the specific causal connections remain hypothetical.
+Clean neurons allow us to map response profiles and understand neural circuits. Now we can ask how a neuron's varied responses developed together. Explaining that requires examining how training favors some extensions over others and how a mechanism's role changes alongside what it detects.
 
 {% tikz(learning=true, fig_w="620px", caption="<strong>A developmental history.</strong> Responses that span different categories emerge in a sequence within one neuron. Categories follow Cammarata's observations, while thin arrows propose developmental links. Dotted ovals group responses at each stage, and equal-sized dots encode categories rather than activation magnitude.") %}
 \begin{tikzpicture}[learning]
