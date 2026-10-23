@@ -11,7 +11,13 @@ cover_caption = "Byte Magazine, August 1979"
 
 ## Developmental flow
 
-How does learning produce understandable structure? What a neural network learns can change what it learns next. Each acquisition modifies circuitry that later training can build on, making certain features easier or harder to acquire. Those dependencies can give otherwise disparate responses a coherent developmental history.
+What a neural network learns can change what it learns next. Each acquisition modifies circuitry that later training builds on, making certain features easier or harder to acquire. So how does learning produce understandable structure?
+
+giving  seemingly disparate responses a coherent developmental lineage.
+
+making certain features easier or harder to acquire.
+
+Those dependencies can give otherwise disparate responses a coherent developmental lineage.
 
 In *Neural Networks Are Already Clean*, Nick Cammarata tracks one such developmental history in a retrained InceptionV1 model.[^cammarata] A neuron initially responds most strongly to yellow-flower images that may or may not contain dogs. As training continues, the neuron responds strongly to green objects, dogs pictured without flowers, and eventually broccoli.
 
@@ -267,7 +273,7 @@ In the hypothetical training interval below, pressure favors additional contribu
 
 
 \belowannotation{2.25}{0}{Selection +\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{4}\\Dog-responsive mechanisms\\contribute more}
-\belowannotation{6.75}{0}{Variation +\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{4}\\An inherited use\\acquires dog responsiveness}
+\belowannotation{6.75}{0}{Variation +\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{4}\\Inherited use acquires\\dog-responsiveness}
 % A broken development axis opens into the accounting inset, not a third state.
 \draw[line width=.85pt,line cap=round] (0,-3.4) -- (4.45,-3.4);
 \draw[flow,line cap=round] (4.55,-3.4) -- (9,-3.4);
