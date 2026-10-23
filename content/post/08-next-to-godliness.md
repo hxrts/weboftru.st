@@ -11,13 +11,7 @@ cover_caption = "Byte Magazine, August 1979"
 
 ## Developmental flow
 
-What a neural network learns can change what it learns next. Each acquisition modifies circuitry that later training builds on, making certain features easier or harder to acquire. So how does learning produce understandable structure?
-
-giving  seemingly disparate responses a coherent developmental lineage.
-
-making certain features easier or harder to acquire.
-
-Those dependencies can give otherwise disparate responses a coherent developmental lineage.
+What a neural network learns can change what it learns next. Each acquisition modifies circuitry that later training builds upon. Path-dependent progression often brings together seemingly disparate responses, making certain capabilities easier or harder to acquire. How do we make sense of this structure when learning itself is a moving target?
 
 In *Neural Networks Are Already Clean*, Nick Cammarata tracks one such developmental history in a retrained InceptionV1 model.[^cammarata] A neuron initially responds most strongly to yellow-flower images that may or may not contain dogs. As training continues, the neuron responds strongly to green objects, dogs pictured without flowers, and eventually broccoli.
 
