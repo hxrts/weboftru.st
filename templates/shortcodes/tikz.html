@@ -14,7 +14,8 @@
    shortcode's body, and `str | safe` prevents Tera from escaping it. Use
    \usetikzlibrary{...} for extra TikZ libraries (arrows.meta,
    decorations.markings, ...). Set learning=true to prepend the shared
-   styles and helpers in templates/partials/tikz-learning.html. #}
+   styles and helpers in templates/partials/tikz-learning.html.
+   Shared annotations use the bundled sans serif slanted font. #}
 <figure class="tikz-fig"{% if learning %} data-learning-frame="-3.45 12.4"{% endif %}{% if fig_w %} style="--fig-w: {{ fig_w }}"{% endif %}>
 <div class="tikz-fig-body">
 <script type="text/tikz">

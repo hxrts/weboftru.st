@@ -13,6 +13,8 @@ const workspace = await mkdtemp(path.join(tmpdir(), 'weboftrust-preview-'));
 const clients = new Set();
 const watchers = [];
 const signatures = new Map();
+const sourceDirectories = ['content', 'templates', 'sass', 'static', 'syntaxes', 'scripts'];
+let reconciliationTimer;
 let activeDirectory;
 let child;
 let building = false;
@@ -109,36 +111,75 @@ async function rebuild() {
 function signature(file) {
     try {
         const info = statSync(file);
-        return info.isFile() ? `${info.mtimeMs}:${info.size}` : 'directory';
+        return info.isFile() ? `${info.ino}:${info.mtimeMs}:${info.ctimeMs}:${info.size}` : 'directory';
     } catch {
         return 'missing';
     }
 }
 
-function remember(directory) {
-    for (const entry of readdirSync(directory, { withFileTypes: true })) {
-        const file = path.join(directory, entry.name);
-        signatures.set(file, signature(file));
-        if (entry.isDirectory()) remember(file);
+function ignored(file) {
+    const relative = path.relative(root, file).split(path.sep).join('/');
+    return relative.startsWith('static/processed_images/')
+        || relative === 'static/images/manifest.json'
+        || path.basename(file) === '.DS_Store';
+}
+
+function remember(directory, snapshot = signatures) {
+    let entries;
+    try {
+        entries = readdirSync(directory, { withFileTypes: true });
+    } catch (error) {
+        if (error.code === 'ENOENT' || error.code === 'ENOTDIR') return;
+        throw error;
     }
+    for (const entry of entries) {
+        const file = path.join(directory, entry.name);
+        if (ignored(file)) continue;
+        snapshot.set(file, signature(file));
+        if (entry.isDirectory() && path.relative(root, file) !== 'static/processed_images') remember(file, snapshot);
+    }
+}
+
+function queueRebuild() {
+    clearTimeout(timer);
+    timer = setTimeout(rebuild, 200);
+}
+
+// Native notifications can be lost, especially when editors replace files or
+// directories. Reconcile the complete source tree independently of those events.
+function reconcile() {
+    const snapshot = new Map();
+    for (const directory of sourceDirectories) remember(path.join(root, directory), snapshot);
+    const config = path.join(root, 'config.toml');
+    snapshot.set(config, signature(config));
+    const differs = snapshot.size !== signatures.size
+        || [...snapshot].some(([file, value]) => signatures.get(file) !== value);
+    if (!differs) return;
+    signatures.clear();
+    for (const [file, value] of snapshot) signatures.set(file, value);
+    queueRebuild();
 }
 
 function changed(filename, directory = root) {
     const name = String(filename || '').replaceAll('\\', '/');
-    if (!name || name.startsWith('processed_images') || name.endsWith('images/manifest.json') || name.endsWith('.DS_Store')) return;
+    if (!name) {
+        reconcile();
+        return;
+    }
     const file = path.join(directory, name);
+    if (ignored(file)) return;
     const next = signature(file);
     if (signatures.get(file) === next) return;
     signatures.set(file, next);
     if (next === 'directory') return;
-    clearTimeout(timer);
-    timer = setTimeout(rebuild, 200);
+    queueRebuild();
 }
 
 async function stop() {
     if (stopping) return;
     stopping = true;
     clearTimeout(timer);
+    clearInterval(reconciliationTimer);
     watchers.forEach(watcher => watcher.close());
     child?.kill('SIGTERM');
     clients.forEach(client => client.end());
@@ -155,7 +196,7 @@ server.on('error', async error => {
     process.exitCode = 1;
 });
 server.listen(port, '127.0.0.1', () => {
-    for (const directory of ['content', 'templates', 'sass', 'static', 'syntaxes', 'scripts']) {
+    for (const directory of sourceDirectories) {
         const source = path.join(root, directory);
         remember(source);
         watchers.push(watch(source, { recursive: true }, (_event, filename) => changed(filename, source)));
@@ -165,5 +206,6 @@ server.listen(port, '127.0.0.1', () => {
     watchers.push(watch(root, (_event, filename) => {
         if (filename === 'config.toml') changed(filename);
     }));
+    reconciliationTimer = setInterval(reconcile, 1000);
     rebuild();
 });

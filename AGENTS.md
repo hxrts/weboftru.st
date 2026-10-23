@@ -27,6 +27,8 @@ live previews.
 
 `just build-serve` runs `scripts/serve-built.mjs`, which watches content,
 templates, Sass, static assets, syntax definitions, scripts, and `config.toml`.
+It also checks file signatures every second to recover missed filesystem
+notifications, including changes made through atomic editor saves.
 Each change triggers a draft Zola build followed by SVG compilation. The
 preview switches to the completed build and reloads connected browsers only
 after both succeed, keeping the previous preview available on failure. It

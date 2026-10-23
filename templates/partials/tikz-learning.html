@@ -4,6 +4,7 @@
   learning/.style={x=1cm,y=1cm,scale=.8,transform shape,>={Stealth[length=4.6pt,width=3.6pt]},every node/.style={font=\sffamily\footnotesize}},%
   time/.style={font=\sffamily\bfseries\footnotesize},%
   emphasis/.style={font=\sffamily\bfseries\footnotesize},%
+  legendlabel/.style={anchor=north west,inner sep=0pt,outer sep=0pt,yshift=3pt},%
   feature/.style={circle,draw,fill=black,minimum size=4.6pt,inner sep=0pt,line width=.65pt},%
   potential/.style={feature,fill=white,fill opacity=1},%
   activation/.style={minimum size=#1pt},%
@@ -23,21 +24,42 @@
   \end{pgfonlayer}%
 }%
 % Common vertical layout, relative to each row's oval centers.
-% Stage titles and subtitles stay above ovals; explanations occupy the footer.
+% Lift the heading row when annotations also occupy the space above ovals.
+\def\learningheadinglift{0}%
 \newcommand{\stageheading}[3]{%
-  \node[time,anchor=base] at (#1,2.8) {#2};%
-  \node[anchor=base] at (#1,2.4) {#3};%
+  \node[time,anchor=base] at (#1,{2.8+\learningheadinglift}) {#2};%
+  \node[anchor=base] at (#1,{2.4+\learningheadinglift}) {#3};%
 }%
+% Equal edge-to-edge clearance above and below the 1.85cm oval radius.
+\def\learningannotationgap{.25}%
 \newcommand{\aboveannotation}[3]{%
-  \node[anchor=south,align=center,inner sep=0pt] at (#1,{#2+2.1}) {#3};%
+  % Correct the font's invisible lower padding so visible glyph clearance matches below.
+  \node[font=\sffamily\slshape\footnotesize,anchor=south,align=center,inner sep=0pt,outer sep=0pt,yshift=-.4pt] at (#1,{#2+1.85+\learningannotationgap}) {#3};%
 }%
+\def\learninghasannotation{0}%
 \newcommand{\belowannotation}[3]{%
-  \node[anchor=north,align=center,inner sep=0pt] at (#1,{#2-2.1}) {#3};%
+  \node[font=\sffamily\slshape\footnotesize,anchor=north,align=center,inner sep=0pt,outer sep=0pt] (learningannotation) at (#1,{#2-1.85-\learningannotationgap}) {#3};%
+  \ifnum\learninghasannotation=0%
+    \coordinate (learningannotationbottom) at (learningannotation.south);%
+    \def\learninghasannotation{1}%
+  \else%
+    \path let \p1=(learningannotationbottom), \p2=(learningannotation.south)
+      in coordinate (learningannotationbottom) at (0,{min(\y1,\y2)});%
+  \fi%
+}%
+% Measure the annotation block so two- and three-line labels get the same gap.
+\newcommand{\preparelearningfooter}[1]{%
+  \path let \p1=(learningannotationbottom) in \pgfextra{%
+    \pgfmathparse{\y1/1cm-.65}\xdef\learningaxisy{\pgfmathresult}%
+    \pgfmathparse{\learningaxisy-1.45}\xdef\learninglegendy{\pgfmathresult}%
+    \pgfmathparse{\learningaxisy-2.25}\xdef\learningpressurelegendy{\pgfmathresult}%
+    \pgfmathparse{\learningaxisy-#1}\xdef\learningframebottom{\pgfmathresult}%
+  };%
 }%
 % A common width preserves the physical scale of spacing across figures.
 \newcommand{\diagramframe}[1]{%
   \pgfresetboundingbox%
-  \path[use as bounding box] (-3.45,#1) rectangle (12.4,3.2);%
+  \path[use as bounding box] (-3.45,#1) rectangle (12.4,{3.2+\learningheadinglift});%
 }%
 % Center every group with the same .8cm center-to-center pitch.
 \def\learningpitch{.8}%
@@ -100,18 +122,19 @@
 %
 }%
 % Legends share columns at 0cm and 5cm: marker centers .3/5.3, text starts .7/5.7.
+% Label tops share one height, independently of glyph height or descenders.
 % The .7cm row pitch separates stacked legend entries.
 \newcommand{\activationlegend}[2]{%
   \node[feature,activation=#2] at (.3,#1) {};%
-  \node[anchor=west] at (.7,#1) {Lower flower activation};%
+  \node[legendlabel] at (.7,#1) {Lower flower activation};%
   \node[feature,activation=10] at ($(.3,#1)+(0,-.7)$) {};%
-  \node[anchor=west] at ($(.7,#1)+(0,-.7)$) {Higher flower activation};%
+  \node[legendlabel] at ($(.7,#1)+(0,-.7)$) {Higher flower activation};%
 }%
 \newcommand{\statuslegend}[1]{%
   \node[feature,activation=7.4] at (.3,#1) {};%
-  \node[anchor=west] at (.7,#1) {Established mechanism};%
+  \node[legendlabel] at (.7,#1) {Established mechanism};%
   \node[potential,activation=7.4] at (5.3,#1) {};%
-  \node[anchor=west] at (5.7,#1) {Unrealized alternative};%
+  \node[legendlabel] at (5.7,#1) {Unrealized alternative};%
 }%
 \newcommand{\pressurekey}[3]{%
   \begin{scope}[shift={(#1,#2)}]%
@@ -127,26 +150,26 @@
 }%
 \newcommand{\pressuremagnitudelegend}[1]{%
   \pressurekey{0}{#1}{1}%
-  \node[anchor=west] at (.7,#1) {Learning pressure (band width)};%
+  \node[legendlabel] at (.7,#1) {Learning pressure (band width)};%
 }%
 \newcommand{\trainingeffectlegend}[1]{%
   \pressurekey{5}{#1}{1}%
-  \node[anchor=west] at (5.7,#1) {Learning pressure (reinforcing)};%
+  \node[legendlabel] at (5.7,#1) {Learning pressure (reinforcing)};%
   \pressurekey{5}{#1-.7}{-1}%
-  \node[anchor=west] at (5.7,{#1-.7}) {Learning pressure (suppressing)};%
+  \node[legendlabel] at (5.7,{#1-.7}) {Learning pressure (suppressing)};%
 }%
 \newcommand{\responselegend}[1]{%
   \node[feature] at (.3,#1) {};%
-  \node[anchor=west] at (.7,#1) {Observed response category};%
+  \node[legendlabel] at (.7,#1) {Observed response category};%
   \draw[schematic] (5,#1) -- (5.6,#1);%
-  \node[anchor=west,align=left] at (5.7,#1) {Possible developmental link};%
+  \node[legendlabel,align=left] at (5.7,#1) {Possible developmental link};%
 }%
 \newcommand{\traitlegend}[1]{%
   \node[feature] (keyyes) at (.3,#1) {};%
   \dogtrait{keyyes}%
-  \node[anchor=west] at (.7,#1) {Responds to dogs};%
+  \node[legendlabel] at (.7,#1) {Responds to dogs};%
   \node[feature] at (5.3,#1) {};%
-  \node[anchor=west] at (5.7,#1) {No dog response};%
+  \node[legendlabel] at (5.7,#1) {No dog response};%
 }%
 %% Opaque trait rings mask connection lines before restoring the instantiated dot.
 \newcommand{\dogtrait}[1]{%

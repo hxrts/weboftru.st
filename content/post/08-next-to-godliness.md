@@ -11,15 +11,11 @@ cover_caption = "Byte Magazine, August 1979"
 
 ## Developmental flow
 
-What a neural network learns changes what it can learn next. Each acquisition modifies circuitry that later training builds upon. Path-dependent development can bring together seemingly disparate responses, while changing the acquisition cost of subsequent features. So how do we make sense of this structure when learning itself is a moving target?
+What a neural network learns changes what it can learn next. But what causes a model to develop coherent computational structure in the first place?
 
-In *Neural Networks Are Already Clean*, Nick Cammarata tracks one such developmental history in a retrained InceptionV1 model.[^cammarata] A neuron initially responds best to yellow-flower images, some with dogs. As training continues, the neuron begins responding to green objects, dogs alone, and eventually broccoli.
+In *Neural Networks Are Already Clean*, Nick Cammarata calls networks clean when their mechanisms form useful groupings for downstream readers.[^cammarata] He follows a neuron in a retrained InceptionV1 model whose strongest responses initially come from yellow-flower images, including some with dogs. Green objects and dogs without flowers appear later, followed by broccoli. However, the described sequence leaves the causal links between extensions unresolved.
 
-Cammarata calls this "recursive generalization." As a neuron learns to respond to related inputs, the features it detects can provide a basis for learning others. He interprets neurons through the distinctions they draw for downstream computation, even when their responses cross familiar categories.[^cammarata] Cleanliness is his shorthand for the intelligibility of a network’s own mechanisms, including why a single neuron responds to seemingly disparate inputs.
-
-Clean neurons allow us to map response profiles and understand neural circuits. Now we can ask how a neuron's varied responses developed together. Explaining that requires examining how training favors some extensions over others and how a mechanism's role changes alongside what it detects.
-
-{% tikz(learning=true, fig_w="620px", caption="<strong>A developmental history.</strong> Responses that span different categories emerge in a sequence within one neuron. Categories follow Cammarata's observations, while thin arrows propose developmental links. Dotted ovals group responses at each stage, and equal-sized dots encode categories rather than activation magnitude.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>A developmental history.</strong> Cammarata’s observed response categories emerge within one neuron. Arrows suggest developmental links between them, and dotted ovals group responses at successive stages.") %}
 \begin{tikzpicture}[learning]
 \stageheading{0}{EARLY}{}
 \stageheading{4.5}{INTERMEDIATE}{}
@@ -31,7 +27,7 @@ Clean neurons allow us to map response profiles and understand neural circuits. 
 \stacknode[feature]{d}{9}{0}{3}{1}
 \stacknode[feature]{e}{9}{0}{3}{2}
 \stacknode[feature]{f}{9}{0}{3}{3}
-\leftlabel{0}{Yellow flowers\\sometimes dogs}
+\leftlabel{0}{Yellow flowers,\\sometimes dogs}
 \abovenodelabel{b}{Green objects}
 \abovenodelabel{c}{Dogs, no flowers}
 \rightstacklabel{0}{3}{1}{Green}
@@ -50,15 +46,15 @@ Clean neurons allow us to map response profiles and understand neural circuits. 
 \end{tikzpicture}
 {% end %}
 
+Conventional generalization concerns responses beyond training examples, while Cammarata's recursive generalization describes acquired responses becoming starting points for further learning. Here, path formation describes changes to circuitry that redirect later learning signals. A shared signal can spare downstream detectors from learning the same distinction independently, giving an established pathway a potential advantage over a new one.
+
 ## One path leads to another
 
-Explaining the flower neuron's changing responses requires examining the circuitry that determines its activation and uses its output. Cammarata's circuit-ecology hypothesis proposes that established pathways capture learning signals ahead of competitors built from scratch. In his account, improvements through established pathways reduce error and can weaken competing pathways' learning signals for the same task.[^cammarata]
+Cammarata presents a circuit-ecology hypothesis, where established pathways benefit from a head start over their competitors. Gradients from different examples reinforce shared circuitry when they favor compatible parameter updates. As that circuitry reduces prediction error, competing pathways have less remaining error to correct.[^cammarata] The proposed advantage can be explained with learning pressure, the force that training signals exert to change circuitry.
 
-The path formation account developed here starts with a flower-responsive mechanism that also responds weakly to vegetation, animals, or shared textures. When green-object examples activate it, the training loss can produce gradients through its downstream connections. Compatible gradients could strengthen its green response, providing an input for a later broccoli detector. In the illustrated case, reusing and modifying that circuitry requires fewer training steps than developing the signal independently.
+In the hypothetical pathway below, a flower-responsive neuron also responds weakly to vegetation. Green-object examples could produce compatible gradients that strengthen this response into a green signal for a later broccoli detector. This intermediate acquisition may make broccoli responsiveness easier to learn than it was from the original flower response. The detector's dependence on the green signal gives the earlier mechanism a new computational role.
 
-Learning pressure describes how training signals favor changes in existing circuitry. Reinforcement and suppression refer to a specified contribution or response, and pressure magnitude is distinct from the change it produces. Lowered resistance means fewer optimization steps or examples under comparable conditions, an advantage that strong activation or gradient support alone does not establish. Where that advantage exists, earlier distinctions help explain how a new feature develops.
-
-{% tikz(learning=true, fig_w="620px", caption="<strong>Earlier learning enables an extension.</strong> In this hypothetical case, an established green signal makes broccoli detection easier to learn than developing the signal independently. Arrows trace contributions that training can modify, while filled and white circles distinguish established mechanisms from unrealized alternatives. Uniform node sizes leave activation unspecified. Grey band width represents gradient support, with taper indicating reinforcement rather than change over time.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>Earlier learning enables an extension.</strong> In this hypothetical case, an established green signal makes broccoli detection easier to learn than constructing the signal independently. Arrows trace contributions carried forward through training, and grey band width indicates gradient support.") %}
 \begin{tikzpicture}[learning]
 \stageheading{0}{PAST}{inherited mechanisms}
 \stageheading{4.5}{PRESENT}{available mechanisms}
@@ -104,17 +100,18 @@ Learning pressure describes how training signals favor changes in existing circu
   \pressureband{h.center}{r5b}{r5a}{dhead}{2}
   \pressureband{i.center}{r6b}{r6a}{ehead}{2}
 \end{pgfonlayer}
-\leftlabel{.4}{Flower / green\\pathway}
-\leftlabel{-.4}{Independent\\green pathway}
-\belowannotation{2.25}{0}{Earlier learning provides\\the green signal}
+\leftlabel{.4}{Flower / green}
+\leftlabel{-.4}{Green}
+\belowannotation{2.25}{0}{Established green signal\\versus learning from scratch}
 \belowannotation{6.75}{0}{Reuse takes fewer steps\\than the independent route}
 \rightstacklabel{0}{4}{1}{Green}
 \rightstacklabel{0}{4}{2}{Dogs}
 \rightstacklabel{0}{4}{3}{Broccoli}
 \rightstacklabel{0}{4}{4}{Broccoli}
-\abovenodelabel{d}{Green signal}
-\abovenodelabel{e}{Green from scratch}
-\developmentaxis{-3.4}
+\abovenodelabel{d}{Green}
+\abovenodelabel{e}{Green}
+\preparelearningfooter{2.85}
+\developmentaxis{\learningaxisy}
 \begin{pgfonlayer}{foreground}
   \node[feature,activation=7.4] at (a.center) {};
   \node[potential,activation=7.4] at (b.center) {};
@@ -125,42 +122,47 @@ Learning pressure describes how training signals favor changes in existing circu
   \node[feature,activation=7.4] at (h.center) {};
   \node[potential,activation=7.4] at (i.center) {};
 \end{pgfonlayer}
-\statuslegend{-4.85}
-\pressuremagnitudelegend{-5.65}
-\diagramframe{-6.25}
+\node[feature,activation=7.4] at (.3,\learninglegendy) {};
+\node[legendlabel] at (.7,\learninglegendy) {Established mechanism};
+\pressurekey{5}{\learninglegendy}{1}
+\node[legendlabel] at (5.7,\learninglegendy) {Learning pressure (band width)};
+\node[potential,activation=7.4] at (.3,\learningpressurelegendy) {};
+\node[legendlabel] at (.7,\learningpressurelegendy) {Unrealized alternative};
+\diagramframe{\learningframebottom}
 \end{tikzpicture}
 {% end %}
 
-## Two paths, one distinction
+Routing learning signals and reducing acquisition cost are distinct claims. Lowered resistance means fewer optimization steps or examples for a specified acquisition under comparable training conditions. Strong activation or gradient support alone does not establish lower cost. Other routes may realize the same distinction with different consequences for later learning.
 
-Cammarata compares InceptionV1 and ConvNeXt neurons that initially respond to rapeseed fields but develop different sets of strongest responses.[^cammarata] These shifts need not erase responsiveness to earlier categories. Architecture and learning history both differ, so the comparison motivates a question about later learning costs without isolating their cause.
+## Two paths can represent the same distinction
 
-Consider two networks whose internal representations preserve the same flower distinction over a specified set of flower and nonflower inputs. Both group the inputs alike for this distinction and make it available to downstream computation. The networks share the same layers and possible connections, but different learned weights implement that distinction through different pathways. Both receive the same subsequent examples under the same optimization procedure.
+Cammarata compares InceptionV1 and ConvNeXt neurons that initially respond to rapeseed fields. Field images remain prominent among the ConvNeXt neuron's strongest responses, while dogs and broccoli increasingly displace them in InceptionV1. Displacement from this set does not establish complete loss of responsiveness. The architectures differ, so the comparison cannot isolate the effect of training history.
 
-Preserving the same distinction does not make these pathways equally easy to modify. In World A, learning the broccoli feature through the flower mechanism could reduce activation on flower inputs and compromise computations that depend on that signal. World B illustrates a separate route that could preserve both roles but require more training. The distinction describes which inputs the representations separate, while the processes implementing it shape how that separation can be reused or changed.
+Consider a controlled counterfactual in which two networks with the same architecture distinguish the same flower inputs from nonflower inputs. Different learned weights implement that distinction through different pathways, under identical subsequent training conditions. In World A, shared circuitry makes broccoli acquisition cheaper, but modifying it weakens the flower signal used by existing consumers. In World B, a separate route preserves both roles at greater training cost.
 
-{% tikz(learning=true, fig_w="620px", caption="<strong>One distinction, different developmental routes.</strong> This controlled counterfactual holds the initial flower distinction and subsequent training conditions fixed while learned weights differ. Shared modification weakens the flower signal in World A, while a separate route preserves it in World B at greater assumed training cost. Arrows trace contributions carried forward through training, and all nodes are established within these hypothetical histories. Asterisks identify mechanisms implementing the shared initial distinction, whose sizes alone encode activation on a fixed assay.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>One distinction, different developmental routes.</strong> In this controlled counterfactual, different learned pathways implement the same initial flower distinction. Broccoli learning weakens flower activation in World A, while a separate route preserves it at greater training cost in World B. Columns mark developmental milestones, and flower-node sizes measure activation on a fixed assay.") %}
 \begin{tikzpicture}[learning]
+\def\learningheadinglift{.75}
 \stageheading{0}{MATCHED CHECKPOINT}{same flower distinction}
 \stageheading{4.5}{RESPONSE EXTENSION}{reshaped pathways}
 \stageheading{9}{FURTHER LEARNING}{retention and interference}
-\foreach \base in {0,-5.4} {
+\foreach \base in {0,-4.6} {
   \foreach \x in {0,4.5,9} { \stageoval{\x,\base} }
 }
 \node[emphasis,anchor=east] at (-1.8,0) {WORLD A};
-\node[emphasis,anchor=east] at (-1.8,-5.4) {WORLD B};
+\node[emphasis,anchor=east] at (-1.8,-4.6) {WORLD B};
 \def\learningpitch{.9}
-\stacknode[feature,activation=10]{a}{0}{-5.4}{3}{1}
-\stacknode[feature,activation=7.4]{b}{0}{-5.4}{3}{2}
-\stacknode[feature,activation=7.4]{c}{0}{-5.4}{3}{3}
+\stacknode[feature,activation=10]{a}{0}{-4.6}{3}{1}
+\stacknode[feature,activation=7.4]{b}{0}{-4.6}{3}{2}
+\stacknode[feature,activation=7.4]{c}{0}{-4.6}{3}{3}
 \stacknode[feature,activation=10]{g}{0}{0}{3}{1}
 \stacknode[feature,activation=7.4]{h}{0}{0}{3}{2}
 \stacknode[feature,activation=7.4]{i}{0}{0}{3}{3}
 \def\learningpitch{.8}
-\stacknode[feature,activation=10]{d}{4.5}{-5.4}{2}{1}
-\stacknode[feature,activation=7.4]{e}{4.5}{-5.4}{2}{2}
-\stacknode[feature,activation=10]{f}{9}{-5.4}{2}{1}
-\stacknode[feature,activation=7.4]{broca}{9}{-5.4}{2}{2}
+\stacknode[feature,activation=10]{d}{4.5}{-4.6}{2}{1}
+\stacknode[feature,activation=7.4]{e}{4.5}{-4.6}{2}{2}
+\stacknode[feature,activation=10]{f}{9}{-4.6}{2}{1}
+\stacknode[feature,activation=7.4]{broca}{9}{-4.6}{2}{2}
 \stacknode[feature,activation=10]{j}{4.5}{0}{2}{1}
 \stacknode[feature,activation=7.4]{k}{4.5}{0}{2}{2}
 \stacknode[feature,activation=6.2]{l}{9}{0}{2}{1}
@@ -170,22 +172,25 @@ Preserving the same distinction does not make these pathways equally easy to mod
   \draw[flow] (\source.center) .. controls ($(\source.center)+(1.62,0)$) and ($(\target.center)+(-1.35,0)$) .. (\target.west);
 }
 \end{pgfonlayer}
-\leftrowlabel{-5.4}{.9}{Flower}
+\leftrowlabel{-4.6}{.9}{Flower}
 \leftrowlabel{0}{.9}{Flower}
 \abovenodelabel{d}{Flower}
 \abovenodelabel{e}{Green}
 \abovenodelabel{j}{Flower}
 \abovenodelabel{k}{Green}
-\belowannotation{6.75}{0}{Shared modification\\reduces flower activation}
-\belowannotation{6.75}{-5.4}{Separate route preserves both\\roles with more training}
-\rightstacklabel{0}{2}{1}{Flower\\reduced activation}
-\rightstacklabel{-5.4}{2}{1}{Flower\\activation preserved}
-\foreach \base in {0,-5.4} {
+\begin{scope}[yshift=-3pt]
+\aboveannotation{6.75}{0}{Learning broccoli reduces\\activation on flower inputs}
+\end{scope}
+\belowannotation{6.75}{-4.6}{Flower activation preserved\\at greater training cost}
+\rightstacklabel{0}{2}{1}{Flower}
+\rightstacklabel{-4.6}{2}{1}{Flower}
+\foreach \base in {0,-4.6} {
   \rightstacklabel{\base}{2}{2}{Broccoli}
 }
-\developmentaxis{-8.8}
+\preparelearningfooter{2.7}
+\developmentaxis{\learningaxisy}
 \begin{pgfonlayer}{foreground}
-  \node[feature,activation=10] (flowerkey) at (5.3,-10.25) {};
+  \node[feature,activation=10] (flowerkey) at (5.3,\learninglegendy) {};
   \foreach \marked in {a,d,f,g,j,l,flowerkey} {
     % Scale both the asterisk span and stroke to the actual node diameter.
     \draw let \p1=($(\marked.east)-(\marked.west)$),
@@ -198,37 +203,29 @@ Preserving the same distinction does not make these pathways equally easy to mod
       ($(\marked.center)+(-\n2,\n3)$) -- ($(\marked.center)+(\n2,-\n3)$);
   }
 \end{pgfonlayer}
-\activationlegend{-10.25}{6.2}
-\node[anchor=west] at (6,-10.25) {Flower response};
-\diagramframe{-11.5}
+\activationlegend{\learninglegendy}{6.2}
+\node[legendlabel] at (5.7,\learninglegendy) {Flower response};
+\diagramframe{\learningframebottom}
 \end{tikzpicture}
 {% end %}
 
+The present flower distinction leaves its developmental route unresolved. A single pathway's history also leaves open how learning redistributes computational roles across the network. How much change comes from mechanisms gaining new uses, and how much comes from changes in what they detect?
+
 ## Learning pressure changes roles and responses
 
-Training can change both how much a mechanism contributes to later computations and what it detects. Those changes determine the contribution weights and trait changes in the Price equation. They are two effects of the same learning pressure and need not point in the same direction. Price's equation separates their contributions to a change in a measured trait, such as responsiveness to dogs without flowers.[^price]
-
-To apply it, fix a population of earlier flower-related mechanisms, a set of tasks, and a rule attributing later uses to those mechanisms. Divide credit for each later use among its contributing mechanisms. A mechanism's total credit gives its weight $w$, while $z$ measures its response on fixed test images and $\Delta z$ measures response change in its later uses.[^price-accounting]
+Dog responsiveness can become more prevalent because responsive mechanisms gain downstream uses, because inherited mechanisms acquire the response, or both. Price's equation separates these contributions under a declared rule attributing later uses to earlier mechanisms.[^price] For a baseline population of flower-related mechanisms, $z$ measures responsiveness to dogs without flowers on a fixed assay, and $w$ measures attributed downstream use.[^price-accounting] With $\bar w$ the mean weight and $\Delta z$ the response change averaged over each mechanism's attributed later uses, the population mean changes by[^price-weights]
 
 ```math
 \Delta\bar z
 =
 \underbrace{\frac{\operatorname{Cov}(w,z)}{\bar w}}_{\text{selection}}
 +
-\underbrace{\frac{\mathbb E[w\Delta z]}{\bar w}}_{\text{variation}}.
+\underbrace{\frac{\mathbb E[w\Delta z]}{\bar w}}_{\text{transmission}}.
 ```
 
-The equation is a mathematical decomposition of change and does not itself establish causality.
+Selection measures the shift due to differential descendant weighting, while transmission measures inherited trait change, including variation acquired through training. In the illustration, greater attributed use of dog-responsive mechanisms raises the mean from ½ to ¾, and acquired responsiveness in another use brings it to 1. Each term contributes ¼, though opposing contributions could conceal substantial change behind a stable mean. Following each neuron one-to-one gives equal weights, so selection is zero even during substantial learning.
 
-The selection term is positive when mechanisms already responsive to dogs receive greater relative weight. Its sign gives the direction of this contribution, and its magnitude gives the shift in the mean response due to weighting. More total contribution alone does not imply a shift toward dog responsiveness. What matters is how contribution is distributed across the earlier traits.
-
-Variation, the standard transmission term, captures response changes within inherited mechanisms and their later uses. It weights those changes by their contributions. Selection toward dog responsiveness could be offset by variation away from it, leaving the average unchanged despite substantial development.
-
-The bands depict proposed training pressure, while the Price terms account for its stipulated consequences under the attribution rule. Pressure magnitude alone determines neither term, since the outcome also depends on the circuitry and its response to training. If each neuron instead has one equally weighted continuation across checkpoints, then $w_i=1$ and selection is zero, even when gradients compete. All measured response change then enters variation.
-
-In the hypothetical training interval below, pressure favors additional contributions from dog-responsive mechanisms and dog responsiveness in a previously nonresponsive inherited use. Reweighting the earlier traits accounts for a rise from 50% to 75%, while acquisition of the trait accounts for the remaining rise to 100%. Selection and variation reinforce each other here, each contributing 25 percentage points.
-
-{% tikz(learning=true, fig_w="620px", caption="<strong>Contribution and trait change.</strong> Schematic grey bands depict reinforcing learning pressure over one hypothetical training interval, producing additional contributions along the upper routes and acquired dog responsiveness along the lower route. Uniform band widths leave pressure magnitude unspecified and do not encode the two Price contributions. Arrows specify attribution, dots represent mechanisms or later uses, and rings mark dog responsiveness on a fixed assay. The middle markers show reweighting alone, with the axis break distinguishing accounting from a training checkpoint.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>Contribution and trait change.</strong> Differential contribution and acquired dog responsiveness each add ¼ to the population mean. Arrows attribute later uses to earlier mechanisms, while the middle inset isolates reweighting. Rings mark dog responsiveness, coded as 1 when present and 0 otherwise. Grey bands depict hypothetical reinforcing learning pressure.") %}
 \begin{tikzpicture}[learning]
 % Slightly smaller markers for the accounting inset and its trait legend.
 \tikzset{feature/.append style={minimum size=4.2pt},trait/.append style={minimum size=9pt}}
@@ -267,45 +264,49 @@ In the hypothetical training interval below, pressure favors additional contribu
 
 
 \belowannotation{2.25}{0}{Selection +\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{4}\\Dog-responsive mechanisms\\contribute more}
-\belowannotation{6.75}{0}{Variation +\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{4}\\Inherited use acquires\\dog-responsiveness}
+\belowannotation{6.75}{0}{Transmission +\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{4}\\Inherited use acquires\\dog-responsiveness}
+\preparelearningfooter{2.65}
 % A broken development axis opens into the accounting inset, not a third state.
-\draw[line width=.85pt,line cap=round] (0,-3.4) -- (4.45,-3.4);
-\draw[flow,line cap=round] (4.55,-3.4) -- (9,-3.4);
-\draw[line width=.85pt,line cap=round] (4.375,-3.55) -- (4.525,-3.25);
-\draw[line width=.85pt,line cap=round] (4.475,-3.55) -- (4.625,-3.25);
-\node[anchor=north] at (4.5,-3.65) {Development};
-\traitlegend{-4.85}
-\pressurekey{0}{-5.65}{1}
-\node[anchor=west,align=left] at (.7,-5.65) {Learning pressure (reinforcing)};
-\diagramframe{-6.05}
+\draw[line width=.85pt,line cap=round] (0,\learningaxisy) -- (4.45,\learningaxisy);
+\draw[flow,line cap=round] (4.55,\learningaxisy) -- (9,\learningaxisy);
+\draw[line width=.85pt,line cap=round] (4.375,{\learningaxisy-.15}) -- (4.525,{\learningaxisy+.15});
+\draw[line width=.85pt,line cap=round] (4.475,{\learningaxisy-.15}) -- (4.625,{\learningaxisy+.15});
+\node[anchor=north] at (4.5,{\learningaxisy-.25}) {Development};
+\node[feature] (keyyes) at (.3,\learninglegendy) {};
+\dogtrait{keyyes}
+\node[legendlabel] at (.7,\learninglegendy) {Responds to dogs};
+\pressurekey{5}{\learninglegendy}{1}
+\node[legendlabel] at (5.7,\learninglegendy) {Learning pressure (reinforcing)};
+\node[feature] at (.3,\learningpressurelegendy) {};
+\node[legendlabel] at (.7,\learningpressurelegendy) {No dog response};
+\diagramframe{\learningframebottom}
 \end{tikzpicture}
 {% end %}
 
+The grey bands illustrate training pressure that could change attributed use or inherited responses. Different gradient processes can produce identical Price terms, even in networks with different opportunities for subsequent learning. Tracing the contributing pathways can identify which signals later circuits use and how training changed those signals.
+
 ## How learning builds understandable structure
 
-A mechanism's current response does not fully describe its developmental role. Mechanisms that respond alike can differ in how training changes them and what later computations can build on them. Learning pressure can redistribute their contributions before an activation summary reveals the difference. The changed circuitry then channels later training signals, potentially making different extensions easier to learn.
+In the proposed flower history, existing green and texture signals make a broccoli detector cheaper to learn. Several detectors may come to use the same green signal, giving the contributing mechanism additional computational roles. Gradients from consumers with compatible learning objectives can reinforce the shared distinction. Conflicting demands may weaken the flower signal or favor separate pathways.
 
-Price's equation separates changes in contribution from changes in measured traits, but neither a current average nor its immediate change necessarily determines what follows. Under specified selection dynamics, populations matching both can later diverge because their internal composition differs. Applied to neural learning, this suggests that an apparently stable feature can conceal a changing developmental trajectory, a possibility the flower timeline alone cannot establish.
+Price accounting separates changes in attributed use from changes in inherited responses. Tracing the green and texture inputs across training checkpoints shows how the broccoli detector comes to use those signals. A pathway may help during acquisition and later become unnecessary, so its absence from the finished circuit does not rule out a developmental role. Interventions during training can test whether the pathway helped the detector develop.
 
-A shared pathway could contribute more to broccoli detection while becoming less responsive to flower inputs. Other pathways may lose relative influence while remaining available, making some later acquisitions harder without making them impossible. Present learning advantages therefore need not preserve every future opportunity, and retaining the flower role may require new circuitry even as broccoli becomes easier to learn.
-
-Learning can produce understandable structure because each acquisition builds on distinctions already available and reshapes the opportunities that follow. In this account of Cammarata's recursive generalization, disparate responses become intelligible through the dependencies connecting their development. A network's apparent cleanliness can reflect that accumulated organization, including changes in both what its features detect and what later computations build on them. Learning builds the machinery of its own future learning.
-
-{% tikz(learning=true, fig_w="620px", caption="<strong>Structure built through learning.</strong> This hypothetical history makes the flower-to-broccoli connection intelligible through shared green and texture signals. Their combination supports broccoli learning while updates to shared circuitry weaken the flower response. Arrows trace developmental contributions, filled nodes mark established mechanisms, and only flower node sizes encode activation on a fixed assay. Grey tapers distinguish reinforcing and suppressing training effects, with pressure magnitude and its change over time unspecified.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>Mechanisms organized for downstream use.</strong> In this hypothetical history, a green signal becomes a retained input to two consumers, with texture also contributing to broccoli detection. Compatible consumer demands reinforce the shared signal, while shared updates weaken flower activation. Node size tracks flower activation on a fixed assay.") %}
 \begin{tikzpicture}[learning]
+\def\learningheadinglift{.75}
 \stageheading{0}{PAST}{inherited mechanisms}
 \stageheading{4.5}{PRESENT}{shared signals}
-\stageheading{9}{FUTURE}{reuse and interference}
+\stageheading{9}{FUTURE}{downstream use}
 \foreach \x in {0,4.5,9} { \stageoval{\x,0} }
 \stacknode[feature,activation=10]{a}{0}{0}{2}{1}
 \stacknode[feature,activation=7.4]{b}{0}{0}{2}{2}
-\def\learningpitch{.9}
+\def\learningpitch{1.0}
 \stacknode[feature,activation=7.4]{green}{4.5}{0}{3}{1}
 \stacknode[feature,activation=7.4]{texture}{4.5}{0}{3}{2}
 \stacknode[feature,activation=10]{flower}{4.5}{0}{3}{3}
-\def\learningpitch{.8}
-\stacknode[feature,activation=7.4]{broccoli}{9}{0}{2}{1}
-\stacknode[feature,activation=4.6]{laterflower}{9}{0}{2}{2}
+\stacknode[feature,activation=7.4]{consumer}{9}{0}{3}{1}
+\stacknode[feature,activation=7.4]{broccoli}{9}{0}{3}{2}
+\stacknode[feature,activation=4.6]{laterflower}{9}{0}{3}{3}
 \coordinate (ahead) at ($(a.center)+(.42,0)$);
 \coordinate (bhead) at ($(b.center)+(.42,0)$);
 \coordinate (greenhead) at ($(green.center)+(.42,0)$);
@@ -316,8 +317,10 @@ Learning can produce understandable structure because each acquisition builds on
 \coordinate (bt) at ($(b.center)+(1.62,0)$);
 \coordinate (tb) at ($(texture.center)+(-1.35,0)$);
 \coordinate (fa) at ($(flower.center)+(-1.35,0)$);
-\coordinate (gb) at ($(green.center)+(1.62,0)$);
+\coordinate (greenjoin) at ($(green.center)+(1.05,0)$);
+\coordinate (gb) at ($(green.center)+(2.292,0)$);
 \coordinate (tg) at ($(texture.center)+(1.62,0)$);
+\coordinate (gc) at ($(consumer.center)+(-1.35,0)$);
 \coordinate (bg) at ($(broccoli.center)+(-1.35,0)$);
 \coordinate (fl) at ($(flower.center)+(1.62,0)$);
 \coordinate (lf) at ($(laterflower.center)+(-1.35,0)$);
@@ -325,31 +328,41 @@ Learning can produce understandable structure because each acquisition builds on
   \pressureband{green.center}{ga}{ag}{ahead}{4}
   \pressureband{texture.center}{tb}{bt}{bhead}{4}
   \pressureband{flower.center}{fa}{ag}{ahead}{4}
+  \pressureband{consumer.center}{gc}{gb}{greenhead}{4}
   \pressureband{broccoli.center}{bg}{gb}{greenhead}{4}
   \pressureband{broccoli.center}{bg}{tg}{texturehead}{4}
   \suppressband{laterflower.center}{lf}{fl}{flowerhead}{4}
   \draw[flow] (a.center) .. controls (ag) and (ga) .. (green.west);
   \draw[flow] (a.center) .. controls (ag) and (fa) .. (flower.west);
   \draw[flow] (b.center) .. controls (bt) and (tb) .. (texture.west);
-  \draw[flow] (green.center) .. controls (gb) and (bg) .. (broccoli.west);
+  \draw[line width=.85pt] (green.center) -- (greenjoin);
+  \draw[flow] (greenjoin) .. controls (gb) and (gc) .. (consumer.west);
+  \draw[flow] (greenjoin) .. controls (gb) and (bg) .. (broccoli.west);
   \draw[flow] (texture.center) .. controls (tg) and (bg) .. (broccoli.west);
   \draw[flow] (flower.center) .. controls (fl) and (lf) .. (laterflower.west);
 \end{pgfonlayer}
-\leftlabel{.4}{Flower response}
+\leftlabel{.4}{Flower}
 \leftlabel{-.4}{Texture cues}
 \abovenodelabel{green}{Green patterns}
 \abovenodelabel{texture}{Clustered texture}
 \abovenodelabel{flower}{Flower}
-\rightstacklabel{0}{2}{1}{Broccoli}
-\rightstacklabel{0}{2}{2}{Flower}
-\belowannotation{2.25}{0}{Earlier distinctions\\support a new feature}
-\belowannotation{6.75}{0}{The extension also changes\\the earlier flower response}
-\developmentaxis{-3.4}
-\activationlegend{-4.85}{4.6}
-\trainingeffectlegend{-4.85}
-\diagramframe{-6.15}
+\rightstacklabel{0}{3}{1}{Green-object\\detector}
+\rightstacklabel{0}{3}{2}{Broccoli\\detector}
+\rightstacklabel{0}{3}{3}{Flower}
+\begin{scope}[yshift=-3pt]
+\aboveannotation{6.75}{0}{Both retain the\\green signal as input}
+\end{scope}
+\belowannotation{2.25}{0}{Compatible demands reinforce\\the shared signal}
+\belowannotation{6.75}{0}{Shared updates weaken\\the earlier flower signal}
+\preparelearningfooter{2.75}
+\developmentaxis{\learningaxisy}
+\activationlegend{\learninglegendy}{4.6}
+\trainingeffectlegend{\learninglegendy}
+\diagramframe{\learningframebottom}
 \end{tikzpicture}
 {% end %}
+
+On this account, training favors established distinctions when they reduce the cost of acquiring new computations. Cammarata's recursive generalization can then be understood as a trace of how mechanisms become organized for downstream use. Learning builds the machinery of its own future learning.
 
 ---
 
@@ -361,4 +374,6 @@ Learning can produce understandable structure because each acquisition builds on
 
 [^frank1997]: Frank, S. A. (1997). [The Price Equation, Fisher’s Fundamental Theorem, Kin Selection, and Causal Analysis](https://stevefrank.org/reprints-pdf/97Evol-Causal.pdf). *Evolution*, 51(6), 1712–1729.
 
-[^price-accounting]: Take equally weighted baseline mechanisms with fixed assay responses $z_i$. Assign each included later use one unit of credit, divided among its registered ancestors, and exclude unassigned uses from this population. Let $w_i\geq0$ be an ancestor's total credit and $\Delta z_i$ its credit-weighted descendant mean response minus $z_i$, set to zero when $w_i=0$. Expectations and covariance use the baseline population, $\bar w=\mathbb E[w]>0$, and $\Delta\bar z$ is the later attributed-use mean minus the baseline mean.[^price1972][^frank1997]
+[^price-accounting]: Take equally weighted baseline flower-related mechanisms with fixed assay responses $z_i$, fixing the downstream tasks and ancestry rule before calculating the decomposition. Ancestry records how earlier mechanisms contribute to later computations.
+
+[^price-weights]: Assign each included later use one unit of credit, divided among its registered ancestors, and exclude unassigned uses from this population. Let $w_i\geq0$ be an ancestor's total credit and $\Delta z_i$ its credit-weighted descendant mean response minus $z_i$, set to zero when $w_i=0$. Expectations and covariance use the baseline population, $\bar w=\mathbb E[w]>0$, and $\Delta\bar z$ is the later attributed-use mean minus the baseline mean.[^price1972][^frank1997]
