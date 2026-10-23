@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { randomUUID } from 'node:crypto';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const port = Number(process.env.PORT || 1111);
@@ -22,6 +23,43 @@ let pending = false;
 let stopping = false;
 let timer;
 let revision = 0;
+const instance = randomUUID();
+let buildError;
+
+function previewState() {
+    return { version: `${instance}:${revision}`, building, error: buildError };
+}
+
+function broadcastState() {
+    const message = `data: ${JSON.stringify(previewState())}\n\n`;
+    for (const client of clients) client.write(message);
+}
+
+function liveReloadScript() {
+    const version = JSON.stringify(previewState().version);
+    return `<script>(() => {
+        const version = ${version};
+        let notice;
+        new EventSource('/__preview_events').onmessage = event => {
+            const state = JSON.parse(event.data);
+            if (state.version !== version) { location.reload(); return; }
+            if (state.building || state.error) {
+                if (!notice) {
+                    notice = document.createElement('div');
+                    notice.setAttribute('role', 'status');
+                    notice.style.cssText = 'position:fixed;bottom:12px;left:12px;right:12px;z-index:2147483647;padding:10px 14px;background:#222;color:#fff;border:1px solid #888;border-radius:4px;font:14px/1.4 sans-serif;white-space:pre-wrap';
+                    document.body.appendChild(notice);
+                }
+                notice.textContent = state.error
+                    ? 'Preview build failed. Showing the last successful build.\\n' + state.error
+                    : 'Rebuilding preview…';
+            } else if (notice) {
+                notice.remove();
+                notice = undefined;
+            }
+        };
+    })();</script>`;
+}
 
 const types = {
     '.html': 'text/html; charset=utf-8', '.css': 'text/css',
@@ -36,9 +74,14 @@ const types = {
 const server = createServer(async (request, response) => {
     try {
         const url = new URL(request.url, baseUrl);
+        if (url.pathname === '/__preview_info') {
+            response.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+            response.end(JSON.stringify({ application: 'weboftrust-preview', root, pid: process.pid }));
+            return;
+        }
         if (url.pathname === '/__preview_events') {
             response.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-store' });
-            response.write(`data: ${revision}\n\n`);
+            response.write(`data: ${JSON.stringify(previewState())}\n\n`);
             clients.add(response);
             request.on('close', () => clients.delete(response));
             return;
@@ -58,7 +101,7 @@ const server = createServer(async (request, response) => {
         let body = await readFile(file);
         const extension = path.extname(file);
         if (extension === '.html') {
-            const reload = `<script>new EventSource('/__preview_events').onmessage = event => { if (Number(event.data) !== ${revision}) location.reload(); };</script>`;
+            const reload = liveReloadScript();
             const html = body.toString();
             body = Buffer.from(html.includes('</body>') ? html.replace('</body>', `${reload}</body>`) : html + reload);
         }
@@ -84,6 +127,8 @@ async function rebuild() {
     pending = true;
     if (building || stopping) return;
     building = true;
+    buildError = undefined;
+    broadcastState();
     while (pending && !stopping) {
         pending = false;
         const output = await mkdtemp(path.join(workspace, 'build-'));
@@ -96,16 +141,19 @@ async function rebuild() {
             if (stopping) break;
             const previous = activeDirectory;
             activeDirectory = output;
+            buildError = undefined;
             revision++;
-            for (const client of clients) client.write(`data: ${revision}\n\n`);
+            broadcastState();
             console.log(`Preview ready at ${baseUrl} (watching for changes)`);
             if (previous) await rm(previous, { recursive: true, force: true });
         } catch (error) {
+            buildError = error.message;
             console.error(`Build failed. Keeping the last successful preview. ${error.message}`);
             await rm(output, { recursive: true, force: true });
         }
     }
     building = false;
+    broadcastState();
 }
 
 function signature(file) {
@@ -190,12 +238,44 @@ async function stop() {
 
 process.on('SIGINT', stop);
 process.on('SIGTERM', stop);
+let replacementAttempted = false;
 server.on('error', async error => {
+    if (error.code === 'EADDRINUSE' && !replacementAttempted) {
+        replacementAttempted = true;
+        try {
+            const response = await fetch(`${baseUrl}/__preview_info`, { signal: AbortSignal.timeout(1500) });
+            const existing = response.ok ? await response.json() : undefined;
+            if (existing?.application !== 'weboftrust-preview' || existing.root !== root
+                || !Number.isInteger(existing.pid) || existing.pid <= 1 || existing.pid === process.pid) {
+                throw new Error('the port is occupied by a different service');
+            }
+            console.log(`Restarting the existing preview for this repository (PID ${existing.pid})…`);
+            process.kill(existing.pid, 'SIGTERM');
+            const deadline = Date.now() + 10000;
+            while (true) {
+                try {
+                    process.kill(existing.pid, 0);
+                } catch (failure) {
+                    if (failure.code === 'ESRCH') break;
+                    throw failure;
+                }
+                if (Date.now() >= deadline) throw new Error('the existing preview did not stop within 10 seconds');
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            if (!stopping) server.listen(port, '127.0.0.1', startWatching);
+            return;
+        } catch (failure) {
+            console.error(`Cannot start preview on ${baseUrl}: ${failure.message}. Use PORT to choose another port.`);
+            await stop();
+            process.exitCode = 1;
+            return;
+        }
+    }
     console.error(error.message);
     await stop();
     process.exitCode = 1;
 });
-server.listen(port, '127.0.0.1', () => {
+function startWatching() {
     for (const directory of sourceDirectories) {
         const source = path.join(root, directory);
         remember(source);
@@ -208,4 +288,6 @@ server.listen(port, '127.0.0.1', () => {
     }));
     reconciliationTimer = setInterval(reconcile, 1000);
     rebuild();
-});
+}
+
+server.listen(port, '127.0.0.1', startWatching);

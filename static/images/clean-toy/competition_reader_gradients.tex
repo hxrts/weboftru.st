@@ -1,0 +1,141 @@
+% Generated reader-specific gradients at checkpoint 0.
+\begin{tikzpicture}[learning]
+\def\learningheadinglift{.6}
+\tikzset{reader/.style={rectangle,draw,fill=white,minimum size=6pt,inner sep=0pt,line width=.65pt}}
+\stageheading{0}{SHARED FEATURES}{net pressure}
+\stageheading{4.5}{READ WEIGHTS}{learned weights}
+\stageheading{9}{READERS}{step 0}
+\pairedrowlabel{-0.0}{ALIGNED}
+\foreach \x in {0,4.5,9} { \stageoval{\x,-0.0} }
+\node[feature] (a00) at (0,0.65) {};
+\abovenodelabel{a00}{$a_0$}
+\leftrowlabel{-0.0}{0.65}{Net $p=+0.048$}
+\node[reader] (r00) at (9,0.65) {};
+\rightlabel{-0.0}{0.65}{Reader 1\\Target $+1$}
+\node[feature] (a01) at (0,-0.65) {};
+\abovenodelabel{a01}{$a_1$}
+\leftrowlabel{-0.0}{-0.65}{Net $p=+0.048$}
+\node[reader] (r01) at (9,-0.65) {};
+\rightlabel{-0.0}{-0.65}{Reader 2\\Target $+1$}
+\node[feature] (b000) at (4.5,1.5) {};
+\abovenodelabel{b000}{$b_{00}$}
+\node[feature] (b010) at (4.5,0.5) {};
+\abovenodelabel{b010}{$b_{10}$}
+\node[feature] (b001) at (4.5,-0.5) {};
+\abovenodelabel{b001}{$b_{01}$}
+\node[feature] (b011) at (4.5,-1.5) {};
+\abovenodelabel{b011}{$b_{11}$}
+\begin{pgfonlayer}{background}
+\coordinate (c000features) at ($(a00.center)+(.42,0)$);
+\coordinate (c000featurea) at ($(a00.center)+(1.62,0)$);
+\coordinate (c000featureb) at ($(b000.center)+(-1.35,0)$);
+\pressureband{b000.center}{c000featureb}{c000featurea}{c000features}{2.87250000}
+\coordinate (c000reads) at ($(b000.center)+(.42,0)$);
+\coordinate (c000reada) at ($(b000.center)+(1.62,0)$);
+\coordinate (c000readb) at ($(r00.center)+(-1.35,0)$);
+\pressureband{r00.center}{c000readb}{c000reada}{c000reads}{9.19200000}
+\coordinate (c001features) at ($(a00.center)+(.42,0)$);
+\coordinate (c001featurea) at ($(a00.center)+(1.62,0)$);
+\coordinate (c001featureb) at ($(b010.center)+(-1.35,0)$);
+\pressureband{b010.center}{c001featureb}{c001featurea}{c001features}{2.87250000}
+\coordinate (c001reads) at ($(b010.center)+(.42,0)$);
+\coordinate (c001reada) at ($(b010.center)+(1.62,0)$);
+\coordinate (c001readb) at ($(r01.center)+(-1.35,0)$);
+\pressureband{r01.center}{c001readb}{c001reada}{c001reads}{9.19200000}
+\coordinate (c010features) at ($(a01.center)+(.42,0)$);
+\coordinate (c010featurea) at ($(a01.center)+(1.62,0)$);
+\coordinate (c010featureb) at ($(b001.center)+(-1.35,0)$);
+\pressureband{b001.center}{c010featureb}{c010featurea}{c010features}{2.87250000}
+\coordinate (c010reads) at ($(b001.center)+(.42,0)$);
+\coordinate (c010reada) at ($(b001.center)+(1.62,0)$);
+\coordinate (c010readb) at ($(r00.center)+(-1.35,0)$);
+\pressureband{r00.center}{c010readb}{c010reada}{c010reads}{0.57450000}
+\coordinate (c011features) at ($(a01.center)+(.42,0)$);
+\coordinate (c011featurea) at ($(a01.center)+(1.62,0)$);
+\coordinate (c011featureb) at ($(b011.center)+(-1.35,0)$);
+\pressureband{b011.center}{c011featureb}{c011featurea}{c011features}{2.87250000}
+\coordinate (c011reads) at ($(b011.center)+(.42,0)$);
+\coordinate (c011reada) at ($(b011.center)+(1.62,0)$);
+\coordinate (c011readb) at ($(r01.center)+(-1.35,0)$);
+\pressureband{r01.center}{c011readb}{c011reada}{c011reads}{0.57450000}
+\draw[flow] (a00.center) .. controls (c000featurea) and (c000featureb) .. (b000.west);
+\draw[flow] (b000.center) .. controls (c000reada) and (c000readb) .. (r00.west);
+\draw[flow] (a00.center) .. controls (c001featurea) and (c001featureb) .. (b010.west);
+\draw[flow] (b010.center) .. controls (c001reada) and (c001readb) .. (r01.west);
+\draw[flow] (a01.center) .. controls (c010featurea) and (c010featureb) .. (b001.west);
+\draw[flow] (b001.center) .. controls (c010reada) and (c010readb) .. (r00.west);
+\draw[flow] (a01.center) .. controls (c011featurea) and (c011featureb) .. (b011.west);
+\draw[flow] (b011.center) .. controls (c011reada) and (c011readb) .. (r01.west);
+\end{pgfonlayer}
+\pairedrowlabel{-5.6}{OPPOSED}
+\foreach \x in {0,4.5,9} { \stageoval{\x,-5.6} }
+\node[feature] (a10) at (0,-4.949999999999999) {};
+\abovenodelabel{a10}{$a_0$}
+\leftrowlabel{-5.6}{0.6500000000000004}{Net $p=-0.002$}
+\node[reader] (r10) at (9,-4.949999999999999) {};
+\rightlabel{-5.6}{0.6500000000000004}{Reader 1\\Target $+1$}
+\node[feature] (a11) at (0,-6.25) {};
+\abovenodelabel{a11}{$a_1$}
+\leftrowlabel{-5.6}{-0.6500000000000004}{Net $p=-0.002$}
+\node[reader] (r11) at (9,-6.25) {};
+\rightlabel{-5.6}{-0.6500000000000004}{Reader 2\\Target $-1$}
+\node[feature] (b100) at (4.5,-4.1) {};
+\abovenodelabel{b100}{$b_{00}$}
+\node[feature] (b110) at (4.5,-5.1) {};
+\abovenodelabel{b110}{$b_{10}$}
+\node[feature] (b101) at (4.5,-6.1) {};
+\abovenodelabel{b101}{$b_{01}$}
+\node[feature] (b111) at (4.5,-7.1) {};
+\abovenodelabel{b111}{$b_{11}$}
+\begin{pgfonlayer}{background}
+\coordinate (c100features) at ($(a10.center)+(.42,0)$);
+\coordinate (c100featurea) at ($(a10.center)+(1.62,0)$);
+\coordinate (c100featureb) at ($(b100.center)+(-1.35,0)$);
+\pressureband{b100.center}{c100featureb}{c100featurea}{c100features}{2.87250000}
+\coordinate (c100reads) at ($(b100.center)+(.42,0)$);
+\coordinate (c100reada) at ($(b100.center)+(1.62,0)$);
+\coordinate (c100readb) at ($(r10.center)+(-1.35,0)$);
+\pressureband{r10.center}{c100readb}{c100reada}{c100reads}{9.19200000}
+\coordinate (c101features) at ($(a10.center)+(.42,0)$);
+\coordinate (c101featurea) at ($(a10.center)+(1.62,0)$);
+\coordinate (c101featureb) at ($(b110.center)+(-1.35,0)$);
+\suppressband{b110.center}{c101featureb}{c101featurea}{c101features}{3.12750000}
+\coordinate (c101reads) at ($(b110.center)+(.42,0)$);
+\coordinate (c101reada) at ($(b110.center)+(1.62,0)$);
+\coordinate (c101readb) at ($(r11.center)+(-1.35,0)$);
+\suppressband{r11.center}{c101readb}{c101reada}{c101reads}{10.00800000}
+\coordinate (c110features) at ($(a11.center)+(.42,0)$);
+\coordinate (c110featurea) at ($(a11.center)+(1.62,0)$);
+\coordinate (c110featureb) at ($(b101.center)+(-1.35,0)$);
+\pressureband{b101.center}{c110featureb}{c110featurea}{c110features}{2.87250000}
+\coordinate (c110reads) at ($(b101.center)+(.42,0)$);
+\coordinate (c110reada) at ($(b101.center)+(1.62,0)$);
+\coordinate (c110readb) at ($(r10.center)+(-1.35,0)$);
+\pressureband{r10.center}{c110readb}{c110reada}{c110reads}{0.57450000}
+\coordinate (c111features) at ($(a11.center)+(.42,0)$);
+\coordinate (c111featurea) at ($(a11.center)+(1.62,0)$);
+\coordinate (c111featureb) at ($(b111.center)+(-1.35,0)$);
+\suppressband{b111.center}{c111featureb}{c111featurea}{c111features}{3.12750000}
+\coordinate (c111reads) at ($(b111.center)+(.42,0)$);
+\coordinate (c111reada) at ($(b111.center)+(1.62,0)$);
+\coordinate (c111readb) at ($(r11.center)+(-1.35,0)$);
+\suppressband{r11.center}{c111readb}{c111reada}{c111reads}{0.62550000}
+\draw[flow] (a10.center) .. controls (c100featurea) and (c100featureb) .. (b100.west);
+\draw[flow] (b100.center) .. controls (c100reada) and (c100readb) .. (r10.west);
+\draw[flow] (a10.center) .. controls (c101featurea) and (c101featureb) .. (b110.west);
+\draw[flow] (b110.center) .. controls (c101reada) and (c101readb) .. (r11.west);
+\draw[flow] (a11.center) .. controls (c110featurea) and (c110featureb) .. (b101.west);
+\draw[flow] (b101.center) .. controls (c110reada) and (c110readb) .. (r10.west);
+\draw[flow] (a11.center) .. controls (c111featurea) and (c111featureb) .. (b111.west);
+\draw[flow] (b111.center) .. controls (c111reada) and (c111readb) .. (r11.west);
+\end{pgfonlayer}
+\coordinate (learningannotationbottom) at (0,-7.7275);
+\preparelearningfooter{1.95}
+\node[align=center] at (2.25,\learningaxisy) {Feature gradients};
+\node[align=center] at (6.75,\learningaxisy) {Connection gradients};
+\pressurekey{0}{\learninglegendy}{1}
+\node[legendlabel] at (.7,\learninglegendy) {Increasing parameter};
+\pressurekey{5}{\learninglegendy}{-1}
+\node[legendlabel] at (5.7,\learninglegendy) {Decreasing parameter};
+\diagramframe{\learningframebottom}
+\end{tikzpicture}

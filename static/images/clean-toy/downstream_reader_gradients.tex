@@ -1,0 +1,145 @@
+% Generated gradients from actual downstream reader losses, checkpoint 10.
+\begin{tikzpicture}[learning]
+\def\learningheadinglift{.6}
+\tikzset{reader/.style={rectangle,draw,fill=white,minimum size=6pt,inner sep=0pt,line width=.65pt}}
+\stageheading{0}{PATHWAYS}{green response}
+\stageheading{4.5}{CONNECTIONS}{read gains}
+\stageheading{9}{READERS}{step 10}
+\pairedrowlabel{-0.0}{COHERENT}
+\foreach \x in {0,4.5,9} { \stageoval{\x,-0.0} }
+\node[feature] (w00) at (0,1.5) {};
+\node[feature] (c00) at (4.5,1.5) {};
+\abovenodelabel{w00}{$A_1$}
+\abovenodelabel{c00}{$c_{A_1}$}
+\node[feature] (w01) at (0,0.5) {};
+\node[feature] (c01) at (4.5,0.5) {};
+\abovenodelabel{w01}{$A_2$}
+\abovenodelabel{c01}{$c_{A_2}$}
+\node[feature] (w02) at (0,-0.5) {};
+\node[feature] (c02) at (4.5,-0.5) {};
+\abovenodelabel{w02}{$A_3$}
+\abovenodelabel{c02}{$c_{A_3}$}
+\node[feature] (w03) at (0,-1.5) {};
+\node[feature] (c03) at (4.5,-1.5) {};
+\abovenodelabel{w03}{$B_1$}
+\abovenodelabel{c03}{$c_{B_1}$}
+\node[reader] (r0flower) at (9,0.7) {};
+\rightlabel{-0.0}{0.7}{Flower\\reader}
+\node[reader] (r0broccoli) at (9,-0.7) {};
+\rightlabel{-0.0}{-0.7}{Broccoli\\reader}
+\begin{pgfonlayer}{background}
+\coordinate (d00paths) at ($(w00.center)+(.42,0)$);
+\coordinate (d00patha) at ($(w00.center)+(1.62,0)$);
+\coordinate (d00pathb) at ($(c00.center)+(-1.35,0)$);
+\suppressband{c00.center}{d00pathb}{d00patha}{d00paths}{5.32895892}
+\coordinate (d00gains) at ($(c00.center)+(.42,0)$);
+\coordinate (d00gaina) at ($(c00.center)+(1.62,0)$);
+\coordinate (d00gainb) at ($(r0flower.center)+(-1.35,0)$);
+\suppressband{r0flower.center}{d00gainb}{d00gaina}{d00gains}{5.42718539}
+\coordinate (d01paths) at ($(w01.center)+(.42,0)$);
+\coordinate (d01patha) at ($(w01.center)+(1.62,0)$);
+\coordinate (d01pathb) at ($(c01.center)+(-1.35,0)$);
+\suppressband{c01.center}{d01pathb}{d01patha}{d01paths}{5.32895892}
+\coordinate (d01gains) at ($(c01.center)+(.42,0)$);
+\coordinate (d01gaina) at ($(c01.center)+(1.62,0)$);
+\coordinate (d01gainb) at ($(r0flower.center)+(-1.35,0)$);
+\suppressband{r0flower.center}{d01gainb}{d01gaina}{d01gains}{5.42718539}
+\coordinate (d02paths) at ($(w02.center)+(.42,0)$);
+\coordinate (d02patha) at ($(w02.center)+(1.62,0)$);
+\coordinate (d02pathb) at ($(c02.center)+(-1.35,0)$);
+\pressureband{c02.center}{d02pathb}{d02patha}{d02paths}{1.44302225}
+\coordinate (d02gains) at ($(c02.center)+(.42,0)$);
+\coordinate (d02gaina) at ($(c02.center)+(1.62,0)$);
+\coordinate (d02gainb) at ($(r0broccoli.center)+(-1.35,0)$);
+\suppressband{r0broccoli.center}{d02gainb}{d02gaina}{d02gains}{1.86998039}
+\coordinate (d03paths) at ($(w03.center)+(.42,0)$);
+\coordinate (d03patha) at ($(w03.center)+(1.62,0)$);
+\coordinate (d03pathb) at ($(c03.center)+(-1.35,0)$);
+\pressureband{c03.center}{d03pathb}{d03patha}{d03paths}{2.01066794}
+\coordinate (d03gains) at ($(c03.center)+(.42,0)$);
+\coordinate (d03gaina) at ($(c03.center)+(1.62,0)$);
+\coordinate (d03gainb) at ($(r0broccoli.center)+(-1.35,0)$);
+\suppressband{r0broccoli.center}{d03gainb}{d03gaina}{d03gains}{1.86998039}
+\draw[flow] (w00.center) .. controls (d00patha) and (d00pathb) .. (c00.west);
+\draw[flow] (c00.center) .. controls (d00gaina) and (d00gainb) .. (r0flower.west);
+\draw[flow] (w01.center) .. controls (d01patha) and (d01pathb) .. (c01.west);
+\draw[flow] (c01.center) .. controls (d01gaina) and (d01gainb) .. (r0flower.west);
+\draw[flow] (w02.center) .. controls (d02patha) and (d02pathb) .. (c02.west);
+\draw[flow] (c02.center) .. controls (d02gaina) and (d02gainb) .. (r0broccoli.west);
+\draw[flow] (w03.center) .. controls (d03patha) and (d03pathb) .. (c03.west);
+\draw[flow] (c03.center) .. controls (d03gaina) and (d03gainb) .. (r0broccoli.west);
+\end{pgfonlayer}
+\pairedrowlabel{-5.6}{SWAPPED}
+\foreach \x in {0,4.5,9} { \stageoval{\x,-5.6} }
+\node[feature] (w10) at (0,-4.1) {};
+\node[feature] (c10) at (4.5,-4.1) {};
+\abovenodelabel{w10}{$A_1$}
+\abovenodelabel{c10}{$c_{A_1}$}
+\node[feature] (w11) at (0,-5.1) {};
+\node[feature] (c11) at (4.5,-5.1) {};
+\abovenodelabel{w11}{$A_2$}
+\abovenodelabel{c11}{$c_{A_2}$}
+\node[feature] (w12) at (0,-6.1) {};
+\node[feature] (c12) at (4.5,-6.1) {};
+\abovenodelabel{w12}{$A_3$}
+\abovenodelabel{c12}{$c_{A_3}$}
+\node[feature] (w13) at (0,-7.1) {};
+\node[feature] (c13) at (4.5,-7.1) {};
+\abovenodelabel{w13}{$B_1$}
+\abovenodelabel{c13}{$c_{B_1}$}
+\node[reader] (r1flower) at (9,-4.8999999999999995) {};
+\rightlabel{-5.6}{0.7000000000000002}{Flower\\reader}
+\node[reader] (r1broccoli) at (9,-6.3) {};
+\rightlabel{-5.6}{-0.7000000000000002}{Broccoli\\reader}
+\begin{pgfonlayer}{background}
+\coordinate (d10paths) at ($(w10.center)+(.42,0)$);
+\coordinate (d10patha) at ($(w10.center)+(1.62,0)$);
+\coordinate (d10pathb) at ($(c10.center)+(-1.35,0)$);
+\suppressband{c10.center}{d10pathb}{d10patha}{d10paths}{1.09325469}
+\coordinate (d10gains) at ($(c10.center)+(.42,0)$);
+\coordinate (d10gaina) at ($(c10.center)+(1.62,0)$);
+\coordinate (d10gainb) at ($(r1broccoli.center)+(-1.35,0)$);
+\suppressband{r1broccoli.center}{d10gainb}{d10gaina}{d10gains}{4.95738797}
+\coordinate (d11paths) at ($(w11.center)+(.42,0)$);
+\coordinate (d11patha) at ($(w11.center)+(1.62,0)$);
+\coordinate (d11pathb) at ($(c11.center)+(-1.35,0)$);
+\suppressband{c11.center}{d11pathb}{d11patha}{d11paths}{1.09325469}
+\coordinate (d11gains) at ($(c11.center)+(.42,0)$);
+\coordinate (d11gaina) at ($(c11.center)+(1.62,0)$);
+\coordinate (d11gainb) at ($(r1broccoli.center)+(-1.35,0)$);
+\suppressband{r1broccoli.center}{d11gainb}{d11gaina}{d11gains}{4.95738797}
+\coordinate (d12paths) at ($(w12.center)+(.42,0)$);
+\coordinate (d12patha) at ($(w12.center)+(1.62,0)$);
+\coordinate (d12pathb) at ($(c12.center)+(-1.35,0)$);
+\suppressband{c12.center}{d12pathb}{d12patha}{d12paths}{3.41121388}
+\coordinate (d12gains) at ($(c12.center)+(.42,0)$);
+\coordinate (d12gaina) at ($(c12.center)+(1.62,0)$);
+\coordinate (d12gainb) at ($(r1flower.center)+(-1.35,0)$);
+\suppressband{r1flower.center}{d12gainb}{d12gaina}{d12gains}{0.62826800}
+\coordinate (d13paths) at ($(w13.center)+(.42,0)$);
+\coordinate (d13patha) at ($(w13.center)+(1.62,0)$);
+\coordinate (d13pathb) at ($(c13.center)+(-1.35,0)$);
+\suppressband{c13.center}{d13pathb}{d13patha}{d13paths}{3.27707569}
+\coordinate (d13gains) at ($(c13.center)+(.42,0)$);
+\coordinate (d13gaina) at ($(c13.center)+(1.62,0)$);
+\coordinate (d13gainb) at ($(r1flower.center)+(-1.35,0)$);
+\suppressband{r1flower.center}{d13gainb}{d13gaina}{d13gains}{3.42655793}
+\draw[flow] (w10.center) .. controls (d10patha) and (d10pathb) .. (c10.west);
+\draw[flow] (c10.center) .. controls (d10gaina) and (d10gainb) .. (r1broccoli.west);
+\draw[flow] (w11.center) .. controls (d11patha) and (d11pathb) .. (c11.west);
+\draw[flow] (c11.center) .. controls (d11gaina) and (d11gainb) .. (r1broccoli.west);
+\draw[flow] (w12.center) .. controls (d12patha) and (d12pathb) .. (c12.west);
+\draw[flow] (c12.center) .. controls (d12gaina) and (d12gainb) .. (r1flower.west);
+\draw[flow] (w13.center) .. controls (d13patha) and (d13pathb) .. (c13.west);
+\draw[flow] (c13.center) .. controls (d13gaina) and (d13gainb) .. (r1flower.west);
+\end{pgfonlayer}
+\coordinate (learningannotationbottom) at (0,-7.7275);
+\preparelearningfooter{1.95}
+\node at (2.25,\learningaxisy) {Pathway gradients};
+\node at (6.75,\learningaxisy) {Connection gradients};
+\pressurekey{0}{\learninglegendy}{1}
+\node[legendlabel] at (.7,\learninglegendy) {Increasing parameter};
+\pressurekey{5}{\learninglegendy}{-1}
+\node[legendlabel] at (5.7,\learninglegendy) {Decreasing parameter};
+\diagramframe{\learningframebottom}
+\end{tikzpicture}

@@ -25,7 +25,7 @@ compile them to inline SVG with `node-tikzjax`, so readers do not wait for
 browser-side TeX rendering. `zola serve` still uses the browser renderer for
 live previews.
 
-`just build-serve` runs `scripts/serve-built.mjs`, which watches content,
+Both `just serve` and `just build-serve` run `scripts/serve-built.mjs`, which watches content,
 templates, Sass, static assets, syntax definitions, scripts, and `config.toml`.
 It also checks file signatures every second to recover missed filesystem
 notifications, including changes made through atomic editor saves.
@@ -34,6 +34,15 @@ preview switches to the completed build and reloads connected browsers only
 after both succeed, keeping the previous preview available on failure. It
 serves at `http://127.0.0.1:1111` by default (`PORT` overrides the port) and uses
 temporary build directories that are removed when the server stops.
+Use either recipe for development rather than starting `zola serve` directly.
+Zola's incremental preview can retain stale shortcode includes after a shared
+partial changes. The compiled preview performs a fresh build for every edit.
+Browsers display rebuild progress or failure and reconnect using a unique server
+instance ID so restarting the server also invalidates previously loaded pages.
+Starting either recipe again gracefully replaces an existing preview for this
+repository on the same port. The server verifies the repository and process
+identity through its local metadata endpoint before stopping the old instance.
+An unrelated service is left running, with a message to choose another `PORT`.
 
 ### Usage
 

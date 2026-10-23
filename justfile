@@ -6,9 +6,8 @@ default:
 manifest:
     ./scripts/generate-image-manifest.sh
 
-# start dev server
-serve: manifest
-    zola serve
+# watch, rebuild TikZ SVGs, and serve a live preview including drafts
+serve: build-serve
 
 # watch, rebuild TikZ SVGs, and serve a live preview including drafts
 build-serve: manifest

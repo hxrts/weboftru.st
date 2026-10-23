@@ -15,12 +15,20 @@
    \usetikzlibrary{...} for extra TikZ libraries (arrows.meta,
    decorations.markings, ...). Set learning=true to prepend the shared
    styles and helpers in templates/partials/tikz-learning.html.
-   Shared annotations use the bundled sans serif slanted font. #}
+   Shared annotations use the bundled sans serif slanted font. An optional
+   source path loads generated TikZ from a project file instead of the body;
+   for example source="static/images/clean-toy/acquisition_comparison.tex".
+   Optional preamble loads generated definitions before either source or body. #}
 <figure class="tikz-fig"{% if learning %} data-learning-frame="-3.45 12.4"{% endif %}{% if fig_w %} style="--fig-w: {{ fig_w }}"{% endif %}>
 <div class="tikz-fig-body">
 <script type="text/tikz">
 {% if learning %}{% include "partials/tikz-learning.html" %}{% endif %}
+{% if preamble %}{{ load_data(path=preamble, format="plain") | safe }}{% endif %}
+{% if source %}
+{{ load_data(path=source, format="plain") | safe }}
+{% else %}
 {{ body | safe }}
+{% endif %}
 </script>
 </div>
 {%- if caption %}

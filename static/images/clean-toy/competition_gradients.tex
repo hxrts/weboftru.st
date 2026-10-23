@@ -1,0 +1,57 @@
+% Generated measurements: signed pressure = -dL/da; widths use mean absolute gradient.
+\begin{tikzpicture}[learning]
+\stageheading{0}{INITIAL}{step 0}
+\stageheading{4.5}{EARLY LEARNING}{step 10}
+\stageheading{9}{LATER LEARNING}{step 30}
+\foreach \x in {0,4.5,9} { \stageoval{\x,0} }
+\node[feature] (n00) at (0.0,0.65) {};
+\abovenodelabel{n00}{$a=0.80$}
+\node[feature] (n01) at (0.0,-0.65) {};
+\abovenodelabel{n01}{$a=0.05$}
+\node[feature] (n10) at (4.5,0.65) {};
+\abovenodelabel{n10}{$a=1.08$}
+\node[feature] (n11) at (4.5,-0.65) {};
+\abovenodelabel{n11}{$a=0.12$}
+\node[feature] (n20) at (9.0,0.65) {};
+\abovenodelabel{n20}{$a=1.31$}
+\node[feature] (n21) at (9.0,-0.65) {};
+\abovenodelabel{n21}{$a=0.16$}
+\begin{pgfonlayer}{background}
+\coordinate (start00) at ($(n00.center)+(.42,0)$);
+\coordinate (cfirst00) at ($(n00.center)+(1.62,0)$);
+\coordinate (clast00) at ($(n10.center)+(-1.35,0)$);
+\pressureband{n10.center}{clast00}{cfirst00}{start00}{7.39458715}
+\coordinate (start01) at ($(n01.center)+(.42,0)$);
+\coordinate (cfirst01) at ($(n01.center)+(1.62,0)$);
+\coordinate (clast01) at ($(n11.center)+(-1.35,0)$);
+\pressureband{n11.center}{clast01}{cfirst01}{start01}{1.92261516}
+\coordinate (start10) at ($(n10.center)+(.42,0)$);
+\coordinate (cfirst10) at ($(n10.center)+(1.62,0)$);
+\coordinate (clast10) at ($(n20.center)+(-1.35,0)$);
+\pressureband{n20.center}{clast10}{cfirst10}{start10}{3.05665904}
+\coordinate (start11) at ($(n11.center)+(.42,0)$);
+\coordinate (cfirst11) at ($(n11.center)+(1.62,0)$);
+\coordinate (clast11) at ($(n21.center)+(-1.35,0)$);
+\pressureband{n21.center}{clast11}{cfirst11}{start11}{0.50780974}
+\draw[flow] (n00.east) -- (n10.west);
+\draw[flow] (n01.east) -- (n11.west);
+\draw[flow] (n10.east) -- (n20.west);
+\draw[flow] (n11.east) -- (n21.west);
+\end{pgfonlayer}
+\node[fill=white,inner sep=2pt] at (2.25,0.15) {$p=+0.185$};
+\node[fill=white,inner sep=2pt] at (2.25,-1.15) {$p=+0.048$};
+\node[fill=white,inner sep=2pt] at (6.75,0.15) {$p=+0.076$};
+\node[fill=white,inner sep=2pt] at (6.75,-1.15) {$p=+0.013$};
+\leftlabel{.65}{Established\\green route}
+\leftlabel{-.65}{Alternative route}
+\rightlabel{0}{.65}{Green coefficient}
+\rightlabel{0}{-.65}{Green coefficient}
+\coordinate (learningannotationbottom) at (0,-2.1275);
+\preparelearningfooter{1.95}
+\developmentaxis{\learningaxisy}
+\pressurekey{0}{\learninglegendy}{1}
+\node[legendlabel] at (.7,\learninglegendy) {Reinforcing (positive)};
+\pressurekey{5}{\learninglegendy}{-1}
+\node[legendlabel] at (5.7,\learninglegendy) {Suppressing (negative)};
+\diagramframe{\learningframebottom}
+\end{tikzpicture}

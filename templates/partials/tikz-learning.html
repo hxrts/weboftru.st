@@ -10,7 +10,7 @@
   activation/.style={minimum size=#1pt},%
   flow/.style={->,line width=.85pt},%
   schematic/.style={->,line width=.7pt},%
-  boundary/.style={draw=black!65,line width=.8pt,dash pattern=on .1pt off 2.5pt,line cap=round},%
+  boundary/.style={draw=black!65,line width=1pt,dash pattern=on .1pt off 2.5pt,line cap=round},%
   readout/.style={draw,line width=.65pt,fill=white,inner sep=4pt,align=center},%
   trait/.style={circle,draw,fill=none,minimum size=10pt,inner sep=0pt,line width=.65pt}%
 }%
@@ -20,25 +20,37 @@
 % One shared stage boundary for every learning diagram.
 \newcommand{\stageoval}[1]{%
   \begin{pgfonlayer}{bottom}%
-    \draw[boundary] (#1) ellipse (.7cm and 1.85cm);%
+    \draw[boundary] (#1) ellipse (.63cm and 2.1275cm);%
   \end{pgfonlayer}%
 }%
 % Common vertical layout, relative to each row's oval centers.
 % Lift the heading row when annotations also occupy the space above ovals.
 \def\learningheadinglift{0}%
+\def\learningheadingcompact{0}%
 \newcommand{\stageheading}[3]{%
-  \node[time,anchor=base] at (#1,{2.8+\learningheadinglift}) {#2};%
-  \node[anchor=base] at (#1,{2.4+\learningheadinglift}) {#3};%
+  \if\relax\detokenize{#3}\relax%
+    \def\learningheadingcompact{.4}%
+    \node[time,anchor=base] at (#1,{2.6775+\learningheadinglift}) {#2};%
+  \else%
+    \node[time,anchor=base] at (#1,{3.0775+\learningheadinglift}) {#2};%
+    \node[anchor=base] at (#1,{2.6775+\learningheadinglift}) {#3};%
+  \fi%
 }%
-% Equal edge-to-edge clearance above and below the 1.85cm oval radius.
+% Equal edge-to-edge clearance above and below the 2.1275cm oval radius.
 \def\learningannotationgap{.25}%
 \newcommand{\aboveannotation}[3]{%
   % Correct the font's invisible lower padding so visible glyph clearance matches below.
-  \node[font=\sffamily\slshape\footnotesize,anchor=south,align=center,inner sep=0pt,outer sep=0pt,yshift=-.4pt] at (#1,{#2+1.85+\learningannotationgap}) {#3};%
+  \node[font=\sffamily\slshape\footnotesize,anchor=south,align=center,inner sep=0pt,outer sep=0pt,yshift=-.4pt] at (#1,{#2+2.1275+\learningannotationgap}) {#3};%
 }%
 \def\learninghasannotation{0}%
+\newcommand{\pricecomponents}[2]{%
+  \begin{tabular}{@{}r@{:\hspace{.35em}}l@{}}%
+    Selection & #1\\%
+    Transmission & #2%
+  \end{tabular}%
+}%
 \newcommand{\belowannotation}[3]{%
-  \node[font=\sffamily\slshape\footnotesize,anchor=north,align=center,inner sep=0pt,outer sep=0pt] (learningannotation) at (#1,{#2-1.85-\learningannotationgap}) {#3};%
+  \node[font=\sffamily\slshape\footnotesize,anchor=north,align=center,inner sep=0pt,outer sep=0pt] (learningannotation) at (#1,{#2-2.1275-\learningannotationgap}) {#3};%
   \ifnum\learninghasannotation=0%
     \coordinate (learningannotationbottom) at (learningannotation.south);%
     \def\learninghasannotation{1}%
@@ -59,25 +71,36 @@
 % A common width preserves the physical scale of spacing across figures.
 \newcommand{\diagramframe}[1]{%
   \pgfresetboundingbox%
-  \path[use as bounding box] (-3.45,#1) rectangle (12.4,{3.2+\learningheadinglift});%
+  \path[use as bounding box] (-3.45,#1) rectangle (12.4,{3.4775+\learningheadinglift-\learningheadingcompact});%
 }%
-% Center every group with the same .8cm center-to-center pitch.
-\def\learningpitch{.8}%
+% Use consistent spacing and offsets for every group with the same count.
+\newcommand{\setstackpitch}[1]{%
+  \def\learningstackoffset{0}%
+  \ifnum#1=2\def\learningpitch{1.0}%
+  \else\ifnum#1=3\def\learningpitch{1.05}%
+  \else\ifnum#1=4\def\learningpitch{1.0}\def\learningstackoffset{-.15}%
+  \else\def\learningpitch{.8}\fi\fi\fi%
+}%
+\newcommand{\pairedrowlabel}[2]{%
+  \node[emphasis,anchor=east] at (-1.6,#1) {#2};%
+}%
 \newcommand{\stacknode}[6][]{%
-  \node[#1] (#2) at (#3,{#4+\learningpitch*((#5+1)/2-#6)}) {};%
+  \setstackpitch{#5}%
+  \node[#1] (#2) at (#3,{#4+\learningstackoffset+\learningpitch*((#5+1)/2-#6)}) {};%
 }%
 \newcommand{\rightstacklabel}[4]{%
-  \rightlabel{#1}{\learningpitch*((#2+1)/2-#3)}{#4}%
+  \setstackpitch{#2}%
+  \rightlabel{#1}{\learningstackoffset+\learningpitch*((#2+1)/2-#3)}{#4}%
 }%
 % Keep labels approximately 4pt beyond the curved edge of the first or last oval.
 \newcommand{\rightlabel}[3]{%
   \pgfmathsetmacro{\labeldy}{#2}%
-  \pgfmathsetmacro{\labelx}{9+0.7*sqrt(1-(\labeldy/1.85)^2)+.14}%
+  \pgfmathsetmacro{\labelx}{9+0.63*sqrt(1-(\labeldy/2.1275)^2)+.14}%
   \pgfmathsetmacro{\labely}{#1+#2}%
   \node[anchor=west,align=left,inner sep=0pt] at (\labelx,\labely) {#3};%
 }%
 \newcommand{\leftrowlabel}[3]{%
-  \pgfmathsetmacro{\labelx}{-0.7*sqrt(1-(#2/1.85)^2)-.14}%
+  \pgfmathsetmacro{\labelx}{-0.63*sqrt(1-(#2/2.1275)^2)-.14}%
   \node[anchor=east,align=right,inner sep=0pt] at (\labelx,{#1+#2}) {#3};%
 }%
 \newcommand{\leftlabel}[2]{\leftrowlabel{0}{#1}{#2}}%
@@ -176,6 +199,24 @@
   \begin{pgfonlayer}{foreground}%
     \node[trait,fill=white] at (#1.center) {};%
     \node[feature] at (#1.center) {};%
+  \end{pgfonlayer}%
+}%
+% Draw a white asterisk in a filled circle, scaled to preserve activation encoding.
+\def\responsemarkerscale{1}%
+\newcommand{\responsetrait}[1]{%
+  \begin{pgfonlayer}{foreground}%
+    \path let \p1=($(#1.east)-(#1.west)$) in \pgfextra{%
+      \pgfmathparse{veclen(\x1,\y1)/1pt}\xdef\responsediameter{\pgfmathresult}%
+    };%
+    \pgfmathsetlengthmacro{\responseouterdiameter}{\responsemarkerscale*(\responsediameter pt+4.8pt)}%
+    \node[trait,fill=black,line width=1.25pt,minimum size={.7*\responseouterdiameter}] at (#1.center) {};%
+    \pgfmathsetlengthmacro{\responsestar}{.25*\responseouterdiameter}%
+    \foreach \angle in {30,90,150}{%
+      \begin{scope}[shift={(#1.center)},rotate=\angle]%
+        \path[fill=white,draw=none,rounded corners=0pt]
+          (-\responsestar,-.5pt) rectangle (\responsestar,.5pt);%
+      \end{scope}%
+    }%
   \end{pgfonlayer}%
 }%
 % Discard definition-time glue before the picture, including library glue.
