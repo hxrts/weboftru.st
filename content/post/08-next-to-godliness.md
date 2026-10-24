@@ -46,7 +46,7 @@ In *Neural Networks Are Already Clean*, Nick Cammarata calls networks "clean" wh
 \end{tikzpicture}
 {% end %}
 
-Generalization considers aquisition of responses beyond training examples. Cammarata's "recursive generalization" describes acquired responses that facilitate further learning.
+Generalization considers acquisition of responses beyond training examples. Cammarata's "recursive generalization" describes acquired responses that facilitate further learning.
 
 In this post, I look at the *process* of path formation to understand how learned distinctions acquire new roles and persist as circuitry changes.
 
@@ -144,7 +144,7 @@ Across a population, some pathways can gain new uses while others lose responsiv
 
 Average response can stay constant while the underlying pathways change. How much of that change comes from pathways gaining influence, and how much comes from their responses changing?
 
-In the synthetic flower model, the responsive share begins at ½, $\mathsf{A}$ responds to flowers while $\mathsf{B}$ does not. In the final population, $\mathsf{A}$ provides three pathways, $\mathsf{B}$ retains one path. $\mathsf{A}$ and $\mathsf{B}$ can change independently as they learn a new role. One of $\mathsf{A}$'s three pathways loses its flower response, leaving two of the four final pathways responsive. The average therefore stays at ½, concealing $\mathsf{A}$'s increased contribution.
+In the synthetic flower model, the responsive share begins at ½ because $\mathsf{A}$ responds to flowers while $\mathsf{B}$ does not. In the final population, $\mathsf{A}$ provides three pathways, while $\mathsf{B}$ retains one path. $\mathsf{A}$ and $\mathsf{B}$ can change independently as they learn a new role. One of $\mathsf{A}$'s three pathways loses its flower response, leaving two of the four final pathways responsive. The average therefore stays at ½, concealing $\mathsf{A}$'s increased contribution.
 
 {% tikz(learning=true, preamble="static/images/clean-toy/price_gradient_values.tex", fig_w="620px", caption="<strong>Change concealed by a stable mean.</strong> Selection +¼ and variation −¼ cancel. A₃ receives flower pressure of −0.029, while the other branches receive none. The middle column isolates reweighting.") %}
 \begin{tikzpicture}[learning]
@@ -229,7 +229,7 @@ An earlier response can weaken through direct learning pressure or through compe
 
 ## How learning builds understandable structure
 
-The unchanged average leaves open whether flower signals still reach the readers that use them. $\mathsf{A}$'s two flower-responsive pathways feed flower detectors. Its third pathway can now provide green signal for a broccoli detector to combines with texture information from $\mathsf{B}$. Whether these signals remain useful depends on the distinctions their downstream readers need to make.
+The unchanged average leaves open whether flower signals still reach the readers that use them. $\mathsf{A}$'s two flower-responsive pathways feed flower detectors. Its third pathway can now provide a green signal for a broccoli detector to combine with texture information from $\mathsf{B}$. Whether these signals remain useful depends on the distinctions their downstream readers need to make.
 
 Now send the green and texture pathways to the flower detectors, and the flower-responsive pathways to the broccoli detector. The pathways keep the same ancestry and responses, so the global Price terms stay unchanged even though their activation outputs now feed different downstream detectors. The diagram compares how further learning responds to these two assignments.[^toy-reader-training]
 
@@ -251,7 +251,7 @@ Once a pathway supplies a downstream reader, that reader’s errors help shape i
 
 When a network retains a learned distinction, what has survived? The distinction may still reach its downstream readers even as different pathways take over the role of supplying it.
 
- Instead of $\mathsf{A}$ supplying the flower pathways, suppose $\mathsf{A}$ supplies only green, while $\mathsf{B}$ contributes texture and two pathways that acquire flower responsiveness. Both histories end with half the pathways flower-responsive and equivalent signals supplying each downstream reader.
+Instead of $\mathsf{A}$ supplying the flower pathways, suppose $\mathsf{A}$ supplies only green, while $\mathsf{B}$ contributes texture and two pathways that acquire flower responsiveness. Both histories end with half the pathways flower-responsive and equivalent signals supplying each downstream reader.
 
 In the second history, differential contribution favors the initially nonresponsive $\mathsf{B}$, so selection is −¼. Response changes contribute +¼ through variation, reversing the first history's terms while preserving its final mean. The flower distinction remains available to the downstream readers, even though different ancestral pathways learned to supply it.
 
