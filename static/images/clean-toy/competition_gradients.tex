@@ -5,17 +5,17 @@
 \stageheading{9}{LATER LEARNING}{step 30}
 \foreach \x in {0,4.5,9} { \stageoval{\x,0} }
 \node[feature] (n00) at (0.0,0.65) {};
-\abovenodelabel{n00}{$a=0.80$}
+\abovenodelabel{n00}{$0.80$}
 \node[feature] (n01) at (0.0,-0.65) {};
-\abovenodelabel{n01}{$a=0.05$}
+\abovenodelabel{n01}{$0.05$}
 \node[feature] (n10) at (4.5,0.65) {};
-\abovenodelabel{n10}{$a=1.08$}
+\abovenodelabel{n10}{$1.08$}
 \node[feature] (n11) at (4.5,-0.65) {};
-\abovenodelabel{n11}{$a=0.12$}
+\abovenodelabel{n11}{$0.12$}
 \node[feature] (n20) at (9.0,0.65) {};
-\abovenodelabel{n20}{$a=1.31$}
+\abovenodelabel{n20}{$1.31$}
 \node[feature] (n21) at (9.0,-0.65) {};
-\abovenodelabel{n21}{$a=0.16$}
+\abovenodelabel{n21}{$0.16$}
 \begin{pgfonlayer}{background}
 \coordinate (start00) at ($(n00.center)+(.42,0)$);
 \coordinate (cfirst00) at ($(n00.center)+(1.62,0)$);
@@ -38,20 +38,18 @@
 \draw[flow] (n10.east) -- (n20.west);
 \draw[flow] (n11.east) -- (n21.west);
 \end{pgfonlayer}
-\node[fill=white,inner sep=2pt] at (2.25,0.15) {$p=+0.185$};
-\node[fill=white,inner sep=2pt] at (2.25,-1.15) {$p=+0.048$};
-\node[fill=white,inner sep=2pt] at (6.75,0.15) {$p=+0.076$};
-\node[fill=white,inner sep=2pt] at (6.75,-1.15) {$p=+0.013$};
+\node[inner sep=2pt] at (2.25,0.15) {$p$=\textsf{+0.185}};
+\node[inner sep=2pt] at (2.25,-1.15) {$p$=\textsf{+0.048}};
+\node[inner sep=2pt] at (6.75,0.15) {$p$=\textsf{+0.076}};
+\node[inner sep=2pt] at (6.75,-1.15) {$p$=\textsf{+0.013}};
 \leftlabel{.65}{Established\\green route}
-\leftlabel{-.65}{Alternative route}
-\rightlabel{0}{.65}{Green coefficient}
-\rightlabel{0}{-.65}{Green coefficient}
+\leftlabel{-.65}{Alternative\\green route}
+\rightlabel{0}{.65}{Green}
+\rightlabel{0}{-.65}{Green}
 \coordinate (learningannotationbottom) at (0,-2.1275);
 \preparelearningfooter{1.95}
 \developmentaxis{\learningaxisy}
 \pressurekey{0}{\learninglegendy}{1}
-\node[legendlabel] at (.7,\learninglegendy) {Reinforcing (positive)};
-\pressurekey{5}{\learninglegendy}{-1}
-\node[legendlabel] at (5.7,\learninglegendy) {Suppressing (negative)};
+\node[legendlabel] at (.7,\learninglegendy) {Reinforcing learning pressure};
 \diagramframe{\learningframebottom}
 \end{tikzpicture}

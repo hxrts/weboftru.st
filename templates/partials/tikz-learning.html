@@ -46,7 +46,7 @@
 \newcommand{\pricecomponents}[2]{%
   \begin{tabular}{@{}r@{:\hspace{.35em}}l@{}}%
     Selection & #1\\%
-    Transmission & #2%
+    Variation & #2%
   \end{tabular}%
 }%
 \newcommand{\belowannotation}[3]{%
@@ -118,17 +118,17 @@
 \newcommand{\belownodelabel}[2]{%
   \halolabel{anchor=north,align=center}{$(#1.south)+(0,-4pt)$}{#2}%
 }%
-% Fixed horizontal extents; the narrow end matches the .85pt black line.
+% Keep the narrow end at the node and inset only the wide end.
 \newcommand{\pressureband}[5]{%
   \path[fill=black!40,draw=none]%
-    ($(#4)+(0,#5pt)$) .. controls ($(#3)+(0,#5pt)$) and ($(#2)+(0,.425pt)$) .. ($(#1)+(-.42,.425pt)$)%
-    -- ($(#1)+(-.42,-.425pt)$) .. controls ($(#2)+(0,-.425pt)$) and ($(#3)+(0,-#5pt)$) .. ($(#4)+(0,-#5pt)$) -- cycle;%
+    ($(#4)+(0,#5pt)$) .. controls ($(#3)+(0,#5pt)$) and ($(#2)+(0,.425pt)$) .. ($(#1)+(-.08,.425pt)$)%
+    -- ($(#1)+(-.08,-.425pt)$) .. controls ($(#2)+(0,-.425pt)$) and ($(#3)+(0,-#5pt)$) .. ($(#4)+(0,-#5pt)$) -- cycle;%
 }%
 % Suppression reverses the taper, retaining the same endpoints and magnitude.
 \newcommand{\suppressband}[5]{%
   \path[fill=black!40,draw=none]%
-    ($(#4)+(0,.425pt)$) .. controls ($(#3)+(0,.425pt)$) and ($(#2)+(0,#5pt)$) .. ($(#1)+(-.42,#5pt)$)%
-    -- ($(#1)+(-.42,-#5pt)$) .. controls ($(#2)+(0,-#5pt)$) and ($(#3)+(0,-.425pt)$) .. ($(#4)+(0,-.425pt)$) -- cycle;%
+    ($(#4)+(-.34,.425pt)$) .. controls ($(#3)+(0,.425pt)$) and ($(#2)+(0,#5pt)$) .. ($(#1)+(-.42,#5pt)$)%
+    -- ($(#1)+(-.42,-#5pt)$) .. controls ($(#2)+(0,-#5pt)$) and ($(#3)+(0,-.425pt)$) .. ($(#4)+(-.34,-.425pt)$) -- cycle;%
 }%
 % A plain developmental axis does not imply a pressure magnitude.
 \newcommand{\developmentaxis}[1]{%
@@ -163,10 +163,10 @@
   \begin{scope}[shift={(#1,#2)}]%
     \ifnum #3>0%
       \path[fill=black!40,draw=none]%
-        (0,4.5pt) -- (.45,.425pt) -- (.45,-.425pt) -- (0,-4.5pt) -- cycle;%
+        (0,4.5pt) -- (.35,.425pt) -- (.35,-.425pt) -- (0,-4.5pt) -- cycle;%
     \else%
       \path[fill=black!40,draw=none]%
-        (0,.425pt) -- (.45,4.5pt) -- (.45,-4.5pt) -- (0,-.425pt) -- cycle;%
+        (0,.425pt) -- (.35,4.5pt) -- (.35,-4.5pt) -- (0,-.425pt) -- cycle;%
     \fi%
     \draw[flow] (-.1,0) -- (.6,0);%
   \end{scope}%
