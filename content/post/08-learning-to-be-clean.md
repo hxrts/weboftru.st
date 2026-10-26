@@ -11,7 +11,7 @@ cover_caption = "Byte Magazine, August 1979"
 
 ## What makes a response useful?
 
-Every acquisition changes what a neural network learns next. So how should we think about learned mechanisms if circuitry is a moving target?
+Every acquisition changes what a neural network learns next. So how should we think about learned mechanisms if neural circuitry is a moving target?
 
 In *Neural Networks Are Already Clean*, Nick Cammarata explains what he means by cleanliness.
 
