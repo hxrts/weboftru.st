@@ -52,7 +52,7 @@ Cammarata follows a neuron in a retrained InceptionV1 model whose strongest resp
 
 Cammarata calls the branching of responses across related inputs "recursive generalization." His proposed explanation is that existing mechanisms give related learning a head start.
 
-An established response may give later learning a head start, but when does that advantage become a useful computational relationship? I use controlled experiments to test how earlier acquisitions affect later learning and whether readers retain access to useful signals as their sources change.
+An established response may give later learning a head start, but when does it help other parts of the network learn to use that response? I use controlled experiments to test how earlier acquisitions affect later learning and whether readers retain access to useful signals as their sources change.
 
 ## One path leads to another
 
@@ -60,7 +60,7 @@ In Cammarata's circuit-ecology hypothesis, established mechanisms and their read
 
 Applied to Cammarata’s flower neuron, the hypothesis suggests a possible mechanism. A flower-responsive neuron might also respond weakly to vegetation. Training on green objects could strengthen that response into a green signal for a later broccoli detector. This intermediate acquisition may make broccoli responsiveness easier to learn than it was from the original flower response.
 
-A broccoli detector that uses the green signal would give the earlier mechanism a new computational role. This is the causal interpretation explored below, rather than a measured dependency in Cammarata's flower neuron.
+A broccoli detector that uses the green signal would give the earlier mechanism a new role. This is the causal interpretation explored below, rather than a measured dependency in Cammarata's flower neuron.
 
 A reader is a downstream computation using pathway outputs. To distinguish a developmental head start from a useful starting point that later becomes a constraint, I built a synthetic model with explicit binary flower, green, and texture cues.[^toy-model] Supplying these distinctions directly lets us test how their use develops without also having to explain their initial discovery.
 
@@ -402,13 +402,13 @@ In the continuous handoff, $\mathsf{B}$ learns first, so the fixed reader keeps 
 
 The reader trajectory establishes the interruption, which endpoint Price accounting cannot detect.
 
-{{ tikz(learning=true, source="static/images/flower-toy/handoff_continuity.tex", fig_w="620px", caption="<strong>Equivalent endpoints, different continuity.</strong> A fixed reader averages the two pathways’ flower signals. Arrows below show the order of training, and flower markers indicate pathway responses meeting the 0.50 assay threshold. The reader classifies correctly throughout the handoff but fails at updates 1–50 during recovery under its fixed threshold of 0.45. The weakened signal still distinguishes the inputs numerically. Both schedules end with the same computation and zero net selection and variation.") }}
+{{ tikz(learning=true, source="static/images/flower-toy/handoff_continuity.tex", fig_w="620px", caption="<strong>Equivalent endpoints, different continuity.</strong> A fixed reader averages the two pathways’ flower signals. Arrows below show the order of training, and flower markers indicate pathway responses meeting the 0.50 assay threshold. The reader classifies correctly throughout the handoff but fails at updates 1–50 during recovery under its fixed threshold of 0.45. The weakened signal still distinguishes the inputs numerically. Both schedules end with identical pathway parameters and reader outputs, with zero net selection and variation.") }}
 
-Throughout the continuous schedule, the score for flower-present inputs stays at least 0.05 above the reader’s threshold, while flower-absent inputs score zero. The contrast persists at tested reader thresholds from 0.001 to 0.45.[^toy-continuity] Allowing downstream computations to learn during the handoff would test whether keeping this reader functional also supports further development.
+Throughout the continuous schedule, the score for flower-present inputs stays at least 0.05 above the reader’s threshold, while flower-absent inputs score zero. The contrast persists at tested reader thresholds from 0.001 to 0.45.[^toy-continuity] Allowing downstream readers to learn during the handoff would test whether keeping this reader functional also supports further development.
 
 Different histories do not necessarily leave different learning opportunities. These schedules converge on identical states, so subsequently applying duplicate training would produce the same updates. The earlier acquisition experiments show how retained differences in circuitry can change later learning costs. History matters through the structure it leaves available and the capabilities it maintains along the way.
 
-Usefulness belongs to a relationship between a signal and the computation reading it. A distinction can remain encoded yet fail an existing reader, or pass between mechanisms while that reader keeps working. Understanding this organization requires explaining how those dependencies develop and testing whether they remain functional as their components change. What learning carries forward can be a reader’s access to a distinction, even when the mechanism supplying it changes.
+A signal is useful insofar as it supports a reader’s task. A distinction can remain encoded yet fail an existing reader, or pass between mechanisms while that reader keeps working. Understanding this organization requires explaining how those dependencies develop and testing whether they remain functional as their components change. What learning carries forward can be a reader’s access to a distinction, even when the mechanism supplying it changes.
 
 ---
 
@@ -426,7 +426,7 @@ Usefulness belongs to a relationship between a signal and the computation readin
 
 [^price]: Price, G. R. (1970). [*Selection and Covariance*](https://doi.org/10.1038/227520a0). *Nature*, 227, 520–521.
 
-[^overlapping-pathways]: Cammarata, N., et al. (2021). [*Curve Circuits*](https://distill.pub/2020/circuits/curve-circuits/). *Distill*. Similar shape detectors appear across InceptionV1’s 3×3 and 5×5 branches, providing evidence of overlapping computations without implying literal copying.
+[^overlapping-pathways]: Cammarata, N., et al. (2021). [*Curve Circuits*](https://distill.pub/2020/circuits/curve-circuits/). *Distill*. Similar shape detectors appear across InceptionV1’s 3×3 and 5×5 branches, providing evidence of overlapping feature detection without implying literal copying.
 
 [^gradient-conflict]: Yu, T., et al. (2020). [*Gradient Surgery for Multi-Task Learning*](https://arxiv.org/abs/2001.06782). *NeurIPS*. The study examines conflicting task gradients on shared parameters. This supports gradient interference, rather than exact cancellation between Price terms.
 
