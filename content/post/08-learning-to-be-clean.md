@@ -158,6 +158,8 @@ To separate inherited representation from response change, I copied two earlier 
 
 The flower-responsive share stays at ½, even though $\mathsf{A}$ now supplies ¾ of the pathways. Its increased representation is offset by a change in what one descendant detects.
 
+Trained networks can develop overlapping representations along separate pathways,[^overlapping-pathways] while shared parameters can receive opposing learning signals.[^gradient-conflict] The toy isolates these ingredients by prescribing ancestry and choosing changes that cancel exactly. This makes the accounting ambiguity visible without establishing how often such cancellation occurs in ordinary training.
+
 Price accounting has previously been applied to evolutionary algorithms and neural learning.[^price-learning] Here, I use it to measure how differential representation and response change contribute to the population mean. The equation separates selection (which mechanisms contribute more descendants) from variation (how those descendants differ from their ancestors).[^price][^price-variation]
 
 Let $z$ be one for a flower-responsive pathway and zero otherwise, under a fixed assay. Let $w$ count the later pathways attributed to each earlier mechanism.[^price-accounting] With $\bar w$ the average descendant count and $\Delta z$ the mean descendant response minus its ancestor’s response, the change in population mean is[^price-weights]
@@ -423,6 +425,10 @@ Usefulness belongs to a relationship between a signal and the computation readin
 [^price-learning]: Bassett, J. K., Potter, M. A., and De Jong, K. A. (2004), [*Looking Under the EA Hood with Price’s Equation*](https://www.cs.york.ac.uk/rts/docs/GECCO_2004/Conference%20proceedings/papers/3102/31020914.pdf), uses Price-based decompositions to analyze evolutionary algorithms. Fernando, C., Szathmáry, E., and Husbands, P. (2012), [*Selectionist and Evolutionary Approaches to Brain Function*](https://doi.org/10.3389/fncom.2012.00024), discusses Price accounting for neuronal groups and synaptic selection, including its limits as a description of dynamics. Frank, S. A. (2025), [*The Price Equation Reveals a Universal Force–Metric–Bias Law of Algorithmic Learning and Natural Selection*](https://stevefrank.org/reprints-pdf/25FMB.pdf), develops connections to optimization methods including SGD and Adam. This post applies the accounting to attributed pathway uses and their downstream readers.
 
 [^price]: Price, G. R. (1970). [*Selection and Covariance*](https://doi.org/10.1038/227520a0). *Nature*, 227, 520–521.
+
+[^overlapping-pathways]: Cammarata, N., et al. (2021). [*Curve Circuits*](https://distill.pub/2020/circuits/curve-circuits/). *Distill*. Similar shape detectors appear across InceptionV1’s 3×3 and 5×5 branches, providing evidence of overlapping computations without implying literal copying.
+
+[^gradient-conflict]: Yu, T., et al. (2020). [*Gradient Surgery for Multi-Task Learning*](https://arxiv.org/abs/2001.06782). *NeurIPS*. The study examines conflicting task gradients on shared parameters. This supports gradient interference, rather than exact cancellation between Price terms.
 
 [^price-variation]: The second Price term is conventionally called transmission. Here, variation denotes weighted mean change in inherited traits, including response acquisition or loss. It means neither statistical variance nor necessarily random change.
 
