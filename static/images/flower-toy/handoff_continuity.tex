@@ -2,7 +2,7 @@
 \stageheading{0}{INITIAL}{Update 0}
 \stageheading{4.5}{INTERMEDIATE}{Update 40}
 \stageheading{9}{FINAL}{Update 80}
-\foreach \base/\prefix in {0/u,-6.3/v} {
+\foreach \base/\prefix in {0/u,-5.6/v} {
   \foreach \x in {0,4.5,9} { \stageoval{\x,\base} }
   \foreach \x/\stage in {0/initial,4.5/middle,9/final} {
     \stacknode[feature]{\prefix\stage A}{\x}{\base}{2}{1}
@@ -19,32 +19,24 @@
     }
   \end{pgfonlayer}
 }
-\node[emphasis,anchor=west,align=right] at (-3.2,0) {CONTINUOUS\\HANDOFF};
-\node[emphasis,anchor=west,align=right] at (-3.2,-6.3) {INTERRUPTED\\RECOVERY};
+\pairedrowlabel{0}{CONTINUOUS\\HANDOFF}
+\pairedrowlabel{-5.6}{INTERRUPTED\\RECOVERY}
 \foreach \name in {uinitialA,umiddleA,umiddleB,ufinalB,vinitialA,vfinalB} { \responsetrait{\name} }
 \abovenodelabel{umiddleA}{A still responds}
 \belownodelabel{umiddleB}{B now responds}
-\abovenodelabel{vmiddleA}{A no longer responds}
-\belownodelabel{vmiddleB}{B not yet responsive}
-% Availability is measured after every update, mapped to the same time axis.
-\draw[line width=1.2pt,line cap=round] (0,-2.55) -- (9,-2.55);
-\fill (0,-2.55) circle (1.2pt);
-\fill (9,-2.55) circle (1.2pt);
-\node[anchor=north west,inner sep=0pt] at (0,-2.8) {Flower classification};
-\node[anchor=north east,inner sep=0pt] at (9,-2.8) {Available throughout};
-% Recovery first restores correct classification at update 51.
-\fill (0,-8.85) circle (1.2pt);
-\draw[line width=1.2pt,line cap=round] (5.7375,-8.85) -- (9,-8.85);
-\fill (5.7375,-8.85) circle (1.2pt);
-\fill (9,-8.85) circle (1.2pt);
-\node[anchor=north west,inner sep=0pt] at (0,-9.1) {Flower classification};
-\node[anchor=north east,inner sep=0pt] at (9,-9.1) {Unavailable at updates 1--50};
-\node[align=center] at (4.5,-10.05) {Same final computation and Price terms\\Selection 0, variation 0};
-\developmentaxis{-10.9}
-\node[feature] (keyflower) at (.3,-12.35) {};
+\abovenodelabel{vmiddleA}{A below criterion}
+\belownodelabel{vmiddleB}{B below criterion}
+% Training phases use the same split arrows as the inherited-roles figure.
+\foreach \base/\first/\second in {0/{Train B toward flower}/{Train A toward zero},-5.6/{Train A toward zero}/{Train B toward flower}} {
+  \draw[flow] (.3,{\base-2.55}) -- (4.2,{\base-2.55});
+  \node[anchor=north] at (2.25,{\base-2.8}) {\first};
+  \draw[flow] (4.8,{\base-2.55}) -- (8.7,{\base-2.55});
+  \node[anchor=north] at (6.75,{\base-2.8}) {\second};
+}
+\node[feature] (keyflower) at (.3,-9.55) {};
 \responsetrait{keyflower}
-\node[legendlabel] at (.7,-12.35) {Flower-responsive};
-\node[feature] at (5.3,-12.35) {};
-\node[legendlabel] at (5.7,-12.35) {Not flower-responsive};
-\diagramframe{-12.95}
+\node[legendlabel] at (.7,-9.55) {Flower-responsive};
+\node[feature] at (5.3,-9.55) {};
+\node[legendlabel] at (5.7,-9.55) {Not flower-responsive};
+\diagramframe{-10.15}
 \end{tikzpicture}

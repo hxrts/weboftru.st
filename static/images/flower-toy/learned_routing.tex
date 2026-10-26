@@ -4,7 +4,7 @@
 \stageheading{0}{PATHWAYS}{flower response}
 \stageheading{4.5}{ROUTING}{allocation logits}
 \stageheading{9}{READERS}{update 10}
-\node[emphasis,anchor=east,align=right] at (-1.2,0) {LEARNED\\ROUTING};
+\pairedrowlabel{0}{LEARNED\\ROUTING}
 \stageoval{0,0}
 \stageoval{4.5,0}
 \stageoval{9,0}
@@ -74,7 +74,7 @@
 \draw[flow] (w0B.center) .. controls (e03featurea) and (e03featureb) .. (c03.west);
 \draw[flow] (c03.center) .. controls (e03routinga) and (e03routingb) .. (r0broccoli.west);
 \end{pgfonlayer}
-\node[emphasis,anchor=east,align=right] at (-1.2,-5.2) {FROZEN\\ROUTING};
+\pairedrowlabel{-5.2}{FROZEN\\ROUTING}
 \stageoval{0,-5.2}
 \stageoval{4.5,-5.2}
 \stageoval{9,-5.2}
@@ -141,9 +141,9 @@
 \draw[flow] (c13.center) .. controls (e13routinga) and (e13routingb) .. (r1broccoli.west);
 \end{pgfonlayer}
 \pressurekey{0}{-8.15}{1}
-\node[anchor=west] at (.7,-8.15) {Increasing parameter};
+\node[anchor=west] at (.7,-8.15) {Reinforcing (positive)};
 \pressurekey{5}{-8.15}{-1}
-\node[anchor=west] at (5.7,-8.15) {Decreasing parameter};
+\node[anchor=west] at (5.7,-8.15) {Suppressing (negative)};
 \node at (4.5,-8.85) {Applied pressure at update 10};
 \diagramframe{-9.4}
 \end{tikzpicture}

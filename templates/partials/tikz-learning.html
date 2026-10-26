@@ -82,7 +82,8 @@
   \else\def\learningpitch{.8}\fi\fi\fi%
 }%
 \newcommand{\pairedrowlabel}[2]{%
-  \node[emphasis,anchor=east] at (-1.6,#1) {#2};%
+  % Center vertically on the first oval; keep the near edge 1.37cm to its left.
+  \node[emphasis,rotate=90,anchor=south,align=center,inner sep=0pt,outer sep=0pt] at (-2,#1) {#2};%
 }%
 \newcommand{\stacknode}[6][]{%
   \setstackpitch{#5}%

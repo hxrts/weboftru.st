@@ -1,24 +1,23 @@
 +++
 title = "Learning to Be Clean"
-date = 2026-10-20
-description = "How neural networks build coherent structure."
+date = 2026-10-28
+description = "How neural networks build useful structure."
 slug = "learning-to-be-clean"
-aliases = ["/post/next-to-godliness/"]
 
 [extra]
 cover_image = "/images/byte-neuron.png"
 cover_caption = "Byte Magazine, August 1979"
 +++
 
-## Developmental flow
+## How responses develop
 
-What a neural network learns changes what it can learn next. A useful pathway can become a starting point for further learning, but its history explains only part of how the network develops. How do these individual developments produce an organized computational system?
+A neuron can respond to flowers early in training and broccoli later. How does its changing response become useful to the computations that read it?
 
 In *Neural Networks Are Already Clean*, Nick Cammarata explains what he means by cleanliness.
 
 > When I say neural networks are already clean, I mean something deeper than neuron monosemanticity, although even by that standard, I think things look much better than the field expects. I mean that a network’s parts are built to be read, and built upon, by its downstream readers.[^cammarata]
 
-Following a mechanism through training offers a way to investigate how it becomes useful to those readers. Cammarata follows a neuron in a retrained InceptionV1 model whose strongest responses initially come from yellow-flower images, some with dogs. Green objects and dogs without flowers appear later, followed by broccoli. The observed sequence motivates his developmental explanation, while leaving the causal links between specific responses open.
+Cammarata follows a neuron in a retrained InceptionV1 model whose strongest responses initially come from yellow-flower images, some with dogs. Green objects and dogs without flowers appear later, followed by broccoli. The observed sequence motivates his developmental explanation, while leaving the causal links between specific responses open.
 
 {% tikz(learning=true, fig_w="620px", caption="<strong>A developmental history.</strong> A schematic of the response sequence Cammarata reports. Arrows suggest links between responses without establishing causation.") %}
 \begin{tikzpicture}[learning]
@@ -53,31 +52,31 @@ Following a mechanism through training offers a way to investigate how it become
 
 Cammarata calls the branching of responses across related inputs "recursive generalization." His proposed explanation is that existing mechanisms give related learning a head start.
 
-I use *path formation* to examine how those acquisitions change later learning opportunities. The synthetic experiments below connect two views of development. Tracing particular pathways supplies histories whose causal relationships can be tested, while Price accounting separates changes in their relative representation from changes in inherited responses. Explaining how learning produces useful organization requires connecting these population changes to the mechanisms that cause them.
+A response can remain common while the mechanisms supplying it change. Readers can also learn to use the same mechanism differently. To understand this path formation, we need to track which mechanisms retain a response and which computations depend on it.
 
 ## One path leads to another
 
-In Cammarata's circuit-ecology hypothesis, established mechanisms and their readers can learn related tasks faster than competitors starting fresh. Capturing the remaining error gives them an advantage that can compound through further reuse. He proposes this race as an explanation for recursive generalization.[^cammarata]
+In Cammarata's circuit-ecology hypothesis, established mechanisms and their readers can learn related tasks faster than competitors starting fresh. As their predictions improve, less error remains to train competing pathways. He proposes that repeated reuse can produce recursive generalization.[^cammarata]
 
-The analysis here makes one part of that hypothesis explicit through learning pressure, measured as the direction and strength of the negative loss gradient on a parameter. Gradients from different examples reinforce shared circuitry when they favor compatible updates. As prediction error falls, the learning signals available to competing pathways can weaken.
+I measure learning pressure as the negative loss gradient on a parameter. Its sign gives the direction of the gradient-descent update, and its magnitude gives the update size per unit learning rate. Gradients from different examples reinforce shared circuitry when they favor compatible updates. As prediction error falls, the learning signals available to competing pathways can weaken.
 
 Applied to the flower example, this suggests a possible mechanism. A flower-responsive neuron might also respond weakly to vegetation. Green-object examples could produce compatible gradients that strengthen this response into a green signal for a later broccoli detector. This intermediate acquisition may make broccoli responsiveness easier to learn than it was from the original flower response.
 
 A broccoli detector that uses the green signal would give the earlier mechanism a new computational role. This is the causal interpretation explored below, rather than a measured dependency in Cammarata's flower neuron.
 
-I built flower-toy to explore these relationships using flower, green, and texture cues.[^toy-model] Controlled changes to circuitry and training isolate acquisition cost, inheritance, and downstream learning. Each experiment has its own initialization and training conditions, chosen to examine a consequence of the proposed mechanism.
+I built flower-toy to explore these relationships using binary flower, green, and texture cues.[^toy-model] The cues are supplied explicitly, allowing the experiments to isolate how existing distinctions are modified and used. A reader is a downstream computation using pathway outputs, with the broccoli task requiring green and texture together. Flower discrimination means correctly classifying inputs with and without the flower cue, even when response strength changes.
 
-In the first experiment, I trained two readers on a green-dependent response from competing pathways. Both feature coefficients and reader weights train. The established route attracts more pressure, which declines as prediction error falls.[^toy-gradients]
+In the first experiment, I trained two readers on a green-dependent response from competing pathways. Both feature coefficients and reader weights train. The established route receives stronger gradients, which decline as prediction error falls.[^toy-gradients]
 
-{{ tikz(learning=true, source="static/images/flower-toy/competition_gradients.tex", fig_w="620px", caption="<strong>Measured pressure on competing routes.</strong> The established route attracts more learning pressure, which declines as prediction error falls.") }}
+{{ tikz(learning=true, source="static/images/flower-toy/competition_gradients.tex", fig_w="620px", caption="<strong>Measured pressure on competing routes.</strong> The established route receives stronger gradients, which decline as prediction error falls.") }}
 
-Aligned readers reinforce one another, while the net pressure of opposed targets may cancel at a shared feature, concealing reader contributions.
+Readers reinforce one another when their errors favor the same update to a shared feature. Opposing updates can cancel, leaving weak net pressure despite strong individual contributions.
 
 The weights carrying signals to downstream readers also learn. For the same prediction error, a stronger input creates greater learning pressure to change how strongly the reader uses that signal.
 
 {{ tikz(learning=true, source="static/images/flower-toy/competition_reader_gradients.tex", fig_w="620px", caption="<strong>Where reader pressure comes from.</strong> Readers can exert reinforcing or opposing pressures on a shared feature. Weak net pressure can conceal strong competing contributions. Band taper distinguishes pressure to increase a parameter from pressure to decrease it.") }}
 
-An established green signal can reduce how much new learning broccoli detection requires. The advantage comes from a useful distinction that earlier training has already supplied, allowing the subsequent detector to build on it. This gives a candidate explanation for one developmental route, whose advantage depends on the training conditions.
+An established green signal gives the broccoli reader a useful input before its own training begins. Whether this reduces acquisition cost depends on how subsequent updates affect the other responses that share the pathway.
 
 ## Two paths can represent the same distinction
 
@@ -147,19 +146,19 @@ A stricter target can reverse this advantage. Under a shared capacity constraint
 
 A distinction can persist despite weaker activation. Both routes preserve flower classification, but the weaker signal may affect other downstream uses.
 
-Following either route explains a particular acquisition, but does not establish how widely such routes contribute across a network. Some pathways can gain new uses while others lose responsiveness. To connect these local developments to population change, their relative representation and inherited responses must be measured separately.
+Across a population of pathways, increased use of a flower-responsive mechanism can coincide with loss of flower responsiveness in its descendants. Measuring only the final responsive share would miss these opposing changes.
 
 ## How roles and responses change
 
 Across inherited pathways, an unchanged average can conceal a redistribution of the mechanisms supplying a distinction. How much change comes from ancestors supplying more pathways, and how much comes from inherited responses changing?
 
-In the synthetic flower model, $\mathsf{A}$ initially responds to flowers, while $\mathsf{B}$ supplies texture without responding to flowers on the same assay. Three later pathways descend from $\mathsf{A}$ and one from $\mathsf{B}$. Two of $\mathsf{A}$'s descendants retain flower responsiveness, while the third specializes toward green and loses its flower response.
+In a controlled construction, $\mathsf{A}$ initially responds to flowers, while $\mathsf{B}$ supplies texture without responding to flowers on the same assay. Three later pathways descend from $\mathsf{A}$ and one from $\mathsf{B}$. Two of $\mathsf{A}$'s descendants retain flower responsiveness, while the third specializes toward green and loses its flower response.
 
 The flower-responsive share stays at ½, even though $\mathsf{A}$ now supplies ¾ of the pathways. Its increased representation is offset by a change in what one descendant detects. I specified the ancestry and local response targets in this experiment, then trained the descendants to fit those targets.
 
 Price accounting has previously been applied to evolutionary algorithms and neural learning.[^price-learning] Here, I use it to measure how differential representation and response change contribute to the population mean. The equation separates selection, change due to differential contribution, from variation, change in inherited responses.[^price][^price-variation]
 
-Let $z$ record flower responsiveness on a fixed assay and $w$ count the later pathways attributed to each earlier mechanism.[^price-accounting] With $\bar w$ the average descendant count and $\Delta z$ each mechanism's average inherited response change, the population mean changes by[^price-weights]
+Let $z$ be one for a flower-responsive pathway and zero otherwise, under a fixed assay. Let $w$ count the later pathways attributed to each earlier mechanism.[^price-accounting] With $\bar w$ the average descendant count and $\Delta z$ the mean descendant response minus its ancestor’s response, the change in population mean is[^price-weights]
 
 ```math
 \Delta\bar z
@@ -168,6 +167,8 @@ Let $z$ record flower responsiveness on a fixed assay and $w$ count the later pa
 +
 \underbrace{\frac{\mathbb E[w\Delta z]}{\bar w}}_{\text{variation}}.
 ```
+
+$\operatorname{Cov}(w,z)$ measures whether initially responsive mechanisms supply more descendants, and $\mathbb E$ averages over the initial mechanisms. Dividing by $\bar w$ expresses both contributions per descendant.
 
 Weighting the initial responses by $\mathsf{A}$'s three pathways and $\mathsf{B}$'s one raises the responsive share from ½ to ¾, giving selection +¼. Losing the response in one of $\mathsf{A}$'s pathways subtracts ¼ through variation. Preferential contribution from flower-responsive ancestry therefore offsets inherited response loss, leaving the overall share unchanged.
 
@@ -238,15 +239,15 @@ Weighting the initial responses by $\mathsf{A}$'s three pathways and $\mathsf{B}
 
 Each pathway counts once, so selection measures the share of attributed pathway uses. Three nearly unused pathways still outweigh one heavily used pathway in this calculation. Functional influence requires additional evidence about reader gains or the effect of removing a signal. A contribution-weighted analysis would need a declared, nonnegative attribution rule supported by those measurements.
 
-The positive selection term shows that initially flower-responsive mechanisms gain representation, while negative variation shows that their descendants lose some responsiveness. These are separate outcomes for a developmental explanation to account for, even when the mean stays fixed. The stipulated ancestry illustrates this distinction without establishing why one mechanism gains more uses.
+Ancestry records identify which responses are retained or acquired. Price accounting quantifies how changing representation and inherited responses contribute to the population mean, exposing changes that cancel in the total. The identity does not itself assign causes to those changes.
 
-A model of training dynamics supplies the causal explanation. Direct learning pressure and competition for shared capacity can each weaken an earlier response.[^toy-roles] Price records the resulting inherited change, while its selection term measures differential representation under the declared ancestry rule. The gradient measurements and the Price terms describe different aspects of development.
+Explaining the changes requires examining training dynamics. Direct learning pressure and competition for shared capacity can each weaken an earlier response.[^toy-roles] Here, ancestry and targets are prescribed, so the construction illustrates the accounting without explaining why branching would emerge.
 
-Connecting these views requires locating population changes within actual computational relationships. Does the flower signal reach its readers through retained responsiveness or through newly acquired responses?
+The global terms do not identify which readers receive retained flower responses and which receive newly acquired ones.
 
-## How learning builds understandable structure
+## Readers reveal inherited roles
 
-Tracing pathways to their readers gives the population accounting a computational interpretation. The same global terms can conceal different inheritance within the computations a network serves. To examine what it misses, I constructed two histories with three descendants of $\mathsf{A}$ and one of $\mathsf{B}$. Both finish with two flower pathways, a green pathway, and a texture pathway supplying identical readers.
+I constructed two histories with identical global Price terms but different ancestry for the flower readers’ inputs. Each has three descendants of $\mathsf{A}$ and one of $\mathsf{B}$. Both finish with two flower pathways, a green pathway, and a texture pathway supplying identical readers.
 
 In History I, two $\mathsf{A}$ descendants retain flower responsiveness, its third supplies green, and $\mathsf{B}$ supplies texture. In History II, one $\mathsf{A}$ descendant retains flower responsiveness and a $\mathsf{B}$ descendant acquires it. The other two $\mathsf{A}$ descendants learn green and texture. Training fits the same prescribed role targets in both histories, preserving the broccoli reader's required signals as well as the flower outputs.
 
@@ -347,49 +348,57 @@ Each group is compared with the full initial population. Averaging the equally s
 \end{tikzpicture}
 {% end %}
 
-Dependency tracing identifies which ancestral pathways supply each reader. Conditioning Price on those relationships quantifies how differential representation and inherited response change contribute within each reader group. The combined analysis distinguishes retention from new acquisition where global accounting and final outputs agree. A causal explanation must then account for the measured pattern of retention and acquisition within each group.
+The matched histories prescribe which pathways supply each reader. In a separate experiment, reader errors train two persistent routes and the weights allocating their signals to each reader. Each reader learns nonnegative routing shares that sum to one, starting with equal shares. The broccoli reader combines its routed signal with a fixed texture input.[^toy-routing]
 
-The matched histories establish what the accounting distinguishes under prescribed ancestry. To connect that accounting to a causal learning process, I also trained two persistent routes whose responses and allocation to readers change together. Each reader learns nonnegative routing shares that sum to one, starting with equal shares. The broccoli reader combines its routed signal with a fixed texture input.[^toy-routing]
+The first Price analysis counts inherited pathway uses, while this one measures allocation among persistent routes. Selection can therefore change here without creating any new pathways, simply because a reader assigns more weight to one route.
 
-Here the population weights measure routing allocation, replacing the unit pathway counts above. The trait is continuous flower contrast, so it can become negative or exceed one. Selection measures changing allocation to the initially flower-responsive route, while variation measures changes in the routes' flower responses. Both are calculated from the same trajectory as the reader gradients.
+The trait is now continuous flower contrast, measured by subtracting the response without the flower cue from the response with it while holding other cues fixed. This difference can be negative or exceed one. Selection measures changing allocation to the initially flower-responsive route, while variation measures changes in the routes’ flower responses. Both are calculated from the same trajectory as the reader gradients.
 
 {{ tikz(learning=true, source="static/images/flower-toy/learned_routing.tex", learning_centers="0 9", fig_w="620px", caption="<strong>Reader pressure with learned and frozen routing.</strong> Reader errors modify shared flower responses and, when routing learns, their allocation. Bands show applied descent directions at update 10, with frozen routing receiving no updates. Feature and logit bands use separate scales, shared across conditions. The fixed texture input to broccoli is omitted.") }}
 
-The table accounts for flower-contrast change after 800 updates with learned routing, relative to the initial mean of 0.50. The global row weights both reader groups equally, with values rounded to two decimal places.
+The table accounts for change in allocation-weighted mean flower contrast after 800 updates with learned routing, relative to the initial mean of 0.50. The global row weights both reader groups equally. Values are rounded to two decimal places, so displayed terms may not sum exactly.
 
-| Reader group | Selection | Variation | Final mean flower contrast |
+| Reader group | Selection | Variation | Final contrast |
 |---|---|---|---|
 | Flower | +0.22 | +0.19 | 0.91 |
 | Broccoli | −0.23 | −0.11 | 0.16 |
 | Global | −0.01 | +0.04 | 0.54 |
 
-After 800 updates, the flower reader assigns about 72% of its routing share to the initially flower-responsive route, while broccoli assigns about 27%. Their opposing allocation changes nearly cancel globally. Freezing the routing shares at one half forces selection to zero and leaves broccoli classification at 75%, compared with 100% when routing learns. Within this model, allowing reader-specific allocation improves computation, and Price quantifies how that allocation develops alongside the responses.
+After 800 updates, the flower reader assigns about 72% of its routing share to the initially flower-responsive route, while broccoli assigns about 27%. Different readers develop different uses of the same pathways, yet their opposing allocation changes nearly disappear in the global selection term. Freezing routing at one half forces selection to zero and leaves broccoli classification at 75%, compared with 100% when routing learns. Allowing routing to learn improves broccoli classification under these training conditions.[^toy-reader-training]
 
-Removing the initial green response changes both contributions, while restoring it reproduces the intact trajectory. Removal actually lowers final response error in this joint-learning setting. The precursor advantage in the earlier acquisition experiment therefore depends on what is being learned and how readers compete for shared signals. The intervention identifies an effect of the precursor, and the decomposition locates its consequences in allocation and response change.
+To test dependence on each route, I zeroed its signal after training while holding all learned weights and routing shares fixed.[^toy-ablations]
 
-A separate experiment confirms that exchanging fixed reader assignments redirects learning pressure on their input pathways.[^toy-reader-training]
+| Removed route | Flower accuracy | Broccoli accuracy |
+|---|---|---|
+| None | 100% | 100% |
+| A | 50% | 100% |
+| B | 100% | 75% |
 
-These experiments connect reader demands to changes in allocation and signals. Price measures those developments, while interventions identify effects of particular learning conditions. Following these relationships through time raises a further question about whether a capability remains available throughout the changes.
+The selective classification losses show that flower depends on A and broccoli on B under this intervention. Each reader’s learned allocation favors the route whose removal impairs its classification.
+
+Removing the initial green response before training leaves final classification unchanged but reduces mean squared reader error by about 99% after 800 updates. Restoring it reproduces the intact trajectory.[^toy-routing]
+
+Earlier, the precursor made a target cheaper to acquire under a different training task. That advantage does not guarantee lower error after a fixed budget of joint learning. Together, the experiments suggest that downstream demands help determine the developmental value of an existing pathway, though precursor removal alone does not isolate the cause of the error difference.
+
+The ablations identify the routes each trained reader needs for correct classification. They leave open whether the reader kept classifying correctly while those routes changed.
 
 ## What learning carries forward
 
-Ancestral retention and continuous availability are different properties. The original history retains flower responsiveness in $\mathsf{A}$ descendants. A history in which $\mathsf{B}$ supplies both flower pathways instead reverses the global terms to selection −¼ and variation +¼, while reaching equivalent reader outputs. Neither endpoint comparison establishes whether flower discrimination remained available throughout learning.
+Ancestral retention and continuous usability are different properties. A distinction may remain encoded while its signal becomes too weak for an existing reader to classify correctly. Even reader-conditioned endpoint accounting cannot establish whether that reader kept working throughout learning.
 
-To distinguish continuous availability from recovery, I changed the order in which two pathways acquire and lose flower responsiveness. Two pathways supply a fixed flower reader, which averages their flower signals. Initially $\mathsf{A}$ responds and $\mathsf{B}$ does not. Both schedules train $\mathsf{B}$ to acquire the response and $\mathsf{A}$ to lose it, with identical targets and update budgets.[^toy-continuity]
+To distinguish uninterrupted classification from recovery, I changed the order in which two pathways strengthen and weaken their flower responses. A fixed reader averages their signals and classifies at threshold 0.45. Initially $\mathsf{A}$ has response strength one and $\mathsf{B}$ zero. Both schedules train $\mathsf{B}$ toward one and $\mathsf{A}$ toward zero, with identical update budgets.[^toy-continuity]
 
-In the continuous handoff, $\mathsf{B}$ learns first, so the reader retains flower discrimination as $\mathsf{A}$ changes. Reversing the order interrupts discrimination before $\mathsf{B}$ restores it. The schedules end with identical pathway parameters and reader outputs, with zero selection and zero net variation under one-to-one ancestry. Only the recorded reader trajectory distinguishes uninterrupted availability from recovery.
+In the continuous handoff, $\mathsf{B}$ learns first, so the fixed reader keeps classifying correctly as $\mathsf{A}$ changes. Reversing the order causes classification to fail temporarily, even though the flower signal remains positive. The schedules end with identical pathway parameters and reader outputs. Equal one-to-one descendant weights give zero selection, and the unchanged binary responsive share gives zero net variation.
 
-{{ tikz(learning=true, source="static/images/flower-toy/handoff_continuity.tex", fig_w="620px", caption="<strong>Equivalent endpoints, different continuity.</strong> A fixed reader averages the two pathways' flower signals. During the handoff, B acquires the response while A still supplies it. Reversing the order leaves neither responsive at the intermediate checkpoint. Lines below track correct flower classification at every update. Matching final computations and Price terms conceal this interruption.") }}
+The reader trajectory establishes the interruption, which endpoint Price accounting cannot detect.
 
-Continuity belongs to the evolving computation that supplies the reader. A trait can be lost by one lineage while its role remains available through another, or that role can disappear before being reacquired. Endpoint Price accounting separates inherited changes, while longitudinal reader measurements establish which of these developments occurred.
+{{ tikz(learning=true, source="static/images/flower-toy/handoff_continuity.tex", fig_w="620px", caption="<strong>Equivalent endpoints, different continuity.</strong> A fixed reader averages the two pathways’ flower signals. Arrows below show the order of training, and flower markers indicate pathway responses meeting the 0.50 assay threshold. The reader classifies correctly throughout the handoff but fails at updates 1–50 during recovery under its fixed threshold of 0.45. The weakened signal still distinguishes the inputs numerically. Both schedules end with the same computation and zero net selection and variation.") }}
+
+Throughout the continuous schedule, the score for flower-present inputs stays at least 0.05 above the reader’s threshold, while flower-absent inputs score zero. The contrast persists at tested reader thresholds from 0.001 to 0.45.[^toy-continuity] Allowing downstream computations to learn during the handoff would test whether keeping this reader functional also supports further development.
 
 Different histories do not necessarily leave different learning opportunities. These schedules converge on identical full states, so identical subsequent training would produce identical updates. The earlier acquisition experiments show how retained differences in circuitry can change later learning costs. History matters through the structure it leaves available and the capabilities it maintains along the way.
 
-The examples bring causal development and population change into the same explanation. Price separates differential representation from inherited response change, including changes that cancel in the mean. Tracing computational dependencies locates those changes within reader relationships, while controlled comparisons establish how those relationships affect learning. Following them over time distinguishes continuous availability from recovery, even when endpoint computations and accounting agree.
-
-I see this combination as a way to investigate the organization Cammarata describes. A pathway history can suggest how a useful distinction formed, and population accounting measures how that distinction spreads or changes across inherited pathways. Connecting those measurements to causal evidence would explain how particular acquisitions produce mechanisms that downstream computations can read and build upon. The synthetic experiments establish what these views can distinguish together, providing questions to investigate in real neural development.
-
-Learning builds the machinery of its own future learning.
+For Cammarata’s flower neuron, this suggests testing which readers depend on its response at successive checkpoints. Such measurements could distinguish a response that gains new uses from one whose earlier role passes to another mechanism.
 
 ---
 
@@ -403,7 +412,7 @@ Learning builds the machinery of its own future learning.
 
 [^toy-targets]: Both routes obey $f^2+g^2\leq1.30^2$ and start with the same flower function. Initial green responses are 0.8 for the shared route and zero for the separate route. Acquisition requires the specified positive score and negative scores below 0.10, and step counts exclude precursor training. Both routes classify all eight binary inputs correctly at threshold 0.5. Scores are not calibrated probabilities.
 
-[^price-learning]: Bassett, J. K., Potter, M. A., and De Jong, K. A. (2004), [*Looking Under the EA Hood with Price’s Equation*](https://www.cs.york.ac.uk/rts/docs/GECCO_2004/Conference%20proceedings/papers/3102/31020914.pdf), uses Price-based decompositions to analyze evolutionary algorithms. Fernando, C., Szathmáry, E., and Husbands, P. (2012), [*Selectionist and Evolutionary Approaches to Brain Function*](https://doi.org/10.3389/fncom.2012.00024), discusses Price accounting for neuronal groups and synaptic selection, including its limits as a description of dynamics. Frank, S. A. (2025), [*The Price Equation Reveals a Universal Force–Metric–Bias Law of Algorithmic Learning and Natural Selection*](https://stevefrank.org/reprints-pdf/25FMB.pdf), develops connections to optimization methods including SGD and Adam. This post applies established accounting to attributed pathway uses and their downstream readers, without claiming priority for that application.
+[^price-learning]: Bassett, J. K., Potter, M. A., and De Jong, K. A. (2004), [*Looking Under the EA Hood with Price’s Equation*](https://www.cs.york.ac.uk/rts/docs/GECCO_2004/Conference%20proceedings/papers/3102/31020914.pdf), uses Price-based decompositions to analyze evolutionary algorithms. Fernando, C., Szathmáry, E., and Husbands, P. (2012), [*Selectionist and Evolutionary Approaches to Brain Function*](https://doi.org/10.3389/fncom.2012.00024), discusses Price accounting for neuronal groups and synaptic selection, including its limits as a description of dynamics. Frank, S. A. (2025), [*The Price Equation Reveals a Universal Force–Metric–Bias Law of Algorithmic Learning and Natural Selection*](https://stevefrank.org/reprints-pdf/25FMB.pdf), develops connections to optimization methods including SGD and Adam. This post applies the accounting to attributed pathway uses and their downstream readers.
 
 [^price]: Price, G. R. (1970). [*Selection and Covariance*](https://doi.org/10.1038/227520a0). *Nature*, 227, 520–521.
 
@@ -423,13 +432,15 @@ Learning builds the machinery of its own future learning.
 
 [^toy-routing]: The [routing trajectories](/images/flower-toy/learned_routing_trajectories.csv), [Price terms](/images/flower-toy/learned_routing_price.csv), and [reader pressures](/images/flower-toy/learned_routing_pressure.csv) come from one joint-learning experiment. Route A starts with flower coefficient 1 and green coefficient 0.8, while route B starts at zero. Softmax routing shares start at ½ for each reader. All route coordinates and routing logits learn from mean half-squared reader error at learning rate 0.15 for 800 updates. Broccoli multiplies its mixture by the fixed texture cue. These routing shares measure allocation, not ablation-based importance or neuron reproduction. The [band measurements](/images/flower-toy/learned_routing_bands.csv) record gradient magnitudes and display scales at update 10, using 200 points per gradient unit for flower responses and 3000 for routing logits. Frozen logits have no applied update and therefore no band.
 
-    For normalized baseline masses $p_i$ and later masses $q_i$, weighted Price selection is $\sum_i(q_i-p_i)z_i$ and variation is $\sum_i q_i(z'_i-z_i)$. Their sum is the change in the allocation-weighted mean flower contrast. Equivalently, descendant weights are $w_i=q_i/p_i$ with expectations under $p_i$. Exports include comparisons with initialization and with the preceding checkpoint. Reader groups have equal total mass. The removal condition zeros only A's initial green coefficient, rescue restores it before training, and the frozen-routing control holds both readers' shares at ½. All conditions use the same inputs, reader targets, update budget, and learning rate.
+    For normalized baseline masses $p_i$ and later masses $q_i$, weighted Price selection is $\sum_i(q_i-p_i)z_i$ and variation is $\sum_i q_i(z'_i-z_i)$. Their sum is the change in the allocation-weighted mean flower contrast. Equivalently, descendant weights are $w_i=q_i/p_i$ with expectations under $p_i$. Exports include comparisons with initialization and with the preceding checkpoint. Reader groups have equal total mass. The removal condition zeros only A's initial green coefficient, rescue restores it before training, and the frozen-routing control holds both readers' shares at ½. All conditions use the same inputs, reader targets, update budget, and learning rate. Mean squared error averaged equally over the two readers falls from 1.97 × 10⁻² with the precursor to 2.31 × 10⁻⁴ without it. Using unrounded values, the reduction is 98.83%.
 
-[^toy-reader-training]: The [fixed-routing experiment](/images/flower-toy/downstream_reader_training.csv) starts both assignments from identical ancestor copies. $\mathsf{A_1}$, $\mathsf{A_2}$, and $\mathsf{A_3}$ inherit flower and green responses, while $\mathsf{B_1}$ inherits texture. Pathway coordinates and read gains learn from reader errors without local role targets, and recorded gradients include the checkpoint after ten updates. Coherent routing suppresses green in $\mathsf{A_1}$ and $\mathsf{A_2}$ and strengthens it in $\mathsf{A_3}$, while swapping readers redirects flower-reader suppression toward $\mathsf{A_3}$ and $\mathsf{B_1}$.
+[^toy-reader-training]: A separate experiment shows that exchanging fixed reader assignments redirects learning pressure on their input pathways. The [fixed-routing experiment](/images/flower-toy/downstream_reader_training.csv) starts both assignments from identical ancestor copies. $\mathsf{A_1}$, $\mathsf{A_2}$, and $\mathsf{A_3}$ inherit flower and green responses, while $\mathsf{B_1}$ inherits texture. Pathway coordinates and read gains learn from reader errors without local role targets, and recorded gradients include the checkpoint after ten updates. Coherent routing suppresses green in $\mathsf{A_1}$ and $\mathsf{A_2}$ and strengthens it in $\mathsf{A_3}$, while swapping readers redirects flower-reader suppression toward $\mathsf{A_3}$ and $\mathsf{B_1}$.
 
     Suppressing pathways on fixed positive and negative inputs tests reader dependence. Both assignments reach correct classification, though the swapped assignment retains larger response errors.
 
-[^toy-continuity]: The [handoff trace](/images/flower-toy/handoff_trajectories.csv) tests flower-present and flower-absent inputs after every update, with a fixed mean reader and classification threshold 0.45. Each pathway receives 40 gradient steps at rate 0.2 on a prescribed squared-error target, with acquisition and loss ordered oppositely. [Endpoint accounting](/images/flower-toy/handoff_price.csv) uses binary responsiveness and one-to-one ancestry.
+[^toy-ablations]: The [route-ablation measurements](/images/flower-toy/learned_routing_ablations.csv) zero one route’s output after training, without renormalizing routing shares or retraining. They record mean squared error, maximum error, and accuracy for each reader in every training condition. Selective classification losses establish dependence under this intervention, while error changes show that the other reader can also be affected.
+
+[^toy-continuity]: The [handoff trace](/images/flower-toy/handoff_trajectories.csv) tests flower-present and flower-absent inputs after every update, with a fixed mean reader and classification threshold 0.45. Each pathway receives 40 gradient steps at rate 0.2 on a prescribed squared-error target, with acquisition and loss ordered oppositely. [Endpoint accounting](/images/flower-toy/handoff_price.csv) uses binary responsiveness and one-to-one ancestry. The trace includes positive and negative scores and margins. [Threshold checks](/images/flower-toy/handoff_thresholds.csv) evaluate 0.001, 0.01, 0.10, 0.25, 0.45, and 0.50 without retraining. Continuous handoff preserves classification at the first five thresholds, while interrupted recovery fails temporarily at each. At 0.50, the continuous schedule reaches a zero-margin boundary, with floating-point rounding producing a final failed classification. Its minimum positive score is approximately 0.50, compared with 6.65 × 10⁻⁵ during interrupted recovery.
 
 [^price1972]: Price, G. R. (1972). [Extension of covariance selection mathematics](https://doi.org/10.1111/j.1469-1809.1957.tb01874.x). *Annals of Human Genetics*, 35, 485–490.
 

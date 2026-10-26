@@ -9,12 +9,12 @@
 \foreach \x in {0,4.5,9} { \stageoval{\x,-0.0} }
 \node[feature] (a00) at (0,0.65) {};
 \abovenodelabel{a00}{$a_0$}
-\leftrowlabel{-0.0}{0.65}{Net $p=+0.048$}
+\leftrowlabel{-0.0}{0.65}{Net $p$\\$+0.048$}
 \node[reader] (r00) at (9,0.65) {};
 \rightlabel{-0.0}{0.65}{Reader 1\\Target $+1$}
 \node[feature] (a01) at (0,-0.65) {};
 \abovenodelabel{a01}{$a_1$}
-\leftrowlabel{-0.0}{-0.65}{Net $p=+0.048$}
+\leftrowlabel{-0.0}{-0.65}{Net $p$\\$+0.048$}
 \node[reader] (r01) at (9,-0.65) {};
 \rightlabel{-0.0}{-0.65}{Reader 2\\Target $+1$}
 \node[feature] (b000) at (4.5,1.5) {};
@@ -71,12 +71,12 @@
 \foreach \x in {0,4.5,9} { \stageoval{\x,-5.6} }
 \node[feature] (a10) at (0,-4.949999999999999) {};
 \abovenodelabel{a10}{$a_0$}
-\leftrowlabel{-5.6}{0.6500000000000004}{Net $p=-0.002$}
+\leftrowlabel{-5.6}{0.6500000000000004}{Net $p$\\$-0.002$}
 \node[reader] (r10) at (9,-4.949999999999999) {};
 \rightlabel{-5.6}{0.6500000000000004}{Reader 1\\Target $+1$}
 \node[feature] (a11) at (0,-6.25) {};
 \abovenodelabel{a11}{$a_1$}
-\leftrowlabel{-5.6}{-0.6500000000000004}{Net $p=-0.002$}
+\leftrowlabel{-5.6}{-0.6500000000000004}{Net $p$\\$-0.002$}
 \node[reader] (r11) at (9,-6.25) {};
 \rightlabel{-5.6}{-0.6500000000000004}{Reader 2\\Target $-1$}
 \node[feature] (b100) at (4.5,-4.1) {};
@@ -134,8 +134,8 @@
 \node at (2.25,\learningaxisy) {Feature gradients};
 \node at (6.75,\learningaxisy) {Connection gradients};
 \pressurekey{0}{\learninglegendy}{1}
-\node[legendlabel] at (.7,\learninglegendy) {Increasing parameter};
+\node[legendlabel] at (.7,\learninglegendy) {Reinforcing (positive)};
 \pressurekey{5}{\learninglegendy}{-1}
-\node[legendlabel] at (5.7,\learninglegendy) {Decreasing parameter};
+\node[legendlabel] at (5.7,\learninglegendy) {Suppressing (negative)};
 \diagramframe{\learningframebottom}
 \end{tikzpicture}
