@@ -178,9 +178,9 @@ Weighting the initial responses by $\mathsf{A}$'s three pathways and $\mathsf{B}
 \begin{tikzpicture}[learning]
 % Slightly smaller markers for the accounting inset and its trait legend.
 \tikzset{feature/.append style={minimum size=4.2pt},trait/.append style={minimum size=9pt}}
-\stageheading{0}{BASELINE}{50\% flower-responsive}
-\stageheading{4.5}{REWEIGHTING}{calculation, 75\% responsive}
-\stageheading{9}{FINAL POPULATION}{50\% flower-responsive}
+\stageheading{0}{BASELINE}{\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{2} flower-responsive}
+\stageheading{4.5}{REWEIGHTING}{calculation, \textsuperscript{3}\kern-.12em/\kern-.12em\textsubscript{4} responsive}
+\stageheading{9}{FINAL POPULATION}{\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{2} flower-responsive}
 \foreach \x in {0,9} { \stageoval{\x,0} }
 \stacknode[feature]{a}{0}{0}{2}{1}
 \stacknode[feature]{b}{0}{0}{2}{2}
@@ -259,10 +259,10 @@ Each group is compared with the full initial population, whose flower-responsive
 
 | Reader group | History | Selection | Variation | Flower-responsive share |
 |---|---|---|---|---|
-| Flower | I | +½ | 0 | 1 |
-| Broccoli | I | 0 | −½ | 0 |
-| Flower | II | 0 | +½ | 1 |
-| Broccoli | II | +½ | −1 | 0 |
+| Flower | I | +½ | 0 | All |
+| Broccoli | I | 0 | −½ | None |
+| Flower | II | 0 | +½ | All |
+| Broccoli | II | +½ | −1 | None |
 
 Averaging the equally sized groups recovers the global terms in either history. History I supplies flower readers entirely through retained responsiveness, while History II combines retention with acquisition from a previously nonresponsive ancestor. The final responsive shares alone hide this difference.
 
@@ -370,7 +370,7 @@ The table accounts for change in allocation-weighted mean flower contrast after 
 | Broccoli | −0.23 | −0.11 | 0.16 |
 | Global | −0.01 | +0.04 | 0.54 |
 
-After 800 updates, the flower reader assigns about 72% of its routing share to the initially flower-responsive route, while broccoli assigns about 27%. Different readers develop different uses of the same pathways, yet their opposing allocation changes nearly disappear in the global selection term. Freezing routing at one half forces selection to zero and leaves broccoli classification at 75%, compared with 100% when routing learns. Allowing routing to learn improves broccoli classification under these training conditions.[^toy-reader-training]
+After 800 updates, the flower reader assigns about 72% of its routing share to the initially flower-responsive route, while broccoli assigns about 27%. Different readers develop different uses of the same pathways, yet their opposing allocation changes nearly disappear in the global selection term. Holding each routing share at 50% forces selection to zero and leaves broccoli classification at 75%, compared with 100% when routing learns. Allowing routing to learn improves broccoli classification under these training conditions.[^toy-reader-training]
 
 Removing the initial green response before training leaves final classification unchanged but reduces mean squared reader error by about 99% after 800 updates. Restoring it reproduces the intact trajectory.[^toy-routing]
 
@@ -438,9 +438,9 @@ Usefulness belongs to a relationship between a signal and the computation readin
 
     The [matched-history accounting](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/matched_reader_inheritance.csv) uses the binary flower assay. Numerical exports call variation "transmission."
 
-[^toy-routing]: The [routing trajectories](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_trajectories.csv), [Price terms](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_price.csv), and [reader pressures](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_pressure.csv) come from one joint-learning experiment. Route A starts with flower coefficient 1 and green coefficient 0.8, while route B starts at zero. Softmax routing shares start at ½ for each reader. All route coordinates and routing logits learn from mean half-squared reader error at learning rate 0.15 for 800 updates. Broccoli multiplies its mixture by the fixed texture cue. These routing shares measure allocation, not ablation-based importance or neuron reproduction. The [band measurements](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_bands.csv) record gradient magnitudes and display scales at update 10, using 200 points per gradient unit for flower responses and 3000 for routing logits. Frozen logits have no applied update and therefore no band.
+[^toy-routing]: The [routing trajectories](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_trajectories.csv), [Price terms](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_price.csv), and [reader pressures](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_pressure.csv) come from one joint-learning experiment. Route A starts with flower coefficient 1 and green coefficient 0.8, while route B starts at zero. Each reader’s softmax routing shares start at 50% per route. All route coordinates and routing logits learn from mean half-squared reader error at learning rate 0.15 for 800 updates. Broccoli multiplies its mixture by the fixed texture cue. These routing shares measure allocation, not ablation-based importance or neuron reproduction. The [band measurements](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_bands.csv) record gradient magnitudes and display scales at update 10, using 200 points per gradient unit for flower responses and 3000 for routing logits. Frozen logits have no applied update and therefore no band.
 
-    For normalized baseline masses $p_i$ and later masses $q_i$, weighted Price selection is $\sum_i(q_i-p_i)z_i$ and variation is $\sum_i q_i(z'_i-z_i)$. Their sum is the change in the allocation-weighted mean flower contrast. Equivalently, descendant weights are $w_i=q_i/p_i$ with expectations under $p_i$. Exports include comparisons with initialization and with the preceding checkpoint. Reader groups have equal total mass. The removal condition zeros only A's initial green coefficient, rescue restores it before training, and the frozen-routing control holds both readers' shares at ½. All conditions use the same inputs, reader targets, update budget, and learning rate. Mean squared error averaged equally over the two readers falls from 1.97 × 10⁻² with the precursor to 2.31 × 10⁻⁴ without it. Using unrounded values, the reduction is 98.83%.
+    For normalized baseline masses $p_i$ and later masses $q_i$, weighted Price selection is $\sum_i(q_i-p_i)z_i$ and variation is $\sum_i q_i(z'_i-z_i)$. Their sum is the change in the allocation-weighted mean flower contrast. Equivalently, descendant weights are $w_i=q_i/p_i$ with expectations under $p_i$. Exports include comparisons with initialization and with the preceding checkpoint. Reader groups have equal total mass. The removal condition zeros only A's initial green coefficient, rescue restores it before training, and the frozen-routing control holds each routing share at 50%. All conditions use the same inputs, reader targets, update budget, and learning rate. Mean squared error averaged equally over the two readers falls from 1.97 × 10⁻² with the precursor to 2.31 × 10⁻⁴ without it. Using unrounded values, the reduction is 98.83%.
 
 [^toy-reader-training]: A separate experiment shows that exchanging fixed reader assignments redirects learning pressure on their input pathways. The [fixed-routing experiment](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/downstream_reader_training.csv) starts both assignments from identical ancestor copies. $\mathsf{A_1}$, $\mathsf{A_2}$, and $\mathsf{A_3}$ inherit flower and green responses, while $\mathsf{B_1}$ inherits texture. Pathway coordinates and read gains learn from reader errors without local role targets, and recorded gradients include the checkpoint after ten updates. Coherent routing suppresses green in $\mathsf{A_1}$ and $\mathsf{A_2}$ and strengthens it in $\mathsf{A_3}$, while swapping readers redirects flower-reader suppression toward $\mathsf{A_3}$ and $\mathsf{B_1}$.
 
