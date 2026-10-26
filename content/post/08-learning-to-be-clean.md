@@ -58,13 +58,13 @@ A response can remain common while the mechanisms supplying it change. Readers c
 
 In Cammarata's circuit-ecology hypothesis, established mechanisms and their readers can learn related tasks faster than competitors starting fresh. As their predictions improve, less error remains to train competing pathways. He proposes that repeated reuse can produce recursive generalization.[^cammarata]
 
-I measure learning pressure as the negative loss gradient on a parameter. Its sign gives the direction of the gradient-descent update, and its magnitude gives the update size per unit learning rate. Gradients from different examples reinforce shared circuitry when they favor compatible updates. As prediction error falls, the learning signals available to competing pathways can weaken.
+To test how an established pathway affects later learning, I built flower-toy, a synthetic model with explicit binary flower, green, and texture cues.[^toy-model] Supplying these distinctions directly lets us isolate how training changes their use by downstream readers. In this model, learning pressure is the negative loss gradient on a parameter. Its sign determines the direction of an update, while its magnitude determines the update size per unit learning rate.
 
 Applied to the flower example, this suggests a possible mechanism. A flower-responsive neuron might also respond weakly to vegetation. Green-object examples could produce compatible gradients that strengthen this response into a green signal for a later broccoli detector. This intermediate acquisition may make broccoli responsiveness easier to learn than it was from the original flower response.
 
 A broccoli detector that uses the green signal would give the earlier mechanism a new computational role. This is the causal interpretation explored below, rather than a measured dependency in Cammarata's flower neuron.
 
-I built flower-toy to explore these relationships using binary flower, green, and texture cues.[^toy-model] The cues are supplied explicitly, allowing the experiments to isolate how existing distinctions are modified and used. A reader is a downstream computation using pathway outputs, with the broccoli task requiring green and texture together. Flower discrimination means correctly classifying inputs with and without the flower cue, even when response strength changes.
+A reader is a downstream computation using pathway outputs, with the broccoli task requiring green and texture together. Flower discrimination means correctly classifying inputs with and without the flower cue, even when response strength changes.
 
 In the first experiment, I trained two readers on a green-dependent response from competing pathways. Both feature coefficients and reader weights train. The established route receives stronger gradients, which decline as prediction error falls.[^toy-gradients]
 
