@@ -13,7 +13,7 @@ cover_caption = "Byte Magazine, August 1979"
 
 Every acquisition changes what a neural network learns next. So how should we think about learned mechanisms if neural circuitry itself is a moving target?
 
-In *Neural Networks Are Already Clean*, Nick Cammarata notes the importance of identifying how mechanisms are used in later development.
+In *Neural Networks Are Already Clean*, Nick Cammarata notes the importance of identifying when mechanisms are used in later development.
 
 > When I say neural networks are already clean, I mean something deeper than neuron monosemanticity, although even by that standard, I think things look much better than the field expects. I mean that a network’s parts are built to be read, and built upon, by its downstream readers.[^cammarata]
 
