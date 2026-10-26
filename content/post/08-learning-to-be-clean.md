@@ -376,7 +376,9 @@ After 800 updates, the flower reader assigns about 72% of its routing share to t
 
 Removing the initial green response before training leaves final classification unchanged but reduces mean squared reader error by about 99% after 800 updates. Restoring it reproduces the intact trajectory.[^toy-routing] A starting point that makes one acquisition cheaper can impede joint learning when several readers and representations adapt together.
 
-The traces show earlier differentiation without the precursor. By update 400, the flower reader allocates about 75% to A and broccoli about 75% to B, compared with 56% and 55% when the precursor is present. B has also acquired a stronger green response, while the reader-specific Price terms separate more strongly in both allocation and flower-response change.[^toy-precursor]
+{{ tikz(learning=true, source="static/images/flower-toy/precursor_comparison.tex", fig_w="620px", caption="<strong>An inherited response can hinder joint learning.</strong> Mean squared error averaged equally over the flower and broccoli readers, with a logarithmic vertical axis. Removing the initial green response produces about 99% lower error after the same 800-update budget. Both conditions reach 100% classification accuracy. The faster error decline accompanies increasing specialization of the routes and their reader allocations. The trajectories show the effect of the initial condition without isolating which later changes cause the improvement.") }}
+
+During this decline, the routes and readers differentiate earlier without the precursor. By update 400, the flower reader allocates about 75% to A and broccoli about 75% to B, compared with 56% and 55% when the precursor is present. B has also acquired a stronger green response, while the reader-specific Price terms separate more strongly in both allocation and flower-response change.[^toy-precursor]
 
 The precursor therefore changes the course of joint learning as well as its final error. Earlier differentiation is consistent with the improvement, but the comparison does not isolate which allocation or response changes cause it.
 
