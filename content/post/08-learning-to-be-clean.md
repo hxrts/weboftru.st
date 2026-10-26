@@ -76,7 +76,7 @@ Readers reinforce one another when their errors favor the same update to a share
 
 The weights carrying signals to downstream readers also learn. For the same prediction error, a stronger input creates greater learning pressure to change how strongly the reader uses that signal.
 
-{{ tikz(learning=true, source="static/images/flower-toy/competition_reader_gradients.tex", fig_w="620px", caption="<strong>Where reader pressure comes from.</strong> Readers can exert reinforcing or opposing pressures on a shared feature. Weak net pressure can conceal strong competing contributions. Band taper distinguishes pressure to increase a parameter from pressure to decrease it.") }}
+{{ tikz(learning=true, source="static/images/flower-toy/competition_reader_gradients.tex", fig_w="620px", caption="<strong>Where reader pressure comes from.</strong> Gradients change both the responses shared features produce and the weights readers use to combine them. Reader contributions can reinforce or oppose one another at a shared feature, so weak net pressure can conceal strong competing contributions. Band taper distinguishes pressure to increase a parameter from pressure to decrease it.") }}
 
 An established green signal gives the broccoli reader a useful input before its own training begins. Whether this reduces acquisition cost depends on how subsequent updates affect the other responses that share the pathway.
 
