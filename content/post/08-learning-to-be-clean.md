@@ -406,7 +406,7 @@ The reader trajectory establishes the interruption, which endpoint Price account
 
 Throughout the continuous schedule, the score for flower-present inputs stays at least 0.05 above the reader’s threshold, while flower-absent inputs score zero. The contrast persists at tested reader thresholds from 0.001 to 0.45.[^toy-continuity] Allowing downstream readers to learn during the handoff would test whether keeping this reader functional also supports further development.
 
-Different histories do not necessarily leave different learning opportunities. These schedules converge on identical states, so subsequently applying duplicate training would produce the same updates. The earlier acquisition experiments show how retained differences in circuitry can change later learning costs. History matters through the structure it leaves available and the capabilities it maintains along the way.
+Different histories do not necessarily leave different learning opportunities. Both schedules reach the same state, so further training under the same conditions would produce matching updates. The earlier acquisition experiments show how retained differences in circuitry can change later learning costs. History matters through the structure it leaves available and the capabilities it maintains along the way.
 
 A signal is useful insofar as it supports a reader’s task. Its presence alone does not establish that the reader can use it. Following that dependence through training reveals a form of continuity that tracking individual mechanisms can miss. Learning can preserve a reader’s access to a distinction even as the mechanism supplying it changes.
 
