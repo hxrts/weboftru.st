@@ -17,7 +17,7 @@ In *Neural Networks Are Already Clean*, Nick Cammarata notes the importance of i
 
 > When I say neural networks are already clean, I mean something deeper than neuron monosemanticity, although even by that standard, I think things look much better than the field expects. I mean that a network’s parts are built to be read, and built upon, by its downstream readers.[^cammarata]
 
-Cammarata follows a neuron in a retrained InceptionV1 model whose strongest responses initially come from yellow-flower images, some with dogs. Green objects and dogs without flowers appear later, followed by broccoli. The observed sequence motivates his developmental explanation, while leaving the causal links between specific responses open.
+Cammarata follows a neuron in a retrained InceptionV1 model whose strongest responses initially come from yellow-flower images, some with dogs. Green objects and dogs without flowers appear later, followed by broccoli. The observed sequence motivates his developmental explanation, but does not address the causal links that connect feature responses.
 
 {% tikz(learning=true, fig_w="620px", caption="<strong>A developmental history.</strong> A schematic of the response sequence Cammarata reports. Arrows suggest links between responses without establishing causation.") %}
 \begin{tikzpicture}[learning]
