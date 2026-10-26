@@ -142,11 +142,13 @@ Across a population, some pathways can gain new uses while others lose responsiv
 
 ## Learning pressure changes roles and responses
 
-Average response can stay constant while the underlying pathways change. How much of that change comes from pathways gaining influence, and how much comes from their responses changing?
+Across inherited pathways, an unchanged average can conceal a redistribution of the mechanisms supplying a distinction. How much change comes from pathways gaining influence, and how much comes from their responses changing?
 
-In the synthetic flower model, the responsive share begins at ½ because $\mathsf{A}$ responds to flowers while $\mathsf{B}$ does not. In the final population, $\mathsf{A}$ provides three pathways, while $\mathsf{B}$ retains one path. $\mathsf{A}$ and $\mathsf{B}$ can change independently as they learn a new role. One of $\mathsf{A}$'s three pathways loses its flower response, leaving two of the four final pathways responsive. The average therefore stays at ½, concealing $\mathsf{A}$'s increased contribution.
+In the synthetic flower model, $\mathsf{A}$ initially responds to flowers, while $\mathsf{B}$ supplies texture without responding to flowers on the same assay. Three later pathways descend from $\mathsf{A}$ and one from $\mathsf{B}$. Two of $\mathsf{A}$'s descendants retain flower responsiveness, while the third specializes toward green and loses its flower response.
 
-{% tikz(learning=true, preamble="static/images/clean-toy/price_gradient_values.tex", fig_w="620px", caption="<strong>Change concealed by a stable mean.</strong> Selection +¼ and variation −¼ cancel. A₃ receives flower pressure of −0.029, while the other branches receive none. The middle column isolates reweighting.") %}
+The flower-responsive share stays at ½, even though $\mathsf{A}$ now supplies ¾ of the pathways. Its increased representation is offset by a change in what one descendant detects. Ancestry is stipulated in this experiment, while training determines the descendants' responses.
+
+{% tikz(learning=true, preamble="static/images/clean-toy/price_gradient_values.tex", fig_w="620px", caption="<strong>Change concealed by a stable mean.</strong> Selection +¼ offsets variation −¼. The open middle column isolates reweighting under the stipulated ancestry. Bands show measured flower pressure, −0.029 on A₃ and zero on the other pathways.") %}
 \begin{tikzpicture}[learning]
 % Slightly smaller markers for the accounting inset and its trait legend.
 \tikzset{feature/.append style={minimum size=4.2pt},trait/.append style={minimum size=9pt}}
@@ -213,7 +215,7 @@ In the synthetic flower model, the responsive share begins at ½ because $\maths
 
 
 
-The Price equation answers this question by separating selection, change due to differential contribution, from variation, change in inherited responses.[^price][^price-variation] Let $z$ record flower responsiveness on a fixed assay and $w$ count the later pathways attributed to each earlier mechanism.[^price-accounting] With $\bar w$ the average contribution and $\Delta z$ each mechanism's average inherited response change, the population mean changes by[^price-weights]
+The Price equation separates selection, change due to differential contribution, from variation, change in inherited responses.[^price][^price-variation] Let $z$ record flower responsiveness on a fixed assay and $w$ count the later pathways attributed to each earlier mechanism.[^price-accounting] With $\bar w$ the average contribution and $\Delta z$ each mechanism's average inherited response change, the population mean changes by[^price-weights]
 
 ```math
 \Delta\bar z
@@ -225,43 +227,50 @@ The Price equation answers this question by separating selection, change due to 
 
 Weighting the initial responses by $\mathsf{A}$'s three pathways and $\mathsf{B}$'s one raises the responsive share from ½ to ¾, giving selection +¼. Losing the response in one of $\mathsf{A}$'s pathways subtracts ¼ through variation. Preferential contribution from flower-responsive ancestry therefore offsets inherited response loss, leaving the overall share unchanged.
 
-An earlier response can weaken through direct learning pressure or through competition for shared capacity.[^toy-roles] The Price equation allows us to decompose contributions from selection and variation, but says nothing about which process produced them.
+The stable mean therefore conceals both a shift toward flower-responsive ancestry and response loss within that ancestry. Price separates these changes without identifying their causes. Direct learning pressure and competition for shared capacity can each weaken an earlier response.[^toy-roles]
+
+The decomposition also leaves open where the inherited pathways contribute to computation. Do the retained flower signals still reach the readers that use them?
 
 ## How learning builds understandable structure
 
-The unchanged average leaves open whether flower signals still reach the readers that use them. $\mathsf{A}$'s two flower-responsive pathways feed flower detectors. Its third pathway can now provide a green signal for a broccoli detector to combine with texture information from $\mathsf{B}$. Whether these signals remain useful depends on the distinctions their downstream readers need to make.
+In the original assignment, $\mathsf{A}$'s two flower-responsive pathways supply flower detectors. Its third supplies a green signal that a broccoli detector combines with texture information from $\mathsf{B}$. The established flower distinction remains useful while another inherited branch acquires a new role.
 
-Now send the green and texture pathways to the flower detectors, and the flower-responsive pathways to the broccoli detector. The pathways keep the same ancestry and responses, so the global Price terms stay unchanged even though their activation outputs now feed different downstream detectors. The diagram compares how further learning responds to these two assignments.[^toy-reader-training]
+Now send the green and texture pathways to the flower detectors, and the flower-responsive pathways to the broccoli detector. Keep their ancestry and responses fixed. The global Price terms still cancel, although the readers receive different information.
 
-{{ tikz(learning=true, source="static/images/clean-toy/downstream_reader_gradients.tex", fig_w="620px", caption="<strong>Where signals go shapes how they learn.</strong> Coherent and swapped routing at step 10. Bands show pressure on green responses (left) and read gains (right).") }}
+Tracing each pathway to its reader makes this difference measurable. Apply Price within each reader group, comparing its attributed pathways with the same initial population, half of which is flower-responsive.[^price-readers] The table holds responses fixed during the swap.
 
-Where did the inherited changes occur in the original assignment? Tracing each pathway to its reader lets Price separate selection and variation within those inputs. The table describes that fixed assignment before further reader-driven learning, comparing each group with the same initial population, half of which is flower-responsive.[^price-readers]
-
-| Downstream reader | Inherited pathways | Selection | Variation | Responsive share |
+| Downstream reader | Routing | Selection | Variation | Responsive share |
 |---|---|---|---|---|
-| Flower detectors | Two from $\mathsf{A}$, both retain the response | +½ | 0 | 1 |
-| Broccoli detector | One from $\mathsf{A}$, one from $\mathsf{B}$; $\mathsf{A}$'s loses the response | 0 | −½ | 0 |
-| Overall | Both groups, equally weighted | +¼ | −¼ | ½ |
+| Flower detectors | Original | +½ | 0 | 1 |
+| Broccoli detector | Original | 0 | −½ | 0 |
+| Flower detectors | Swapped | 0 | −½ | 0 |
+| Broccoli detector | Swapped | +½ | 0 | 1 |
 
-Selection increases the contribution of flower-responsive ancestry to the flower detectors, while variation removes flower responsiveness from a branch serving broccoli. The unchanged overall share conceals this differentiation of computational roles.
+Both assignments recover the global +¼ and −¼ when the two equally sized reader groups are averaged. In the original assignment, flower-responsive ancestry gains influence among flower readers while a branch serving broccoli loses that response. Swapping readers preserves the global accounting but deprives the flower detectors of their flower signal. The responsive share measures their inputs, not their classification accuracy.
 
-Once a pathway supplies a downstream reader, that reader’s errors help shape its further development. In the toy model, changing the readers redirects learning pressure on the same inherited pathways. Useful distinctions can therefore become organized around the computations that consume them. This feedback offers a developmental explanation for the organization Cammarata calls clean.
+Reader assignments also affect development. In a separate experiment, both assignments start from identical ancestor copies and train from reader errors, without prescribed local response targets.[^toy-reader-training] Changing the consumers redirects pressure on the pathways and their read gains.
+
+{{ tikz(learning=true, source="static/images/clean-toy/downstream_reader_gradients.tex", fig_w="620px", caption="<strong>Where signals go shapes how they learn.</strong> Reader dependencies redirect measured pressure on green responses (left) and read gains (right) after ten updates. These runs begin from ancestor copies, separately from the fixed endpoint accounting above.") }}
+
+Both assignments eventually classify the toy inputs correctly, though the swapped assignment retains larger response errors. The readers' demands help organize the signals they receive. Dependency tracing identifies these computational relationships, while reader-conditioned Price accounting reveals how inherited contributions and responses changed within them.
+
+This feedback offers an explanation for the useful groupings Cammarata calls clean. Existing distinctions become resources for downstream computations whose errors guide their further development. Yet a useful final arrangement leaves another question open. Has the original learning survived, or has another pathway acquired an equivalent role?
 
 ## What learning carries forward
 
-When a network retains a learned distinction, what has survived? The distinction may still reach its downstream readers even as different pathways take over the role of supplying it.
+A flower distinction can reach the same downstream readers even when a different ancestral mechanism learns to supply it. The original history retains that distinction in two descendants of $\mathsf{A}$, while its third supplies green and $\mathsf{B}$ supplies texture.
 
-Instead of $\mathsf{A}$ supplying the flower pathways, suppose $\mathsf{A}$ supplies only green, while $\mathsf{B}$ contributes texture and two pathways that acquire flower responsiveness. Both histories end with half the pathways flower-responsive and equivalent signals supplying each downstream reader.
+An alternative history reaches equivalent reader outputs on the tested inputs. $\mathsf{A}$ supplies only green, while $\mathsf{B}$ contributes texture and two pathways that acquire flower responsiveness. Half the final pathways respond to flowers in either history, but the sources of that responsiveness differ.
 
-In the second history, differential contribution favors the initially nonresponsive $\mathsf{B}$, so selection is −¼. Response changes contribute +¼ through variation, reversing the first history's terms while preserving its final mean. The flower distinction remains available to the downstream readers, even though different ancestral pathways learned to supply it.
+The Price terms reverse. Selection is −¼ because the initially nonresponsive $\mathsf{B}$ contributes more descendants, while acquired flower responsiveness contributes +¼ through variation. The original history's +¼ and −¼ describe retention and specialization, while the alternative describes acquisition through a different ancestor.
 
-{% tikz(learning=true, fig_w="620px", caption="<strong>The same signals, different ancestry.</strong> Equivalent reader functions can arise from different ancestors, with opposite Price terms. Bands show mean flower pressure in the toy training traces, −0.029 on A₃ and +0.029 on B₁ and B₂.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>The same signals, different ancestry.</strong> The right-hand dependencies match across histories, while the flower signals descend from different ancestors. Price terms reverse. Bands show measured mean flower pressure, −0.029 on A₃ and +0.029 on B₁ and B₂.") %}
 \begin{tikzpicture}[learning]
 \def\learningheadinglift{.75}
 \tikzset{feature/.append style={minimum size=4.2pt},trait/.append style={minimum size=9pt},reader/.style={rectangle,draw,fill=white,minimum size=6pt,inner sep=0pt,line width=.65pt}}
 \stageheading{0}{BASELINE}{earlier mechanisms}
 \stageheading{4.5}{FINAL PATHWAYS}{learned signals}
-\stageheading{9}{READERS}{same final checkpoint}
+\stageheading{9}{READERS}{equivalent final functions}
 \pairedrowlabel{0}{HISTORY A}
 \pairedrowlabel{-5.6}{HISTORY B}
 \foreach \base in {0,-5.6} {
@@ -357,9 +366,13 @@ In the second history, differential contribution favors the initially nonrespons
 \end{tikzpicture}
 {% end %}
 
-At the final checkpoint, both histories supply equivalent distinctions to their readers. Their developmental records reveal whether those distinctions were retained by earlier pathways or acquired elsewhere. Matching endpoints alone leaves open whether the capability remained available throughout training.[^toy-continuity]
+A final dependency graph shows which pathways supply each reader. The developmental record distinguishes retained learning from acquisition elsewhere. Matching endpoints alone leaves open whether a capability remained available throughout training or disappeared before being recovered.[^toy-continuity]
 
-A final circuit shows how the network supplies a learned distinction to its readers. Its developmental history reveals how that role was inherited, modified, or acquired by different pathways. Learning builds the machinery of its own future learning.
+Earlier learning changes the signals available to later acquisitions, while downstream demands shape which signals persist. In these histories, different pathways learn to supply equivalent distinctions to the same readers. A capability's developmental identity therefore depends on how that role was carried forward, beyond the component implementing it at one checkpoint.
+
+Cammarata's recursive generalization describes acquired responses becoming starting points for further development. Following their ancestry reveals how those acquisitions persist or change, while tracing their readers explains what makes them useful. Together, these views connect the history of learning to the organized computation it produces.
+
+Learning builds the machinery of its own future learning.
 
 ---
 
@@ -383,11 +396,11 @@ A final circuit shows how the network supplies a learned distinction to its read
 
 [^toy-roles]: The Price illustration measures flower pressure. $\mathsf{A_1}$ and $\mathsf{A_2}$ retain flower while losing green, and $\mathsf{A_3}$ loses flower as it specializes toward green. In the capacity-constrained model, projection onto the constraint weakens flower without a direct flower-loss gradient.
 
+[^price-readers]: For each reader group, count only its pathways' descendant credit while retaining the full baseline population. Group terms compare final inputs with that common baseline, and weighting by each group's share of descendant credit recovers the global terms. Here each pathway serves one group, with two pathways per group. The [fixed endpoint accounting](/images/clean-toy/reader_price_accounting.csv) includes both assignments and histories under the binary flower assay.
+
 [^toy-reader-training]: Both assignments start from identical ancestor copies. $\mathsf{A_1}$, $\mathsf{A_2}$, and $\mathsf{A_3}$ inherit flower and green responses, while $\mathsf{B_1}$ inherits texture. Pathway coordinates and read gains learn from reader errors without local role targets, and plotted gradients follow ten updates. Coherent routing suppresses green in $\mathsf{A_1}$ and $\mathsf{A_2}$ and strengthens it in $\mathsf{A_3}$, while swapping readers redirects flower-reader suppression toward $\mathsf{A_3}$ and $\mathsf{B_1}$.
 
-    Suppressing pathways on fixed positive and negative inputs tests reader dependence. Further training restores correct classification after the swap, though response errors remain larger.
-
-[^price-readers]: For each reader group, count only its pathways' descendant credit while retaining the full baseline population. Group terms compare final inputs with that common baseline. Weighting them by each group's share of descendant credit recovers the global terms. Here each pathway serves one group, with two pathways per group.
+    Suppressing pathways on fixed positive and negative inputs tests reader dependence. Both assignments reach correct classification, though the swapped assignment retains larger response errors.
 
 [^toy-continuity]: Evaluate the same readers on fixed inputs across checkpoints to distinguish continuous performance from endpoint recovery. Histories may reach equivalent functions at different times, and inherited responsiveness alone does not establish reader accuracy between checkpoints.
 
