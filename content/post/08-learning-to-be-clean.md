@@ -52,7 +52,7 @@ Cammarata follows a neuron in a retrained InceptionV1 model whose strongest resp
 
 Cammarata calls the branching of responses across related inputs "recursive generalization." His proposed explanation is that existing mechanisms give related learning a head start.
 
-But can a distinction persist even as the mechanisms supplying it change? Readers can also learn to use the same mechanism differently. To understand this path formation, we need to track which mechanisms retain a response and which computations depend on it.
+But can a distinction persist even as the mechanisms supplying it change? Readers can also learn to use the same mechanism differently. Answering these questions requires tracking which mechanisms retain a response and which computations depend on it.
 
 ## One path leads to another
 
