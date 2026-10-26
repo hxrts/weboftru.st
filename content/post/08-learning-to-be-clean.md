@@ -9,7 +9,7 @@ cover_image = "/images/byte-neuron.png"
 cover_caption = "Byte Magazine, August 1979"
 +++
 
-## How responses develop
+## What makes a response useful?
 
 A neuron can respond to flowers early in training and broccoli later. How does its changing response become useful to the computations that read it?
 
@@ -396,9 +396,9 @@ The reader trajectory establishes the interruption, which endpoint Price account
 
 Throughout the continuous schedule, the score for flower-present inputs stays at least 0.05 above the reader’s threshold, while flower-absent inputs score zero. The contrast persists at tested reader thresholds from 0.001 to 0.45.[^toy-continuity] Allowing downstream computations to learn during the handoff would test whether keeping this reader functional also supports further development.
 
-Different histories do not necessarily leave different learning opportunities. These schedules converge on identical full states, so identical subsequent training would produce identical updates. The earlier acquisition experiments show how retained differences in circuitry can change later learning costs. History matters through the structure it leaves available and the capabilities it maintains along the way.
+Different histories do not necessarily leave different learning opportunities. These schedules converge on identical states, so subsequently applying duplicate training would produce the same updates. The earlier acquisition experiments show how retained differences in circuitry can change later learning costs. History matters through the structure it leaves available and the capabilities it maintains along the way.
 
-For Cammarata’s flower neuron, this suggests testing which readers depend on its response at successive checkpoints. Such measurements could distinguish a response that gains new uses from one whose earlier role passes to another mechanism.
+Lineage tracing identifies what later learning inherits, while causal interventions test what readers depend on. Statistical accounting measures how those dependencies develop across a population, including changes that cancel in the average. Together, these methods make neural organization intelligible as a history of computational roles that can persist even as the mechanisms supplying them change.
 
 ---
 
