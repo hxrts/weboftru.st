@@ -158,7 +158,7 @@ To separate inherited representation from response change, I copied two earlier 
 
 The flower-responsive share stays at ½, even though $\mathsf{A}$ now supplies ¾ of the pathways. Its increased representation is offset by a change in what one descendant detects.
 
-Price accounting has previously been applied to evolutionary algorithms and neural learning.[^price-learning] Here, I use it to measure how differential representation and response change contribute to the population mean. The equation separates selection, change due to differential contribution, from variation, change in inherited responses.[^price][^price-variation]
+Price accounting has previously been applied to evolutionary algorithms and neural learning.[^price-learning] Here, I use it to measure how differential representation and response change contribute to the population mean. The equation separates selection (which mechanisms contribute more descendants) from variation (how those descendants differ from their ancestors).[^price][^price-variation]
 
 Let $z$ be one for a flower-responsive pathway and zero otherwise, under a fixed assay. Let $w$ count the later pathways attributed to each earlier mechanism.[^price-accounting] With $\bar w$ the average descendant count and $\Delta z$ the mean descendant response minus its ancestor’s response, the change in population mean is[^price-weights]
 
