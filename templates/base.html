@@ -222,11 +222,14 @@
                 text.setAttribute('text-anchor', 'middle');
             });
             // Oval centers are x=0 and x=9, each with horizontal radius .7.
-            const unit = (right - left) / 10.4;
+            const centers = fig.getAttribute('data-learning-centers');
+            const [firstCenter, lastCenter] = centers ? centers.split(' ').map(Number) : [0, 9];
+            const radius = centers ? .63 : .7;
+            const unit = (right - left) / (lastCenter - firstCenter + 2 * radius);
             const [frameLeft, frameRight] = frame.split(' ').map(Number);
             const viewBox = svg.viewBox.baseVal;
             const width = (frameRight - frameLeft) * unit;
-            svg.setAttribute('viewBox', `${left + (frameLeft + .7) * unit} ${viewBox.y} ${width} ${viewBox.height}`);
+            svg.setAttribute('viewBox', `${left + (frameLeft - firstCenter + radius) * unit} ${viewBox.y} ${width} ${viewBox.height}`);
             svg.setAttribute('width', `${width * 4 / 3}px`);
         }
 

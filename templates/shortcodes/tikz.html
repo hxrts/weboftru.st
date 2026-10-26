@@ -19,7 +19,7 @@
    source path loads generated TikZ from a project file instead of the body;
    for example source="static/images/flower-toy/acquisition_comparison.tex".
    Optional preamble loads generated definitions before either source or body. #}
-<figure class="tikz-fig"{% if learning %} data-learning-frame="-3.45 12.4"{% endif %}{% if fig_w %} style="--fig-w: {{ fig_w }}"{% endif %}>
+<figure class="tikz-fig"{% if learning %} data-learning-frame="-3.45 12.4"{% if learning_centers %} data-learning-centers="{{ learning_centers }}"{% endif %}{% endif %}{% if fig_w %} style="--fig-w: {{ fig_w }}"{% endif %}>
 <div class="tikz-fig-body">
 <script type="text/tikz">
 {% if learning %}{% include "partials/tikz-learning.html" %}{% endif %}

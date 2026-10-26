@@ -1,0 +1,149 @@
+\begin{tikzpicture}[learning]
+\def\learningheadinglift{.3}
+\tikzset{reader/.style={rectangle,draw,fill=white,minimum size=6pt,inner sep=0pt,line width=.65pt}}
+\stageheading{0}{PATHWAYS}{flower response}
+\stageheading{4.5}{ROUTING}{allocation logits}
+\stageheading{9}{READERS}{update 10}
+\node[emphasis,anchor=east,align=right] at (-1.2,0) {LEARNED\\ROUTING};
+\stageoval{0,0}
+\stageoval{4.5,0}
+\stageoval{9,0}
+\stacknode[feature]{w0A}{0}{0}{2}{1}
+\leftrowlabel{0}{0.5}{A}
+\stacknode[feature]{w0B}{0}{0}{2}{2}
+\leftrowlabel{0}{-0.5}{B}
+\stacknode[reader]{r0flower}{9}{0}{2}{1}
+\rightstacklabel{0}{2}{1}{Flower}
+\stacknode[reader]{r0broccoli}{9}{0}{2}{2}
+\rightstacklabel{0}{2}{2}{Broccoli}
+\stacknode[feature]{c00}{4.5}{0}{4}{1}
+\abovenodelabel{c00}{A}
+\begin{pgfonlayer}{background}
+\coordinate (e00features) at ($(w0A.center)+(.42,0)$);
+\coordinate (e00featurea) at ($(w0A.center)+(1.62,0)$);
+\coordinate (e00featureb) at ($(c00.center)+(-1.35,0)$);
+\pressureband{c00.center}{e00featureb}{e00featurea}{e00features}{3.20762027}
+\coordinate (e00routings) at ($(c00.center)+(.42,0)$);
+\coordinate (e00routinga) at ($(c00.center)+(1.62,0)$);
+\coordinate (e00routingb) at ($(r0flower.center)+(-1.35,0)$);
+\pressureband{r0flower.center}{e00routingb}{e00routinga}{e00routings}{10.19938620}
+\end{pgfonlayer}
+\stacknode[feature]{c01}{4.5}{0}{4}{2}
+\abovenodelabel{c01}{B}
+\begin{pgfonlayer}{background}
+\coordinate (e01features) at ($(w0B.center)+(.42,0)$);
+\coordinate (e01featurea) at ($(w0B.center)+(1.62,0)$);
+\coordinate (e01featureb) at ($(c01.center)+(-1.35,0)$);
+\pressureband{c01.center}{e01featureb}{e01featurea}{e01features}{3.12226833}
+\coordinate (e01routings) at ($(c01.center)+(.42,0)$);
+\coordinate (e01routinga) at ($(c01.center)+(1.62,0)$);
+\coordinate (e01routingb) at ($(r0flower.center)+(-1.35,0)$);
+\suppressband{r0flower.center}{e01routingb}{e01routinga}{e01routings}{10.19938620}
+\end{pgfonlayer}
+\stacknode[feature]{c02}{4.5}{0}{4}{3}
+\abovenodelabel{c02}{A}
+\begin{pgfonlayer}{background}
+\coordinate (e02features) at ($(w0A.center)+(.42,0)$);
+\coordinate (e02featurea) at ($(w0A.center)+(1.62,0)$);
+\coordinate (e02featureb) at ($(c02.center)+(-1.35,0)$);
+\suppressband{c02.center}{e02featureb}{e02featurea}{e02features}{1.53519295}
+\coordinate (e02routings) at ($(c02.center)+(.42,0)$);
+\coordinate (e02routinga) at ($(c02.center)+(1.62,0)$);
+\coordinate (e02routingb) at ($(r0broccoli.center)+(-1.35,0)$);
+\pressureband{r0broccoli.center}{e02routingb}{e02routinga}{e02routings}{0.51106958}
+\end{pgfonlayer}
+\stacknode[feature]{c03}{4.5}{0}{4}{4}
+\abovenodelabel{c03}{B}
+\begin{pgfonlayer}{background}
+\coordinate (e03features) at ($(w0B.center)+(.42,0)$);
+\coordinate (e03featurea) at ($(w0B.center)+(1.62,0)$);
+\coordinate (e03featureb) at ($(c03.center)+(-1.35,0)$);
+\suppressband{c03.center}{e03featureb}{e03featurea}{e03features}{1.52882854}
+\coordinate (e03routings) at ($(c03.center)+(.42,0)$);
+\coordinate (e03routinga) at ($(c03.center)+(1.62,0)$);
+\coordinate (e03routingb) at ($(r0broccoli.center)+(-1.35,0)$);
+\suppressband{r0broccoli.center}{e03routingb}{e03routinga}{e03routings}{0.51106958}
+\end{pgfonlayer}
+\begin{pgfonlayer}{background}
+\draw[flow] (w0A.center) .. controls (e00featurea) and (e00featureb) .. (c00.west);
+\draw[flow] (c00.center) .. controls (e00routinga) and (e00routingb) .. (r0flower.west);
+\draw[flow] (w0B.center) .. controls (e01featurea) and (e01featureb) .. (c01.west);
+\draw[flow] (c01.center) .. controls (e01routinga) and (e01routingb) .. (r0flower.west);
+\draw[flow] (w0A.center) .. controls (e02featurea) and (e02featureb) .. (c02.west);
+\draw[flow] (c02.center) .. controls (e02routinga) and (e02routingb) .. (r0broccoli.west);
+\draw[flow] (w0B.center) .. controls (e03featurea) and (e03featureb) .. (c03.west);
+\draw[flow] (c03.center) .. controls (e03routinga) and (e03routingb) .. (r0broccoli.west);
+\end{pgfonlayer}
+\node[emphasis,anchor=east,align=right] at (-1.2,-5.2) {FROZEN\\ROUTING};
+\stageoval{0,-5.2}
+\stageoval{4.5,-5.2}
+\stageoval{9,-5.2}
+\stacknode[feature]{w1A}{0}{-5.2}{2}{1}
+\leftrowlabel{-5.2}{0.5}{A}
+\stacknode[feature]{w1B}{0}{-5.2}{2}{2}
+\leftrowlabel{-5.2}{-0.5}{B}
+\stacknode[reader]{r1flower}{9}{-5.2}{2}{1}
+\rightstacklabel{-5.2}{2}{1}{Flower}
+\stacknode[reader]{r1broccoli}{9}{-5.2}{2}{2}
+\rightstacklabel{-5.2}{2}{2}{Broccoli}
+\stacknode[feature]{c10}{4.5}{-5.2}{4}{1}
+\abovenodelabel{c10}{A}
+\begin{pgfonlayer}{background}
+\coordinate (e10features) at ($(w1A.center)+(.42,0)$);
+\coordinate (e10featurea) at ($(w1A.center)+(1.62,0)$);
+\coordinate (e10featureb) at ($(c10.center)+(-1.35,0)$);
+\pressureband{c10.center}{e10featureb}{e10featurea}{e10features}{3.26477345}
+\coordinate (e10routings) at ($(c10.center)+(.42,0)$);
+\coordinate (e10routinga) at ($(c10.center)+(1.62,0)$);
+\coordinate (e10routingb) at ($(r1flower.center)+(-1.35,0)$);
+\end{pgfonlayer}
+\stacknode[feature]{c11}{4.5}{-5.2}{4}{2}
+\abovenodelabel{c11}{B}
+\begin{pgfonlayer}{background}
+\coordinate (e11features) at ($(w1B.center)+(.42,0)$);
+\coordinate (e11featurea) at ($(w1B.center)+(1.62,0)$);
+\coordinate (e11featureb) at ($(c11.center)+(-1.35,0)$);
+\pressureband{c11.center}{e11featureb}{e11featurea}{e11features}{3.26477345}
+\coordinate (e11routings) at ($(c11.center)+(.42,0)$);
+\coordinate (e11routinga) at ($(c11.center)+(1.62,0)$);
+\coordinate (e11routingb) at ($(r1flower.center)+(-1.35,0)$);
+\end{pgfonlayer}
+\stacknode[feature]{c12}{4.5}{-5.2}{4}{3}
+\abovenodelabel{c12}{A}
+\begin{pgfonlayer}{background}
+\coordinate (e12features) at ($(w1A.center)+(.42,0)$);
+\coordinate (e12featurea) at ($(w1A.center)+(1.62,0)$);
+\coordinate (e12featureb) at ($(c12.center)+(-1.35,0)$);
+\suppressband{c12.center}{e12featureb}{e12featurea}{e12features}{1.53362636}
+\coordinate (e12routings) at ($(c12.center)+(.42,0)$);
+\coordinate (e12routinga) at ($(c12.center)+(1.62,0)$);
+\coordinate (e12routingb) at ($(r1broccoli.center)+(-1.35,0)$);
+\end{pgfonlayer}
+\stacknode[feature]{c13}{4.5}{-5.2}{4}{4}
+\abovenodelabel{c13}{B}
+\begin{pgfonlayer}{background}
+\coordinate (e13features) at ($(w1B.center)+(.42,0)$);
+\coordinate (e13featurea) at ($(w1B.center)+(1.62,0)$);
+\coordinate (e13featureb) at ($(c13.center)+(-1.35,0)$);
+\suppressband{c13.center}{e13featureb}{e13featurea}{e13features}{1.53362636}
+\coordinate (e13routings) at ($(c13.center)+(.42,0)$);
+\coordinate (e13routinga) at ($(c13.center)+(1.62,0)$);
+\coordinate (e13routingb) at ($(r1broccoli.center)+(-1.35,0)$);
+\end{pgfonlayer}
+\begin{pgfonlayer}{background}
+\draw[flow] (w1A.center) .. controls (e10featurea) and (e10featureb) .. (c10.west);
+\draw[flow] (c10.center) .. controls (e10routinga) and (e10routingb) .. (r1flower.west);
+\draw[flow] (w1B.center) .. controls (e11featurea) and (e11featureb) .. (c11.west);
+\draw[flow] (c11.center) .. controls (e11routinga) and (e11routingb) .. (r1flower.west);
+\draw[flow] (w1A.center) .. controls (e12featurea) and (e12featureb) .. (c12.west);
+\draw[flow] (c12.center) .. controls (e12routinga) and (e12routingb) .. (r1broccoli.west);
+\draw[flow] (w1B.center) .. controls (e13featurea) and (e13featureb) .. (c13.west);
+\draw[flow] (c13.center) .. controls (e13routinga) and (e13routingb) .. (r1broccoli.west);
+\end{pgfonlayer}
+\pressurekey{0}{-8.15}{1}
+\node[anchor=west] at (.7,-8.15) {Increasing parameter};
+\pressurekey{5}{-8.15}{-1}
+\node[anchor=west] at (5.7,-8.15) {Decreasing parameter};
+\node at (4.5,-8.85) {Applied pressure at update 10};
+\diagramframe{-9.4}
+\end{tikzpicture}

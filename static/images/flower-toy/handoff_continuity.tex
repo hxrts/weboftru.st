@@ -1,102 +1,50 @@
 \begin{tikzpicture}[learning]
-\tikzset{reader/.style={rectangle,draw,fill=white,minimum size=6pt,inner sep=0pt,line width=.65pt}}
-\node[time] at (0,2.0) {INITIAL};
-\node at (0,1.6) {Update 0};
-\node[time] at (4.5,2.0) {HANDOFF};
-\node at (4.5,1.6) {Update 40};
-\node[time] at (9,2.0) {FINAL};
-\node at (9,1.6) {Update 80};
-\node[time,anchor=east,align=right] at (-1.5,0) {CONTINUOUS\\HANDOFF};
-\node[reader] (r00) at (0.8,0) {};
-\node[feature] (n00A) at (-0.55,0.55) {};
-\node[anchor=east] at (-0.85,0.55) {A};
-\begin{pgfonlayer}{background}
-\draw[flow] (n00A.center) -- (r00.west);
-\end{pgfonlayer}
-\responsetrait{n00A}
-\node[feature] (n00B) at (-0.55,-0.55) {};
-\node[anchor=east] at (-0.85,-0.55) {B};
-\begin{pgfonlayer}{background}
-\draw[flow] (n00B.center) -- (r00.west);
-\end{pgfonlayer}
-\node[reader] (r01) at (5.3,0) {};
-\node[feature] (n01A) at (3.95,0.55) {};
-\node[anchor=east] at (3.65,0.55) {A};
-\begin{pgfonlayer}{background}
-\draw[flow] (n01A.center) -- (r01.west);
-\end{pgfonlayer}
-\responsetrait{n01A}
-\node[feature] (n01B) at (3.95,-0.55) {};
-\node[anchor=east] at (3.65,-0.55) {B};
-\begin{pgfonlayer}{background}
-\draw[flow] (n01B.center) -- (r01.west);
-\end{pgfonlayer}
-\responsetrait{n01B}
-\node[reader] (r02) at (9.8,0) {};
-\node[feature] (n02A) at (8.45,0.55) {};
-\node[anchor=east] at (8.15,0.55) {A};
-\begin{pgfonlayer}{background}
-\draw[flow] (n02A.center) -- (r02.west);
-\end{pgfonlayer}
-\node[feature] (n02B) at (8.45,-0.55) {};
-\node[anchor=east] at (8.15,-0.55) {B};
-\begin{pgfonlayer}{background}
-\draw[flow] (n02B.center) -- (r02.west);
-\end{pgfonlayer}
-\responsetrait{n02B}
-\draw[line width=1.2pt] (0.0,-1.35) -- (9.0,-1.35);
-\fill (0.0,-1.35) circle (1.2pt);
-\fill (9.0,-1.35) circle (1.2pt);
-\node[anchor=north west] at (0,-1.57) {Flower classification};
-\node[anchor=north east] at (9,-1.57) {Available throughout};
-\node[time,anchor=east,align=right] at (-1.5,-4.3) {INTERRUPTED\\RECOVERY};
-\node[reader] (r10) at (0.8,-4.3) {};
-\node[feature] (n10A) at (-0.55,-3.75) {};
-\node[anchor=east] at (-0.85,-3.75) {A};
-\begin{pgfonlayer}{background}
-\draw[flow] (n10A.center) -- (r10.west);
-\end{pgfonlayer}
-\responsetrait{n10A}
-\node[feature] (n10B) at (-0.55,-4.85) {};
-\node[anchor=east] at (-0.85,-4.85) {B};
-\begin{pgfonlayer}{background}
-\draw[flow] (n10B.center) -- (r10.west);
-\end{pgfonlayer}
-\node[reader] (r11) at (5.3,-4.3) {};
-\node[feature] (n11A) at (3.95,-3.75) {};
-\node[anchor=east] at (3.65,-3.75) {A};
-\begin{pgfonlayer}{background}
-\draw[flow] (n11A.center) -- (r11.west);
-\end{pgfonlayer}
-\node[feature] (n11B) at (3.95,-4.85) {};
-\node[anchor=east] at (3.65,-4.85) {B};
-\begin{pgfonlayer}{background}
-\draw[flow] (n11B.center) -- (r11.west);
-\end{pgfonlayer}
-\node[reader] (r12) at (9.8,-4.3) {};
-\node[feature] (n12A) at (8.45,-3.75) {};
-\node[anchor=east] at (8.15,-3.75) {A};
-\begin{pgfonlayer}{background}
-\draw[flow] (n12A.center) -- (r12.west);
-\end{pgfonlayer}
-\node[feature] (n12B) at (8.45,-4.85) {};
-\node[anchor=east] at (8.15,-4.85) {B};
-\begin{pgfonlayer}{background}
-\draw[flow] (n12B.center) -- (r12.west);
-\end{pgfonlayer}
-\responsetrait{n12B}
-\fill (0.0,-5.65) circle (1.2pt);
-\draw[line width=1.2pt] (5.68125,-5.65) -- (9.0,-5.65);
-\fill (5.68125,-5.65) circle (1.2pt);
-\fill (9.0,-5.65) circle (1.2pt);
-\node[anchor=north west] at (0,-5.87) {Flower classification};
-\node[anchor=north east] at (9,-5.87) {Unavailable at updates 1--50};
-\node[feature] (keyflower) at (0,-7) {};
+\stageheading{0}{INITIAL}{Update 0}
+\stageheading{4.5}{INTERMEDIATE}{Update 40}
+\stageheading{9}{FINAL}{Update 80}
+\foreach \base/\prefix in {0/u,-6.3/v} {
+  \foreach \x in {0,4.5,9} { \stageoval{\x,\base} }
+  \foreach \x/\stage in {0/initial,4.5/middle,9/final} {
+    \stacknode[feature]{\prefix\stage A}{\x}{\base}{2}{1}
+    \stacknode[feature]{\prefix\stage B}{\x}{\base}{2}{2}
+  }
+  \leftrowlabel{\base}{.5}{A}
+  \leftrowlabel{\base}{-.5}{B}
+  \rightstacklabel{\base}{2}{1}{A}
+  \rightstacklabel{\base}{2}{2}{B}
+  \begin{pgfonlayer}{background}
+    \foreach \pathway in {A,B} {
+      \draw[flow,shorten >=4.9pt] (\prefix initial\pathway.center) -- (\prefix middle\pathway.center);
+      \draw[flow,shorten >=4.9pt] (\prefix middle\pathway.center) -- (\prefix final\pathway.center);
+    }
+  \end{pgfonlayer}
+}
+\node[emphasis,anchor=west,align=right] at (-3.2,0) {CONTINUOUS\\HANDOFF};
+\node[emphasis,anchor=west,align=right] at (-3.2,-6.3) {INTERRUPTED\\RECOVERY};
+\foreach \name in {uinitialA,umiddleA,umiddleB,ufinalB,vinitialA,vfinalB} { \responsetrait{\name} }
+\abovenodelabel{umiddleA}{A still responds}
+\belownodelabel{umiddleB}{B now responds}
+\abovenodelabel{vmiddleA}{A no longer responds}
+\belownodelabel{vmiddleB}{B not yet responsive}
+% Availability is measured after every update, mapped to the same time axis.
+\draw[line width=1.2pt,line cap=round] (0,-2.55) -- (9,-2.55);
+\fill (0,-2.55) circle (1.2pt);
+\fill (9,-2.55) circle (1.2pt);
+\node[anchor=north west,inner sep=0pt] at (0,-2.8) {Flower classification};
+\node[anchor=north east,inner sep=0pt] at (9,-2.8) {Available throughout};
+% Recovery first restores correct classification at update 51.
+\fill (0,-8.85) circle (1.2pt);
+\draw[line width=1.2pt,line cap=round] (5.7375,-8.85) -- (9,-8.85);
+\fill (5.7375,-8.85) circle (1.2pt);
+\fill (9,-8.85) circle (1.2pt);
+\node[anchor=north west,inner sep=0pt] at (0,-9.1) {Flower classification};
+\node[anchor=north east,inner sep=0pt] at (9,-9.1) {Unavailable at updates 1--50};
+\node[align=center] at (4.5,-10.05) {Same final computation and Price terms\\Selection 0, variation 0};
+\developmentaxis{-10.9}
+\node[feature] (keyflower) at (.3,-12.35) {};
 \responsetrait{keyflower}
-\node[anchor=west] at (.3,-7) {Flower-responsive};
-\node[feature] at (4,-7) {};
-\node[anchor=west] at (4.3,-7) {Not flower-responsive};
-\node[reader] at (9,-7) {};
-\node[anchor=west] at (9.3,-7) {Flower reader};
-\path[use as bounding box] (-3.45,-7.6) rectangle (12.4,2.5);
+\node[legendlabel] at (.7,-12.35) {Flower-responsive};
+\node[feature] at (5.3,-12.35) {};
+\node[legendlabel] at (5.7,-12.35) {Not flower-responsive};
+\diagramframe{-12.95}
 \end{tikzpicture}
