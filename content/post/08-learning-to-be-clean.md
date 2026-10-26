@@ -52,7 +52,7 @@ Cammarata follows a neuron in a retrained InceptionV1 model whose strongest resp
 
 Cammarata calls the branching of responses across related inputs "recursive generalization." His proposed explanation is that existing mechanisms give related learning a head start.
 
-But can a distinction persist even as the mechanisms supplying it change? Readers can also learn to use the same mechanism differently. Answering these questions requires tracking which mechanisms retain a response and which computations depend on it.
+An established response may give later learning a head start, but when does that advantage become a useful computational relationship? I use controlled experiments to test how earlier acquisitions affect later learning and whether readers retain access to useful signals as their sources change.
 
 ## One path leads to another
 
@@ -62,7 +62,7 @@ Applied to Cammarata’s flower neuron, the hypothesis suggests a possible mecha
 
 A broccoli detector that uses the green signal would give the earlier mechanism a new computational role. This is the causal interpretation explored below, rather than a measured dependency in Cammarata's flower neuron.
 
-A reader is a downstream computation using pathway outputs. To test how an established pathway affects later learning, I built a synthetic toy model with explicit binary flower, green, and texture cues.[^toy-model] Supplying these distinctions directly lets us isolate how training changes their use by readers.
+A reader is a downstream computation using pathway outputs. To distinguish a developmental head start from a useful starting point that later becomes a constraint, I built a synthetic model with explicit binary flower, green, and texture cues.[^toy-model] Supplying these distinctions directly lets us test how their use develops without also having to explain their initial discovery.
 
 The broccoli task requires green and texture together. Flower discrimination means correctly classifying inputs with and without the flower cue, even when response strength changes.
 
@@ -374,13 +374,13 @@ The table accounts for change in allocation-weighted mean flower contrast after 
 
 After 800 updates, the flower reader assigns about 72% of its routing share to the initially flower-responsive route, while broccoli assigns about 27%. Different readers develop different uses of the same pathways, yet their opposing allocation changes nearly disappear in the global selection term. Holding each routing share at 50% forces selection to zero and leaves broccoli classification at 75%, compared with 100% when routing learns. Allowing routing to learn improves broccoli classification under these training conditions.[^toy-reader-training]
 
-Removing the initial green response before training leaves final classification unchanged but reduces mean squared reader error by about 99% after 800 updates. Restoring it reproduces the intact trajectory.[^toy-routing]
+Removing the initial green response before training leaves final classification unchanged but reduces mean squared reader error by about 99% after 800 updates. Restoring it reproduces the intact trajectory.[^toy-routing] A starting point that makes one acquisition cheaper can impede joint learning when several readers and representations adapt together.
 
 The traces show earlier differentiation without the precursor. By update 400, the flower reader allocates about 75% to A and broccoli about 75% to B, compared with 56% and 55% when the precursor is present. B has also acquired a stronger green response, while the reader-specific Price terms separate more strongly in both allocation and flower-response change.[^toy-precursor]
 
-The precursor therefore changes the course of joint learning as well as its final error. Earlier differentiation is consistent with the improvement, but the comparison does not isolate which allocation or response changes cause it. A starting point that makes one acquisition cheaper can delay useful differentiation under a different training task.
+The precursor therefore changes the course of joint learning as well as its final error. Earlier differentiation is consistent with the improvement, but the comparison does not isolate which allocation or response changes cause it.
 
-To test dependence on each route, I zeroed its signal after training while holding all learned weights and routing shares fixed.[^toy-ablations]
+A reader’s allocation shows how strongly it weights a route, but does its classification depend on that signal? I tested this by zeroing each route after training while holding all learned weights and routing shares fixed.[^toy-ablations]
 
 | Removed route | Flower accuracy | Broccoli accuracy |
 |---|---|---|
@@ -408,7 +408,7 @@ Throughout the continuous schedule, the score for flower-present inputs stays at
 
 Different histories do not necessarily leave different learning opportunities. These schedules converge on identical states, so subsequently applying duplicate training would produce the same updates. The earlier acquisition experiments show how retained differences in circuitry can change later learning costs. History matters through the structure it leaves available and the capabilities it maintains along the way.
 
-Usefulness belongs to a relationship between a signal and the computation reading it. A distinction can remain encoded yet fail an existing reader, or pass between mechanisms while that reader keeps working. Lineage tracing and statistical accounting describe how the mechanisms and their use change, while causal interventions and longitudinal measurements test which relationships support computation. The unit of continuity can be the reader’s access to a usable signal, even as the mechanism supplying it changes.
+Usefulness belongs to a relationship between a signal and the computation reading it. A distinction can remain encoded yet fail an existing reader, or pass between mechanisms while that reader keeps working. Understanding this organization requires explaining how those dependencies develop and testing whether they remain functional as their components change. What learning carries forward can be a reader’s access to a distinction, even when the mechanism supplying it changes.
 
 ---
 
