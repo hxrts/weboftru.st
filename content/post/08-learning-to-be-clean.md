@@ -448,14 +448,7 @@ Usefulness belongs to a relationship between a signal and the computation readin
 
 [^price-representation]: The toy fixes route identities and feature coordinates throughout training. Applying the decomposition to a larger network would require a justified correspondence between mechanisms across checkpoints and a declared signal scale and attribution rule. Changing those choices can change the terms even when the computation being studied is preserved.
 
-[^toy-precursor]: In the [training traces](/images/flower-toy/learned_routing_trajectories.csv), B’s green coefficient at update 400 is 0.94 without the precursor and 0.06 with it. The [Price terms](/images/flower-toy/learned_routing_price.csv) at that checkpoint, relative to initialization, are shown below. These measurements describe the two intervened trajectories without isolating causal mediation by allocation or response changes.
-
-    | Initial green response | Reader | Selection | Variation |
-    |---|---|---|---|
-    | Present | Flower | +0.06 | +0.14 |
-    | Present | Broccoli | −0.05 | +0.12 |
-    | Removed | Flower | +0.25 | +0.18 |
-    | Removed | Broccoli | −0.25 | −0.10 |
+[^toy-precursor]: In the [training traces](/images/flower-toy/learned_routing_trajectories.csv), B’s green coefficient at update 400 is 0.94 without the precursor and 0.06 with it. The corresponding [Price terms](/images/flower-toy/learned_routing_price.csv) describe allocation and response changes relative to initialization without isolating which changes cause the error difference.
 
 [^toy-ablations]: The [route-ablation measurements](/images/flower-toy/learned_routing_ablations.csv) zero one route’s output after training, without renormalizing routing shares or retraining. They record mean squared error, maximum error, and accuracy for each reader in every training condition. Selective classification losses establish dependence under this intervention, while error changes show that the other reader can also be affected.
 
