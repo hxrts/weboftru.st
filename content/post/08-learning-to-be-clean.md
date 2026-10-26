@@ -174,7 +174,7 @@ Let $z$ be one for a flower-responsive pathway and zero otherwise, under a fixed
 
 $\operatorname{Cov}(w,z)$ measures whether initially responsive mechanisms supply more descendants, and $\mathbb E$ averages over the initial mechanisms. Dividing by $\bar w$ expresses both contributions per descendant.
 
-Weighting the initial responses by $\mathsf{A}$'s three pathways and $\mathsf{B}$'s one raises the responsive share from ½ to ¾, giving selection +¼. Losing the response in one of $\mathsf{A}$'s pathways subtracts ¼ through variation. Preferential contribution from flower-responsive ancestry therefore offsets inherited response loss, leaving the overall share unchanged.
+Weighting the initial responses by $\mathsf{A}$'s three pathways and $\mathsf{B}$'s one pathway raises the responsive share from ½ to ¾, giving selection +¼. Losing the response in one of $\mathsf{A}$'s pathways subtracts ¼ through variation. Preferential contribution from flower-responsive ancestry therefore offsets inherited response loss, leaving the overall share unchanged.
 
 {% tikz(learning=true, preamble="static/images/flower-toy/price_gradient_values.tex", fig_w="620px", caption="<strong>Controlled construction. Change concealed by a stable mean.</strong> Selection +¼ offsets variation −¼. The open middle column isolates reweighting under the stipulated ancestry. Bands show measured flower pressure, −0.029 on A₃ and zero on the other pathways.") %}
 \begin{tikzpicture}[learning]
