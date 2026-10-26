@@ -66,7 +66,7 @@ A reader is a downstream computation using pathway outputs. To distinguish a dev
 
 The broccoli task requires green and texture together. Flower discrimination means correctly classifying inputs with and without the flower cue, even when response strength changes.
 
-I measure learning pressure as the negative loss gradient on a parameter. For ordinary gradient descent, its sign and magnitude determine the proposed update per unit learning rate. Constraints can change the realized update, as when the capacity limit below weakens flower responsiveness without a direct flower-loss gradient.
+I measure learning pressure as the negative loss gradient on a parameter. For ordinary gradient descent, its sign and magnitude determine the proposed update per unit learning rate. Constraints can also alter the update. A shared capacity limit, for example, can weaken flower responsiveness without a direct flower-loss gradient.
 
 In the first experiment, I trained two readers on a green-dependent response from competing pathways. Training updates both the feature coefficients and the weights readers use to combine those features. The established route receives stronger gradients, which decline as prediction error falls.[^toy-gradients]
 
