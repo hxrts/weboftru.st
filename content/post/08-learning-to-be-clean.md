@@ -9,7 +9,7 @@ cover_image = "/images/byte-neuron.png"
 cover_caption = "Byte Magazine, August 1979"
 +++
 
-## What makes a response useful?
+## What makes a feature useful?
 
 Every acquisition changes what a neural network learns next. So how should we think about learned mechanisms if neural circuitry itself is a moving target?
 
@@ -62,7 +62,7 @@ Applied to Cammarata’s flower neuron, the hypothesis suggests a possible mecha
 
 A broccoli detector that uses the green signal would give the earlier mechanism a new computational role. This is the causal interpretation explored below, rather than a measured dependency in Cammarata's flower neuron.
 
-A reader is a downstream computation using pathway outputs. To test how an established pathway affects later learning, I built flower-toy, a synthetic model with explicit binary flower, green, and texture cues.[^toy-model] Supplying these distinctions directly lets us isolate how training changes their use by readers.
+A reader is a downstream computation using pathway outputs. To test how an established pathway affects later learning, I built a synthetic toy model with explicit binary flower, green, and texture cues.[^toy-model] Supplying these distinctions directly lets us isolate how training changes their use by readers.
 
 The broccoli task requires green and texture together. Flower discrimination means correctly classifying inputs with and without the flower cue, even when response strength changes.
 
