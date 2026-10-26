@@ -408,7 +408,7 @@ Throughout the continuous schedule, the score for flower-present inputs stays at
 
 Different histories do not necessarily leave different learning opportunities. These schedules converge on identical states, so subsequently applying duplicate training would produce the same updates. The earlier acquisition experiments show how retained differences in circuitry can change later learning costs. History matters through the structure it leaves available and the capabilities it maintains along the way.
 
-A signal is useful insofar as it supports a reader’s task. A distinction can remain encoded yet fail an existing reader, or pass between mechanisms while that reader keeps working. Understanding this organization requires explaining how those dependencies develop and testing whether they remain functional as their components change. Learning can preserve a reader’s access to a distinction even as the mechanism supplying it changes.
+A signal is useful insofar as it supports a reader’s task. Its presence alone does not establish that the reader can use it. Following that dependence through training reveals a form of continuity that tracking individual mechanisms can miss. Learning can preserve a reader’s access to a distinction even as the mechanism supplying it changes.
 
 ---
 
