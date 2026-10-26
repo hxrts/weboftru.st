@@ -43,13 +43,15 @@
 \node[inner sep=2pt] at (6.75,0.15) {$p$=\textsf{+0.076}};
 \node[inner sep=2pt] at (6.75,-1.15) {$p$=\textsf{+0.013}};
 \leftlabel{.65}{Established\\green route}
-\leftlabel{-.65}{Alternative\\green route}
-\rightlabel{0}{.65}{Green}
-\rightlabel{0}{-.65}{Green}
+\leftlabel{-.65}{Alternative route}
+\rightlabel{0}{.65}{Green coefficient}
+\rightlabel{0}{-.65}{Green coefficient}
 \coordinate (learningannotationbottom) at (0,-2.1275);
 \preparelearningfooter{1.95}
 \developmentaxis{\learningaxisy}
 \pressurekey{0}{\learninglegendy}{1}
-\node[legendlabel] at (.7,\learninglegendy) {Reinforcing learning pressure};
+\node[legendlabel] at (.7,\learninglegendy) {Reinforcing (positive)};
+\pressurekey{5}{\learninglegendy}{-1}
+\node[legendlabel] at (5.7,\learninglegendy) {Suppressing (negative)};
 \diagramframe{\learningframebottom}
 \end{tikzpicture}
