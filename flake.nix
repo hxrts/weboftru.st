@@ -23,9 +23,12 @@
             pname = "weboftrust";
             version = "0.1.0";
             src = ./.;
-            npmDepsHash = "sha256-dZ1huv3ZNGLYS34MHxiCQr8QK0jYM2VcrAFXHcWiZrQ=";
+            npmDepsHash = "sha256-+SxgiT6TYfhnjigcYE/C2fIoiuMMxhnZWoEUq/N6M1g=";
 
-            nativeBuildInputs = [ pkgs.zola ];
+            nativeBuildInputs = [ pkgs.zola ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.chromium ];
+            env = pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+              CHROME_EXECUTABLE_PATH = "${pkgs.chromium}/bin/chromium";
+            };
 
             npmBuildScript = "build";
             installPhase = "cp -r public $out";

@@ -138,6 +138,7 @@ async function rebuild() {
             await run('zola', ['build', '--drafts', '--base-url', baseUrl, '--force', '--output-dir', output]);
             if (stopping) break;
             await run(process.execPath, ['scripts/render-tikz.mjs', output]);
+            await run(process.execPath, ['scripts/render-diagrams.mjs', output]);
             if (stopping) break;
             const previous = activeDirectory;
             activeDirectory = output;

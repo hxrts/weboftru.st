@@ -1,5 +1,6 @@
 {# TikZ figure compiled to inline SVG after Zola builds the site. The
-   client-side TikZJax renderer remains available for `zola serve` previews.
+   final dimensions and alignment are computed by the static diagram build.
+   Use `just build-serve` for fully rendered previews.
    Usage in a post:
        {% tikz(fig_w="520px", caption="Optional caption, HTML allowed") %}
        \begin{tikzpicture}

@@ -34,15 +34,13 @@
     {%- endif -%}
 
     {# For social cards: if the source is too large, emit a Zola-resized copy.
-       Source size comes from the image manifest. Site rendering is unaffected. #}
+       Source dimensions are read at build time. Site rendering is unaffected. #}
     {%- set meta_image = "" -%}
     {%- set meta_image_width = 0 -%}
     {%- set meta_image_height = 0 -%}
     {%- set meta_image_type = "" -%}
     {%- if raw_cover -%}
-      {%- set img_filename = raw_cover | split(pat="/") | last -%}
-      {%- set img_manifest = load_data(path="static/images/manifest.json") -%}
-      {%- set img_meta = img_manifest[img_filename] -%}
+      {%- set img_meta = get_image_metadata(path="static" ~ raw_cover) -%}
       {%- set src_width = img_meta.width | default(value=0) -%}
       {%- set src_height = img_meta.height | default(value=0) -%}
       {%- if src_width > 1500 -%}
@@ -164,6 +162,14 @@
                 {left: '$', right: '$', display: false}
             ]
         });"></script>
+    <script>
+        // Inline SVGs are already compiled and sized. Reveal their text once fonts are ready.
+        document.addEventListener('DOMContentLoaded', () => {
+            document.fonts.ready.then(() => {
+                document.querySelectorAll('.diagram-placeholder').forEach(el => el.classList.add('loaded'));
+            });
+        });
+    </script>
     <!-- Fenced math blocks (```math) -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -175,225 +181,6 @@
             });
         });
     </script>
-    <!-- Mermaid -->
-    <script>
-        if (document.querySelector('code.language-mermaid')) {
-            document.write('<script src="{{ base }}mermaid.min.js"><\/script>');
-        }
-    </script>
-    <!-- TikZ (TikZJax, vendored in static/tikzjax/; loaded only when a tikz-fig exists) -->
-    <script>
-        if (document.querySelector('script[type="text/tikz"]')) {
-            document.write('<script src="{{ base }}tikzjax/ligatures.js"><\/script>');
-        }
-    </script>
-    <script>
-        // The preview and build engines place the same picture at different
-        // SVG origins. Anchor the shared frame to its oval geometry instead.
-        function alignLearningFigure(fig) {
-            const frame = fig.getAttribute('data-learning-frame');
-            const svg = fig.querySelector('svg');
-            if (!frame || !svg) return;
-            const rootMatrix = svg.getCTM();
-            if (!rootMatrix) return;
-            const inverse = rootMatrix.inverse();
-            const bounds = Array.from(svg.querySelectorAll('[stroke-dasharray]')).map(el => {
-                const box = el.getBBox();
-                const matrix = el.getCTM();
-                if (!matrix) return null;
-                const relative = inverse.multiply(matrix);
-                return [
-                    new DOMPoint(box.x, box.y).matrixTransform(relative).x,
-                    new DOMPoint(box.x + box.width, box.y).matrixTransform(relative).x,
-                ];
-            }).filter(Boolean);
-            if (!bounds.length) return;
-            const left = Math.min(...bounds.flat());
-            const right = Math.max(...bounds.flat());
-            // Center the rendered label itself, independent of TeX font metrics.
-            svg.querySelectorAll('text').forEach(text => {
-                if (text.textContent.trim() !== 'Development') return;
-                const matrix = text.getCTM();
-                if (!matrix) return;
-                const relative = inverse.multiply(matrix);
-                const baseline = new DOMPoint(0, text.y.baseVal.getItem(0).value).matrixTransform(relative);
-                const position = new DOMPoint((left + right) / 2, baseline.y).matrixTransform(relative.inverse());
-                text.setAttribute('x', position.x);
-                text.setAttribute('text-anchor', 'middle');
-            });
-            // Oval centers are x=0 and x=9, each with horizontal radius .7.
-            const centers = fig.getAttribute('data-learning-centers');
-            const [firstCenter, lastCenter] = centers ? centers.split(' ').map(Number) : [0, 9];
-            const radius = centers ? .63 : .7;
-            const unit = (right - left) / (lastCenter - firstCenter + 2 * radius);
-            const [frameLeft, frameRight] = frame.split(' ').map(Number);
-            const viewBox = svg.viewBox.baseVal;
-            const width = (frameRight - frameLeft) * unit;
-            svg.setAttribute('viewBox', `${left + (frameLeft - firstCenter + radius) * unit} ${viewBox.y} ${width} ${viewBox.height}`);
-            svg.setAttribute('width', `${width * 4 / 3}px`);
-        }
-
-        document.querySelectorAll('.tikz-fig[data-learning-frame]').forEach(alignLearningFigure);
-
-        if (document.querySelector('script[type="text/tikz"]')) {
-            document.querySelectorAll('script[type="text/tikz"]').forEach(source => {
-                source.textContent = window.preventFlLigatures(source.textContent);
-            });
-            document.write('<link rel="stylesheet" href="{{ base }}tikzjax/fonts.css">');
-            document.write('<script src="{{ base }}tikzjax/tikzjax.js"><\/script>');
-
-            // Mermaid-style fade-in: mark a figure processed once its SVG renders.
-            const tikzObserver = new MutationObserver(() => {
-                document.querySelectorAll('.tikz-fig:not([data-processed])').forEach(fig => {
-                    if (fig.querySelector('svg')) {
-                        alignLearningFigure(fig);
-                        fig.setAttribute('data-processed', 'true');
-                    }
-                });
-            });
-            document.addEventListener('DOMContentLoaded', () => {
-                tikzObserver.observe(document.body, { childList: true, subtree: true });
-                // Catch up in case the engine rendered before we started watching.
-                document.querySelectorAll('.tikz-fig:not([data-processed])').forEach(fig => {
-                    if (fig.querySelector('svg')) {
-                        alignLearningFigure(fig);
-                        fig.setAttribute('data-processed', 'true');
-                    }
-                });
-            });
-        }
-    </script>
-    <script>
-        if (typeof mermaid !== 'undefined') {
-            // Convert code blocks to mermaid pre elements
-            document.querySelectorAll('code.language-mermaid').forEach(el => {
-                const pre = el.parentElement;
-                const mermaidPre = document.createElement('pre');
-                mermaidPre.className = 'mermaid';
-                mermaidPre.textContent = el.textContent;
-                pre.replaceWith(mermaidPre);
-            });
-
-            // Get CSS custom properties for consistent theming
-            const styles = getComputedStyle(document.documentElement);
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-            const isDark = currentTheme === 'dark';
-
-            const gray900 = styles.getPropertyValue('--gray-900').trim();
-            const gray700 = styles.getPropertyValue('--gray-700').trim();
-            const gray500 = styles.getPropertyValue('--gray-500').trim();
-            const gray400 = styles.getPropertyValue('--gray-400').trim();
-            const gray300 = styles.getPropertyValue('--gray-300').trim();
-            const gray100 = styles.getPropertyValue('--gray-100').trim();
-            const white = styles.getPropertyValue('--white').trim();
-            const blue600 = styles.getPropertyValue('--blue-600').trim();
-            const blue700 = styles.getPropertyValue('--blue-700').trim();
-            const purple600 = styles.getPropertyValue('--purple-600').trim();
-            const green600 = styles.getPropertyValue('--green-600').trim();
-            const orange600 = styles.getPropertyValue('--orange-600').trim();
-            const fontSans = styles.getPropertyValue('--font-sans').trim().replace(/\s+/g, ' ');
-            const fontSize = styles.getPropertyValue('--t-sm').trim();
-
-            // Theme-specific colors (dark mode uses 0x96f palette)
-            const nodeBgColor = isDark ? '#363338' : gray300;      // Inner node boxes
-            const clusterBgColor = isDark ? 'rgba(54, 51, 56, 0.5)' : gray100;   // Outer subgraph boxes
-            const mainBgColor = isDark ? '#262427' : gray100;      // 0x96f background
-            const textColor = isDark ? '#FCFCFA' : gray900;        // 0x96f foreground
-            const labelTextColor = isDark ? '#FCFCFA' : gray900;   // 0x96f foreground
-            const borderColor = isDark ? '#6B6B6A' : '#c0c0c0';      // 0x96f comment gray
-            const lineColor = isDark ? '#8B8B8A' : gray400;        // 0x96f comment gray
-            const secondaryBorder = isDark ? '#8B8B8A' : gray400;
-
-            mermaid.initialize({
-                startOnLoad: false,
-                theme: 'base',
-                flowchart: {
-                    curve: 'linear'
-                },
-                themeVariables: {
-                    // Global fonts
-                    'fontFamily': fontSans,
-                    'fontSize': fontSize,
-
-                    // Background and surfaces
-                    'primaryColor': nodeBgColor,
-                    'primaryBorderColor': borderColor,
-                    'primaryTextColor': textColor,
-
-                    'secondaryColor': nodeBgColor,
-                    'secondaryBorderColor': borderColor,
-                    'secondaryTextColor': textColor,
-
-                    'tertiaryColor': nodeBgColor,
-                    'tertiaryBorderColor': borderColor,
-                    'tertiaryTextColor': textColor,
-
-                    // Main text and lines
-                    'textColor': labelTextColor,
-                    'lineColor': lineColor,
-                    'mainBkg': nodeBgColor,
-
-                    // Flowchart
-                    'nodeBorder': borderColor,
-                    'clusterBkg': clusterBgColor,
-                    'clusterBorder': borderColor,
-                    'defaultLinkColor': borderColor,
-                    'edgeLabelBackground': isDark ? '#363338' : mainBgColor,
-
-                    // Sequence diagrams (dark mode uses 0x96f accent colors)
-                    'actor0Bkg': isDark ? '#4a2a2a' : '#ffe1e1',    // Muted coral (from #FF7272)
-                    'actor1Bkg': isDark ? '#2a3d42' : '#e1f5ff',    // Muted cyan (from #49CAE4)
-                    'actor2Bkg': isDark ? '#2d3a2a' : '#e1f5ff',    // Muted lime (from #BCDF59)
-                    'actor3Bkg': isDark ? '#3a3242' : '#e1f5ff',    // Muted purple (from #A093E2)
-                    'actorBkg': nodeBgColor,
-                    'actorBorder': secondaryBorder,
-                    'actorTextColor': textColor,
-                    'actorLineColor': secondaryBorder,
-                    'signalColor': secondaryBorder,
-                    'signalTextColor': labelTextColor,
-                    'labelBoxBkgColor': isDark ? 'transparent' : mainBgColor,
-                    'labelBoxBorderColor': isDark ? 'transparent' : borderColor,
-                    'labelTextColor': labelTextColor,
-                    'loopTextColor': labelTextColor,
-                    'altBackground': isDark ? 'rgba(139, 139, 138, 0.15)' : 'rgba(158, 158, 158, 0.1)',  // Based on 0x96f comment
-                    'activationBorderColor': borderColor,
-                    'activationBkgColor': nodeBgColor,
-                    'sequenceNumberColor': white,
-
-                    // Sequence note boxes (yellow in light, muted olive in dark)
-                    'noteBkgColor': isDark ? '#3d3a26' : '#fff5ad',
-                    'noteTextColor': isDark ? '#FCFCFA' : '#333333',
-                    'noteBorderColor': isDark ? '#8b8b8a' : '#e4db95',
-
-                    // Special colors (dark mode uses 0x96f palette)
-                    'activeTaskBkgColor': isDark ? '#49CAE4' : blue600,    // 0x96f cyan
-                    'activeTaskBorderColor': isDark ? '#3ab0c9' : blue700,
-                    'doneTaskBkgColor': isDark ? '#BCDF59' : green600,     // 0x96f lime
-                    'critBkgColor': isDark ? '#FF7272' : orange600,        // 0x96f coral
-                    'critBorderColor': isDark ? '#FF7272' : orange600
-                }
-            });
-
-            // Render diagrams and mark as processed to fade them in
-            document.addEventListener('DOMContentLoaded', async () => {
-                const diagrams = document.querySelectorAll('.mermaid');
-                for (const diagram of diagrams) {
-                    try {
-                        await mermaid.run({ nodes: [diagram] });
-                        diagram.setAttribute('data-processed', 'true');
-
-                        // Add click handler for lightbox
-                        diagram.addEventListener('click', function() {
-                            openMermaidLightbox(this);
-                        });
-                    } catch (e) {
-                        console.error('Mermaid rendering failed:', e);
-                        diagram.setAttribute('data-processed', 'true');
-                    }
-                }
-            });
-        }
-    </script>
     <script>
         // Lightbox functions (available globally)
         function openMermaidLightbox(diagram) {
@@ -403,9 +190,10 @@
                 // Copy the SVG itself: Mermaid and the inline .svg-diagram may
                 // either be the SVG or contain one, while TikZ figures wrap it
                 // in a fixed-size div that would fight the lightbox sizing.
-                const svg = diagram.matches && diagram.matches('svg')
+                const visibleDiagram = diagram.querySelector('[data-diagram-theme="' + (document.documentElement.getAttribute('data-theme') || 'light') + '"]');
+                const svg = visibleDiagram || (diagram.matches && diagram.matches('svg')
                     ? diagram
-                    : (diagram.querySelector ? diagram.querySelector('svg') : null);
+                    : (diagram.querySelector ? diagram.querySelector('svg') : null));
                 // TikZJax leaves the SVG absolutely positioned against its
                 // "page" box; strip that so the lightbox centers it like any
                 // other diagram.
@@ -542,7 +330,7 @@
         // every figure (mermaid + svg-diagram) in document order so downloads
         // can be named "{slug}-{index}.svg".
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.svg-diagram, .tikz-fig').forEach(diagram => {
+            document.querySelectorAll('.mermaid, .svg-diagram, .tikz-fig').forEach(diagram => {
                 diagram.addEventListener('click', function() {
                     openMermaidLightbox(this);
                 });
@@ -636,10 +424,6 @@
                 document.documentElement.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
 
-                // Reload page to re-render Mermaid diagrams with new theme
-                if (typeof mermaid !== 'undefined' && document.querySelector('.mermaid')) {
-                    location.reload();
-                }
             });
         });
     </script>

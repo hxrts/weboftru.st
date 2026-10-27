@@ -444,7 +444,7 @@ body > footer {
 
     .img-placeholder {
         width: 100%;
-        background-color: var(--c-surface);
+        background-color: var(--c-bg);
         overflow: hidden;
 
         img {
@@ -1194,7 +1194,7 @@ body > footer {
 // Usage: I<span class="apos">'</span>m
 .apos {
     margin-left: -0.01em;
-    margin-right: 0.22em;
+    margin-right: 0.1em;
 }
 
 // =============================================================================
@@ -1417,7 +1417,7 @@ svg[id^="mermaid-"] {
 
     // The client-side preview engine adds a fixed-size wrapper around its SVG.
     // Neutralize it so the SVG is a normal inline-block in both render modes.
-    .tikz-fig-body > div {
+    .tikz-fig-body > div:not(.diagram-placeholder) {
         display: block !important;
         width: auto !important;
         height: auto !important;
@@ -1542,5 +1542,34 @@ svg[id^="mermaid-"] {
         bottom: var(--s-4);
         font-weight: 250;
         font-size: calc(var(--t-2xl) * 0.95);
+    }
+}
+
+// Images and precompiled diagrams share a theme-aware loading surface.
+.img-placeholder {
+    background-color: var(--c-bg);
+}
+.diagram-placeholder {
+    position: relative;
+    width: var(--fig-w, 100%);
+    max-width: 100%;
+    margin-inline: auto;
+    overflow: hidden;
+
+    > svg {
+        position: absolute !important;
+        inset: 0;
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        opacity: 0;
+        transition: opacity .3s ease;
+    }
+    &.loaded > svg { opacity: 1; }
+    > svg[data-diagram-theme="dark"] { display: none; }
+    [data-theme="dark"] & {
+        > svg[data-diagram-theme="light"] { display: none; }
+        > svg[data-diagram-theme="dark"] { display: block; }
     }
 }

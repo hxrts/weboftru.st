@@ -1,15 +1,9 @@
 {% extends "base.html" %}
 
-{% block extra_head %}
-<!-- Prefetch Mermaid for post pages -->
-<link rel="prefetch" href="./mermaid.min.js" as="script">
-{% endblock extra_head %}
-
 {% block content %}
-{% set manifest = load_data(path="static/images/manifest.json") %}
 <article>
     <div class="hero-image">
-        {% set img_meta = manifest["happening-score.webp"] %}
+        {% set img_meta = get_image_metadata(path="static/images/happening-score.webp") %}
         <div class="img-placeholder" style="aspect-ratio: {{ img_meta.width }} / {{ img_meta.height }};">
             <img src="./images/happening-score.webp" alt="Happening Score by Wolf Vostell" width="{{ img_meta.width }}" height="{{ img_meta.height }}" onload="this.parentElement.classList.add('loaded')">
         </div>
