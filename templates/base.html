@@ -118,8 +118,8 @@
     {% set base = "" %}{% for i in range(end=depth) %}{% set_global base = base ~ "../" %}{% endfor %}
     {% if base == "" %}{% set base = "./" %}{% endif %}
     <!-- Preload critical fonts -->
-    <link rel="preload" href="{{ base }}fonts/Perun-Regular.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="{{ base }}fonts/Perun-Medium.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="{{ base }}fonts/UniversClone-Regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ base }}fonts/UniversClone-Medium.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{{ base }}style.css">
     <!-- Theme script (must run before render to prevent flash) -->
     <script>
@@ -356,58 +356,6 @@
                 if (e.key === 'Escape') {
                     closeMermaidLightbox();
                 }
-            });
-        });
-    </script>
-    <script>
-        // Fix apostrophe kerning in sans-serif text
-        document.addEventListener('DOMContentLoaded', () => {
-            const apostrophes = /['\u2019]/g;  // curly apostrophes only
-            console.log('Apostrophe fix running...');
-
-            const walker = document.createTreeWalker(
-                document.body,
-                NodeFilter.SHOW_TEXT,
-                null
-            );
-
-            const nodesToProcess = [];
-            while (walker.nextNode()) {
-                const node = walker.currentNode;
-                const parent = node.parentElement;
-
-                // Skip code/pre elements and script/style
-                if (parent) {
-                    const tag = parent.tagName;
-                    if (tag === 'CODE' || tag === 'PRE' || tag === 'SCRIPT' || tag === 'STYLE') continue;
-                    if (parent.closest('code, pre')) continue;
-                }
-
-                if (node.textContent.match(apostrophes)) {
-                    nodesToProcess.push(node);
-                }
-            }
-
-            console.log('Found nodes with apostrophes:', nodesToProcess.length);
-            nodesToProcess.forEach(node => {
-                const text = node.textContent;
-                const parts = text.split(apostrophes);
-                const matches = text.match(apostrophes);
-
-                if (!matches) return;
-
-                const fragment = document.createDocumentFragment();
-                parts.forEach((part, i) => {
-                    if (part) fragment.appendChild(document.createTextNode(part));
-                    if (matches[i]) {
-                        const span = document.createElement('span');
-                        span.className = 'apos';
-                        span.textContent = matches[i];
-                        fragment.appendChild(span);
-                    }
-                });
-
-                node.parentNode.replaceChild(fragment, node);
             });
         });
     </script>

@@ -20,3 +20,6 @@ work
 
 # pi harness
 .pi
+
+# Font generation helpers
+__pycache__/
