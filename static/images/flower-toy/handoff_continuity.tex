@@ -2,41 +2,54 @@
 \stageheading{0}{INITIAL}{Update 0}
 \stageheading{4.5}{INTERMEDIATE}{Update 40}
 \stageheading{9}{FINAL}{Update 80}
-\foreach \base/\prefix in {0/u,-5.6/v} {
+\foreach \base/\prefix in {0/u,-6.0/v} {
   \foreach \x in {0,4.5,9} { \stageoval{\x,\base} }
   \foreach \x/\stage in {0/initial,4.5/middle,9/final} {
     \stacknode[feature]{\prefix\stage A}{\x}{\base}{2}{1}
     \stacknode[feature]{\prefix\stage B}{\x}{\base}{2}{2}
   }
-  \leftrowlabel{\base}{.5}{A}
-  \leftrowlabel{\base}{-.5}{B}
-  \rightstacklabel{\base}{2}{1}{A}
-  \rightstacklabel{\base}{2}{2}{B}
+  % Recorded endpoint parameters and reader scores, rounded to three decimals.
+  \abovenodelabel{\prefix initialA}{A \textsl{r} = 1.000}
+  \abovenodelabel{\prefix initialB}{B \textsl{r} = 0.000}
+  \abovenodelabel{\prefix finalA}{A \textsl{r} = 0.000}
+  \abovenodelabel{\prefix finalB}{B \textsl{r} = 1.000}
+  \readeroutputs{9}{\base}{Reader outputs\\(0.500, 0.000)}
   \begin{pgfonlayer}{background}
     \foreach \pathway in {A,B} {
-      \draw[flow,shorten >=4.9pt] (\prefix initial\pathway.center) -- (\prefix middle\pathway.center);
-      \draw[flow,shorten >=4.9pt] (\prefix middle\pathway.center) -- (\prefix final\pathway.center);
+      \draw[featureflow] (\prefix initial\pathway.center) -- (\prefix middle\pathway.center);
+      \draw[featureflow] (\prefix middle\pathway.center) -- (\prefix final\pathway.center);
     }
   \end{pgfonlayer}
 }
 \pairedrowlabel{0}{CONTINUOUS\\HANDOFF}
-\pairedrowlabel{-5.6}{INTERRUPTED\\RECOVERY}
+\pairedrowlabel{-6.0}{INTERRUPTED\\RECOVERY}
 \foreach \name in {uinitialA,umiddleA,umiddleB,ufinalB,vinitialA,vfinalB} { \responsetrait{\name} }
-\abovenodelabel{umiddleA}{A still responds}
-\belownodelabel{umiddleB}{B now responds}
-\abovenodelabel{vmiddleA}{A below criterion}
-\belownodelabel{vmiddleB}{B below criterion}
+\abovenodelabel{umiddleA}{A \textsl{r} = 1.000}
+\abovenodelabel{umiddleB}{B \textsl{r} = 1.000}
+\abovenodelabel{vmiddleA}{A \textsl{r} = 0.000}
+\abovenodelabel{vmiddleB}{B \textsl{r} = 0.000}
 % Training phases use the same split arrows as the inherited-roles figure.
-\foreach \base/\first/\second in {0/{Train B toward flower}/{Train A toward zero},-5.6/{Train A toward zero}/{Train B toward flower}} {
-  \draw[flow] (.3,{\base-2.55}) -- (4.2,{\base-2.55});
+% Black indicates correct reader classification, grey indicates failure.
+% Availability comes from flower-toy/data/handoff_trajectories.csv.
+% The second recovery phase turns black at update 51 (x = 9 * 51 / 80).
+\foreach \base/\first/\second in {0/{Train B toward flower}/{Train A toward zero},-6.0/{Train A toward zero}/{Train B toward flower}} {
   \node[anchor=north] at (2.25,{\base-2.8}) {\first};
-  \draw[flow] (4.8,{\base-2.55}) -- (8.7,{\base-2.55});
   \node[anchor=north] at (6.75,{\base-2.8}) {\second};
 }
-\node[feature] (keyflower) at (.3,-9.55) {};
+\draw[flow] (.3,-2.55) -- (4.2,-2.55);
+\draw[flow] (4.8,-2.55) -- (8.7,-2.55);
+\node[anchor=south] at (2.25,-2.35) {Reader correct};
+\node[anchor=south] at (6.75,-2.35) {Reader correct};
+\draw[flow,black!45] (.3,-8.55) -- (4.2,-8.55);
+\draw[line width=.85pt,black!45] (4.8,-8.55) -- (5.7375,-8.55);
+\draw[flow] (5.7375,-8.55) -- (8.7,-8.55);
+\draw[line width=.65pt] (5.7375,-8.45) -- (5.7375,-8.65);
+\node[anchor=south,text=black!55] at (2.25,-8.35) {Reader fails};
+\node[anchor=south] at (6.75,-8.35) {Recovers at update 51};
+\node[feature] (keyflower) at (.3,-9.95) {};
 \responsetrait{keyflower}
-\node[legendlabel] at (.7,-9.55) {Flower-responsive};
-\node[feature] at (5.3,-9.55) {};
-\node[legendlabel] at (5.7,-9.55) {Not flower-responsive};
-\diagramframe{-10.15}
+\node[legendlabel] at (.7,-9.95) {Flower-responsive};
+\node[feature] at (5.3,-9.95) {};
+\node[legendlabel] at (5.7,-9.95) {Not flower-responsive};
+\diagramframe{-10.55}
 \end{tikzpicture}

@@ -1,6 +1,5 @@
 \begin{tikzpicture}[learning]
 \def\learningheadinglift{.3}
-\tikzset{reader/.style={rectangle,draw,fill=white,minimum size=6pt,inner sep=0pt,line width=.65pt}}
 \stageheading{0}{PATHWAYS}{flower response}
 \stageheading{4.5}{ROUTING}{allocation logits}
 \stageheading{9}{READERS}{update 10}
@@ -9,13 +8,13 @@
 \stageoval{4.5,0}
 \stageoval{9,0}
 \stacknode[feature]{w0A}{0}{0}{2}{1}
-\leftrowlabel{0}{0.5}{A}
+\abovenodelabel{w0A}{A}
 \stacknode[feature]{w0B}{0}{0}{2}{2}
-\leftrowlabel{0}{-0.5}{B}
+\abovenodelabel{w0B}{B}
 \stacknode[reader]{r0flower}{9}{0}{2}{1}
-\rightstacklabel{0}{2}{1}{Flower}
+\abovenodelabel{r0flower}{Flower}
 \stacknode[reader]{r0broccoli}{9}{0}{2}{2}
-\rightstacklabel{0}{2}{2}{Broccoli}
+\abovenodelabel{r0broccoli}{Broccoli}
 \stacknode[feature]{c00}{4.5}{0}{4}{1}
 \abovenodelabel{c00}{A}
 \begin{pgfonlayer}{background}
@@ -79,13 +78,13 @@
 \stageoval{4.5,-5.2}
 \stageoval{9,-5.2}
 \stacknode[feature]{w1A}{0}{-5.2}{2}{1}
-\leftrowlabel{-5.2}{0.5}{A}
+\abovenodelabel{w1A}{A}
 \stacknode[feature]{w1B}{0}{-5.2}{2}{2}
-\leftrowlabel{-5.2}{-0.5}{B}
+\abovenodelabel{w1B}{B}
 \stacknode[reader]{r1flower}{9}{-5.2}{2}{1}
-\rightstacklabel{-5.2}{2}{1}{Flower}
+\abovenodelabel{r1flower}{Flower}
 \stacknode[reader]{r1broccoli}{9}{-5.2}{2}{2}
-\rightstacklabel{-5.2}{2}{2}{Broccoli}
+\abovenodelabel{r1broccoli}{Broccoli}
 \stacknode[feature]{c10}{4.5}{-5.2}{4}{1}
 \abovenodelabel{c10}{A}
 \begin{pgfonlayer}{background}

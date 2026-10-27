@@ -5,17 +5,17 @@
 \stageheading{9}{LATER LEARNING}{step 30}
 \foreach \x in {0,4.5,9} { \stageoval{\x,0} }
 \node[feature] (n00) at (0.0,0.65) {};
-\abovenodelabel{n00}{$0.80$}
+\abovenodelabel{n00}{Established \textsl{r} = 0.800}
 \node[feature] (n01) at (0.0,-0.65) {};
-\abovenodelabel{n01}{$0.05$}
+\abovenodelabel{n01}{Alternative \textsl{r} = 0.050}
 \node[feature] (n10) at (4.5,0.65) {};
-\abovenodelabel{n10}{$1.08$}
+\abovenodelabel{n10}{Established \textsl{r} = 1.077}
 \node[feature] (n11) at (4.5,-0.65) {};
-\abovenodelabel{n11}{$0.12$}
+\abovenodelabel{n11}{Alternative \textsl{r} = 0.122}
 \node[feature] (n20) at (9.0,0.65) {};
-\abovenodelabel{n20}{$1.31$}
+\abovenodelabel{n20}{Established \textsl{r} = 1.307}
 \node[feature] (n21) at (9.0,-0.65) {};
-\abovenodelabel{n21}{$0.16$}
+\abovenodelabel{n21}{Alternative \textsl{r} = 0.160}
 \begin{pgfonlayer}{background}
 \coordinate (start00) at ($(n00.center)+(.42,0)$);
 \coordinate (cfirst00) at ($(n00.center)+(1.62,0)$);
@@ -38,14 +38,10 @@
 \draw[flow] (n10.east) -- (n20.west);
 \draw[flow] (n11.east) -- (n21.west);
 \end{pgfonlayer}
-\node[inner sep=2pt] at (2.25,0.15) {$p$=\textsf{+0.185}};
-\node[inner sep=2pt] at (2.25,-1.15) {$p$=\textsf{+0.048}};
-\node[inner sep=2pt] at (6.75,0.15) {$p$=\textsf{+0.076}};
-\node[inner sep=2pt] at (6.75,-1.15) {$p$=\textsf{+0.013}};
-\leftlabel{.65}{Established\\green route}
-\leftlabel{-.65}{Alternative\\green route}
-\rightlabel{0}{.65}{Green\\coefficient}
-\rightlabel{0}{-.65}{Green\\coefficient}
+% Keep interval pressure below each arrow and state labels above the nodes.
+\foreach \source/\pressure in {n00/+0.185,n01/+0.048,n10/+0.076,n11/+0.013} {
+  \pressurelabel{$(\source.south)+(2.25,-4pt)$}{$p$ = \textsf{\pressure}};
+}
 \coordinate (learningannotationbottom) at (0,-2.1275);
 \preparelearningfooter{1.95}
 \developmentaxis{\learningaxisy}

@@ -5,10 +5,13 @@
   time/.style={font=\sffamily\bfseries\footnotesize},%
   emphasis/.style={font=\sffamily\bfseries\footnotesize},%
   legendlabel/.style={anchor=north west,inner sep=0pt,outer sep=0pt,yshift=3pt},%
-  feature/.style={circle,draw,fill=black,minimum size=4.6pt,inner sep=0pt,line width=.65pt},%
+  feature/.style={circle,draw,fill=black,minimum size=6pt,inner sep=0pt,line width=.65pt},%
+  reader/.style={rectangle,draw,fill=white,minimum size=6pt,inner sep=0pt,line width=.65pt},%
+  flower/.style={feature},%
   potential/.style={feature,fill=white,fill opacity=1},%
   activation/.style={minimum size=#1pt},%
   flow/.style={->,line width=.85pt},%
+  featureflow/.style={flow,shorten >=3.5pt},%
   schematic/.style={->,line width=.7pt},%
   boundary/.style={draw=black!65,line width=1pt,dash pattern=on .1pt off 2.5pt,line cap=round},%
   readout/.style={draw,line width=.65pt,fill=white,inner sep=4pt,align=center},%
@@ -82,8 +85,8 @@
   \else\def\learningpitch{.8}\fi\fi\fi%
 }%
 \newcommand{\pairedrowlabel}[2]{%
-  % Center vertically on the first oval; keep the near edge 1.37cm to its left.
-  \node[emphasis,rotate=90,anchor=south,align=center,inner sep=0pt,outer sep=0pt] at (-2,#1) {#2};%
+  % Center vertically on the first oval; keep the near edge 1.07cm to its left.
+  \node[emphasis,rotate=90,anchor=south,align=center,inner sep=0pt,outer sep=0pt] at (-1.7,#1) {#2};%
 }%
 \newcommand{\stacknode}[6][]{%
   \setstackpitch{#5}%
@@ -118,6 +121,15 @@
 }%
 \newcommand{\belownodelabel}[2]{%
   \halolabel{anchor=north,align=center}{$(#1.south)+(0,-4pt)$}{#2}%
+}%
+% Pressure annotations share the node-label halo and a north anchor.
+\newcommand{\pressurelabel}[2]{%
+  \halolabel{anchor=north,align=center,text=black!55}{#1}{#2}%
+}%
+% Center reader results beside the final population, with .57cm oval clearance.
+\newcommand{\readeroutputs}[3]{%
+  \node[anchor=west,align=center,inner sep=0pt] at ({#1+1.2},#2)
+    {#3};%
 }%
 % Keep the narrow end at the node and inset only the wide end.
 \newcommand{\pressureband}[5]{%
@@ -202,16 +214,11 @@
     \node[feature] at (#1.center) {};%
   \end{pgfonlayer}%
 }%
-% Draw a white asterisk in a filled circle, scaled to preserve activation encoding.
-\def\responsemarkerscale{1}%
+% A fixed-size flower marker encodes a response category, not its magnitude.
 \newcommand{\responsetrait}[1]{%
   \begin{pgfonlayer}{foreground}%
-    \path let \p1=($(#1.east)-(#1.west)$) in \pgfextra{%
-      \pgfmathparse{veclen(\x1,\y1)/1pt}\xdef\responsediameter{\pgfmathresult}%
-    };%
-    \pgfmathsetlengthmacro{\responseouterdiameter}{\responsemarkerscale*(\responsediameter pt+4.8pt)}%
-    \node[trait,fill=black,line width=1.25pt,minimum size={.7*\responseouterdiameter}] at (#1.center) {};%
-    \pgfmathsetlengthmacro{\responsestar}{.25*\responseouterdiameter}%
+    \node[flower] at (#1.center) {};%
+    \def\responsestar{2.1pt}%
     \foreach \angle in {30,90,150}{%
       \begin{scope}[shift={(#1.center)},rotate=\angle]%
         \path[fill=white,draw=none,rounded corners=0pt]

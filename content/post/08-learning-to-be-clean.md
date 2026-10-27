@@ -31,12 +31,12 @@ Cammarata follows a neuron in a retrained InceptionV1 model whose strongest resp
 \stacknode[feature]{d}{9}{0}{3}{1}
 \stacknode[feature]{e}{9}{0}{3}{2}
 \stacknode[feature]{f}{9}{0}{3}{3}
-\leftlabel{0}{Yellow flowers,\\sometimes dogs}
+\abovenodelabel{a}{Yellow flowers,\\sometimes dogs}
 \abovenodelabel{b}{Green objects}
 \abovenodelabel{c}{Dogs, no flowers}
-\rightstacklabel{0}{3}{1}{Green}
-\rightstacklabel{0}{3}{2}{Broccoli}
-\rightstacklabel{0}{3}{3}{Dogs}
+\abovenodelabel{d}{Green}
+\abovenodelabel{e}{Broccoli}
+\abovenodelabel{f}{Dogs}
 \begin{pgfonlayer}{background}
 \draw[schematic] (a.center) .. controls ($(a.center)+(1.62,0)$) and ($(b.center)+(-1.35,0)$) .. (b.west);
 \draw[schematic] (a.center) .. controls ($(a.center)+(1.62,0)$) and ($(c.center)+(-1.35,0)$) .. (c.west);
@@ -70,13 +70,13 @@ I measure learning pressure as the negative loss gradient on a parameter. For or
 
 In the first experiment, I trained two readers on a green-dependent response from competing pathways. Training updates both the feature coefficients and the weights readers use to combine those features. The established route receives stronger gradients, which decline as prediction error falls.[^toy-gradients]
 
-{{ tikz(learning=true, source="static/images/flower-toy/competition_gradients.tex", fig_w="620px", caption="<strong>Measured pressure on competing routes.</strong> The established route receives stronger gradients, which decline as prediction error falls.") }}
+{{ tikz(learning=true, source="static/images/flower-toy/competition_gradients.tex", fig_w="620px", caption="<strong>Measured pressure on competing routes.</strong> The established route receives stronger gradients, which decline as prediction error falls. <em>r</em> is the green coefficient and <em>p</em> is mean learning pressure over each interval.") }}
 
 Readers reinforce one another when their errors favor the same update to a shared feature. Opposing updates can cancel, leaving weak net pressure despite strong individual contributions.
 
 The weights carrying signals to downstream readers also learn. For the same prediction error, a stronger input creates greater learning pressure to change how strongly the reader uses that signal.
 
-{{ tikz(learning=true, source="static/images/flower-toy/competition_reader_gradients.tex", fig_w="620px", caption="<strong>Where reader pressure comes from.</strong> Gradients change both the responses shared features produce and the weights readers use to combine them. Reader contributions can reinforce or oppose one another at a shared feature, so weak net pressure can conceal strong competing contributions. Band taper distinguishes pressure to increase a parameter from pressure to decrease it.") }}
+{{ tikz(learning=true, source="static/images/flower-toy/competition_reader_gradients.tex", fig_w="620px", caption="<strong>Where reader pressure comes from.</strong> Gradients change both the responses shared features produce and the weights readers use to combine them. Reader contributions can reinforce or oppose one another at a shared feature, so weak net pressure can conceal strong competing contributions. Band taper distinguishes pressure to increase a parameter from pressure to decrease it. <em>t</em> is the target reader output.") }}
 
 An established green signal gives the broccoli reader a useful input before its own training begins. Whether this reduces acquisition cost depends on how subsequent updates affect the other responses that share the pathway.
 
@@ -86,9 +86,8 @@ Cammarata compares neurons in InceptionV1 and ConvNeXt that initially respond to
 
 The two toy networks share an architecture and flower discrimination but have different learned pathways. Both receive identical subsequent training under a capacity limit that constrains the combined strength of flower and green responses within a pathway. In World A, shared circuitry reaches a broccoli target earlier in training at the expense of weakening the flower signal. In World B, a separate route preserves that signal but requires training an entirely new route to the target.
 
-{% tikz(learning=true, fig_w="620px", caption="<strong>One distinction, different developmental routes.</strong> The shared route reaches the broccoli target earlier in training, but shows weaker flower activation. Both routes retain flower discrimination.") %}
+{% tikz(learning=true, fig_w="620px", caption="<strong>One distinction, different developmental routes.</strong> The shared route reaches the broccoli target earlier in training, but shows weaker flower activation. Both routes retain flower discrimination. <em>r</em> is flower response strength.") %}
 \begin{tikzpicture}[learning]
-\def\responsemarkerscale{.9}
 \def\learningheadinglift{.75}
 \stageheading{0}{MATCHED CHECKPOINT}{same flower distinction}
 \stageheading{4.5}{RESPONSE EXTENSION}{reshaped pathways}
@@ -98,27 +97,27 @@ The two toy networks share an architecture and flower discrimination but have di
 }
 \pairedrowlabel{0}{WORLD A}
 \pairedrowlabel{-5.0}{WORLD B}
-\stacknode[feature,activation=7.4]{a}{0}{-5.0}{3}{1}
-\stacknode[feature,activation=7.4]{b}{0}{-5.0}{3}{2}
-\stacknode[feature,activation=7.4]{c}{0}{-5.0}{3}{3}
-\stacknode[feature,activation=7.4]{g}{0}{0}{3}{1}
-\stacknode[feature,activation=7.4]{h}{0}{0}{3}{2}
-\stacknode[feature,activation=7.4]{i}{0}{0}{3}{3}
-\stacknode[feature,activation=7.4]{d}{4.5}{-5.0}{2}{1}
-\stacknode[feature,activation=7.4]{e}{4.5}{-5.0}{2}{2}
-\stacknode[feature,activation=7.4]{f}{9}{-5.0}{2}{1}
-\stacknode[feature,activation=7.4]{broca}{9}{-5.0}{2}{2}
-\stacknode[feature,activation=7.4]{j}{4.5}{0}{2}{1}
-\stacknode[feature,activation=7.4]{k}{4.5}{0}{2}{2}
-\stacknode[feature,activation=7.4]{l}{9}{0}{2}{1}
-\stacknode[feature,activation=7.4]{brocb}{9}{0}{2}{2}
+\stacknode[feature]{a}{0}{-5.0}{3}{1}
+\stacknode[feature]{b}{0}{-5.0}{3}{2}
+\stacknode[feature]{c}{0}{-5.0}{3}{3}
+\stacknode[feature]{g}{0}{0}{3}{1}
+\stacknode[feature]{h}{0}{0}{3}{2}
+\stacknode[feature]{i}{0}{0}{3}{3}
+\stacknode[feature]{d}{4.5}{-5.0}{2}{1}
+\stacknode[feature]{e}{4.5}{-5.0}{2}{2}
+\stacknode[feature]{f}{9}{-5.0}{2}{1}
+\stacknode[feature]{broca}{9}{-5.25}{2}{2}
+\stacknode[feature]{j}{4.5}{0}{2}{1}
+\stacknode[feature]{k}{4.5}{0}{2}{2}
+\stacknode[feature]{l}{9}{0}{2}{1}
+\stacknode[feature]{brocb}{9}{-.25}{2}{2}
 \begin{pgfonlayer}{background}
-\foreach \source/\target/\clearance in {a/d/2.4pt,b/e/0pt,c/e/0pt,d/f/2.4pt,e/broca/0pt,g/j/2.4pt,g/k/0pt,i/k/0pt,j/l/2.4pt,j/brocb/0pt} {
-  \draw[flow,shorten >=\clearance] (\source.center) .. controls ($(\source.center)+(1.62,0)$) and ($(\target.center)+(-1.35,0)$) .. (\target.west);
+\foreach \source/\target in {a/d,b/e,c/e,d/f,e/broca,g/j,g/k,i/k,j/l,j/brocb} {
+  \draw[flow] (\source.center) .. controls ($(\source.center)+(1.62,0)$) and ($(\target.center)+(-1.35,0)$) .. (\target.west);
 }
 \end{pgfonlayer}
-\leftrowlabel{-5.0}{1.05}{Flower\\1.00}
-\leftrowlabel{0}{1.05}{Flower\\1.00}
+\abovenodelabel{a}{Flower \textsl{r} = 1.000}
+\abovenodelabel{g}{Flower \textsl{r} = 1.000}
 \abovenodelabel{d}{Flower}
 \abovenodelabel{e}{Green}
 \abovenodelabel{j}{Flower}
@@ -127,17 +126,16 @@ The two toy networks share an architecture and flower discrimination but have di
 \aboveannotation{6.75}{0}{Learning broccoli reduces\\activation on flower inputs}
 \end{scope}
 \belowannotation{6.75}{-5.0}{Flower activation preserved\\at greater training cost}
-\rightstacklabel{0}{2}{1}{Flower\\0.97}
-\rightstacklabel{-5.0}{2}{1}{Flower\\1.00}
-\foreach \base in {0,-5.0} {
-  \rightstacklabel{\base}{2}{2}{Broccoli}
-}
+\abovenodelabel{l}{Flower \textsl{r} = 0.967}
+\abovenodelabel{f}{Flower \textsl{r} = 1.000}
+\abovenodelabel{brocb}{Broccoli}
+\abovenodelabel{broca}{Broccoli}
 \preparelearningfooter{2.7}
 \developmentaxis{\learningaxisy}
 \foreach \marked in {a,d,f,g,j,l} { \responsetrait{\marked} }
-\node[feature,activation=7.4] at (.3,\learninglegendy) {};
+\node[feature] at (.3,\learninglegendy) {};
 \node[legendlabel] at (.7,\learninglegendy) {Mechanism};
-\node[feature,activation=7.4] (flowerkey) at (5.3,\learninglegendy) {};
+\node[feature] (flowerkey) at (5.3,\learninglegendy) {};
 \responsetrait{flowerkey}
 \node[legendlabel] at (5.7,\learninglegendy) {Flower-responsive};
 \diagramframe{\learningframebottom}
@@ -178,8 +176,6 @@ Weighting the initial responses by $\mathsf{A}$'s three pathways and $\mathsf{B}
 
 {% tikz(learning=true, preamble="static/images/flower-toy/price_gradient_values.tex", fig_w="620px", caption="<strong>Controlled construction. Change concealed by a stable mean.</strong> Selection +¼ offsets variation −¼. The open middle column isolates reweighting under the stipulated ancestry. Bands show measured flower pressure, −0.029 on A₃ and zero on the other pathways.") %}
 \begin{tikzpicture}[learning]
-% Slightly smaller markers for the accounting inset and its trait legend.
-\tikzset{feature/.append style={minimum size=4.2pt},trait/.append style={minimum size=9pt}}
 \stageheading{0}{BASELINE}{\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{2} flower-responsive}
 \stageheading{4.5}{REWEIGHTING}{calculation, \textsuperscript{3}\kern-.12em/\kern-.12em\textsubscript{4} responsive}
 \stageheading{9}{FINAL POPULATION}{\textsuperscript{1}\kern-.12em/\kern-.12em\textsubscript{2} flower-responsive}
@@ -208,18 +204,18 @@ Weighting the initial responses by $\mathsf{A}$'s three pathways and $\mathsf{B}
     \fi
   \fi
 }
-\foreach \source/\target/\clearance in {a/g/4.9pt,a/h/4.9pt,a/i/2.5pt,b/j/2.5pt} {
-  \draw[flow,shorten >=\clearance] (\source.center)
+\foreach \source/\target in {a/g,a/h,a/i,b/j} {
+  \draw[featureflow] (\source.center)
     .. controls ($(\source.center)+(3,0)$) and ($(\target.center)+(-3,0)$)
     .. (\target.center);
 }
 \end{pgfonlayer}
-\leftlabel{.5}{A}
-\leftlabel{-.5}{B}
-\rightstacklabel{0}{4}{1}{A$\mathsf{_1}$}
-\rightstacklabel{0}{4}{2}{A$\mathsf{_2}$}
-\rightstacklabel{0}{4}{3}{A$\mathsf{_3}$}
-\rightstacklabel{0}{4}{4}{B$\mathsf{_1}$}
+\abovenodelabel{a}{A}
+\abovenodelabel{b}{B}
+\abovenodelabel{g}{A$\mathsf{_1}$}
+\abovenodelabel{h}{A$\mathsf{_2}$}
+\abovenodelabel{i}{A$\mathsf{_3}$}
+\abovenodelabel{j}{B$\mathsf{_1}$}
 \foreach \name in {a,c,d,e,g,h} { \responsetrait{\name} }
 
 
@@ -271,7 +267,6 @@ Averaging the equally sized groups recovers the global terms in either history. 
 {% tikz(learning=true, fig_w="620px", caption="<strong>Controlled construction. Matched outputs, different inherited roles.</strong> Both histories have three A descendants, one B descendant, and equivalent final reader outputs. Flower-reader Price terms distinguish retention from acquisition through B. Ancestry and role targets are declared.") %}
 \begin{tikzpicture}[learning]
 \def\learningheadinglift{.75}
-\tikzset{feature/.append style={minimum size=4.2pt},trait/.append style={minimum size=9pt},reader/.style={rectangle,draw,fill=white,minimum size=6pt,inner sep=0pt,line width=.65pt}}
 \stageheading{0}{BASELINE}{earlier mechanisms}
 \stageheading{4.5}{FINAL PATHWAYS}{learned signals}
 \stageheading{9}{READERS}{equivalent final functions}
@@ -288,22 +283,22 @@ Averaging the equally sized groups recovers the global terms in either history. 
 \stacknode[feature]{u4}{4.5}{0}{4}{4}
 \stacknode[reader]{uflower}{9}{0}{2}{1}
 \stacknode[reader]{ubroccoli}{9}{0}{2}{2}
-\leftrowlabel{0}{.5}{A}
-\leftrowlabel{0}{-.5}{B}
+\abovenodelabel{ua}{A}
+\abovenodelabel{ub}{B}
 \abovenodelabel{u1}{A$\mathsf{_1}$ Flower}
 \abovenodelabel{u2}{A$\mathsf{_2}$ Flower}
 \abovenodelabel{u3}{A$\mathsf{_3}$ Green}
 \abovenodelabel{u4}{B$\mathsf{_1}$ Texture}
-\rightstacklabel{0}{2}{1}{Flower\\detectors}
-\rightstacklabel{0}{2}{2}{Broccoli\\detector}
+\abovenodelabel{uflower}{Flower detector}
+\abovenodelabel{ubroccoli}{Broccoli detector}
 \begin{pgfonlayer}{background}
-\draw[flow,shorten >=4.9pt] (ua.center) .. controls ($(ua.center)+(1.62,0)$) and ($(u1.center)+(-1.35,0)$) .. (u1.center);
+\draw[featureflow] (ua.center) .. controls ($(ua.center)+(1.62,0)$) and ($(u1.center)+(-1.35,0)$) .. (u1.center);
 \draw[flow] (u1.center) .. controls ($(u1.center)+(1.62,0)$) and ($(uflower.center)+(-1.35,0)$) .. (uflower.west);
-\draw[flow,shorten >=4.9pt] (ua.center) .. controls ($(ua.center)+(1.62,0)$) and ($(u2.center)+(-1.35,0)$) .. (u2.center);
+\draw[featureflow] (ua.center) .. controls ($(ua.center)+(1.62,0)$) and ($(u2.center)+(-1.35,0)$) .. (u2.center);
 \draw[flow] (u2.center) .. controls ($(u2.center)+(1.62,0)$) and ($(uflower.center)+(-1.35,0)$) .. (uflower.west);
-\draw[flow,shorten >=2.5pt] (ua.center) .. controls ($(ua.center)+(1.62,0)$) and ($(u3.center)+(-1.35,0)$) .. (u3.center);
+\draw[featureflow] (ua.center) .. controls ($(ua.center)+(1.62,0)$) and ($(u3.center)+(-1.35,0)$) .. (u3.center);
 \draw[flow] (u3.center) .. controls ($(u3.center)+(1.62,0)$) and ($(ubroccoli.center)+(-1.35,0)$) .. (ubroccoli.west);
-\draw[flow,shorten >=2.5pt] (ub.center) .. controls ($(ub.center)+(1.62,0)$) and ($(u4.center)+(-1.35,0)$) .. (u4.center);
+\draw[featureflow] (ub.center) .. controls ($(ub.center)+(1.62,0)$) and ($(u4.center)+(-1.35,0)$) .. (u4.center);
 \draw[flow] (u4.center) .. controls ($(u4.center)+(1.62,0)$) and ($(ubroccoli.center)+(-1.35,0)$) .. (ubroccoli.west);
 \end{pgfonlayer}
 \foreach \name in {ua,u1,u2} { \responsetrait{\name} }
@@ -315,22 +310,22 @@ Averaging the equally sized groups recovers the global terms in either history. 
 \stacknode[feature]{v4}{4.5}{-5.6}{4}{4}
 \stacknode[reader]{vflower}{9}{-5.6}{2}{1}
 \stacknode[reader]{vbroccoli}{9}{-5.6}{2}{2}
-\leftrowlabel{-5.6}{.5}{A}
-\leftrowlabel{-5.6}{-.5}{B}
+\abovenodelabel{va}{A}
+\abovenodelabel{vb}{B}
 \abovenodelabel{v1}{A$\mathsf{_1}$ Flower}
 \abovenodelabel{v2}{B$\mathsf{_1}$ Flower}
 \abovenodelabel{v3}{A$\mathsf{_2}$ Green}
 \abovenodelabel{v4}{A$\mathsf{_3}$ Texture}
-\rightstacklabel{-5.6}{2}{1}{Flower\\detectors}
-\rightstacklabel{-5.6}{2}{2}{Broccoli\\detector}
+\abovenodelabel{vflower}{Flower detector}
+\abovenodelabel{vbroccoli}{Broccoli detector}
 \begin{pgfonlayer}{background}
-\draw[flow,shorten >=4.9pt] (va.center) .. controls ($(va.center)+(1.62,0)$) and ($(v1.center)+(-1.35,0)$) .. (v1.center);
+\draw[featureflow] (va.center) .. controls ($(va.center)+(1.62,0)$) and ($(v1.center)+(-1.35,0)$) .. (v1.center);
 \draw[flow] (v1.center) .. controls ($(v1.center)+(1.62,0)$) and ($(vflower.center)+(-1.35,0)$) .. (vflower.west);
-\draw[flow,shorten >=4.9pt] (vb.center) .. controls ($(vb.center)+(1.62,0)$) and ($(v2.center)+(-1.35,0)$) .. (v2.center);
+\draw[featureflow] (vb.center) .. controls ($(vb.center)+(1.62,0)$) and ($(v2.center)+(-1.35,0)$) .. (v2.center);
 \draw[flow] (v2.center) .. controls ($(v2.center)+(1.62,0)$) and ($(vflower.center)+(-1.35,0)$) .. (vflower.west);
-\draw[flow,shorten >=2.5pt] (va.center) .. controls ($(va.center)+(1.62,0)$) and ($(v3.center)+(-1.35,0)$) .. (v3.center);
+\draw[featureflow] (va.center) .. controls ($(va.center)+(1.62,0)$) and ($(v3.center)+(-1.35,0)$) .. (v3.center);
 \draw[flow] (v3.center) .. controls ($(v3.center)+(1.62,0)$) and ($(vbroccoli.center)+(-1.35,0)$) .. (vbroccoli.west);
-\draw[flow,shorten >=2.5pt] (va.center) .. controls ($(va.center)+(1.62,0)$) and ($(v4.center)+(-1.35,0)$) .. (v4.center);
+\draw[featureflow] (va.center) .. controls ($(va.center)+(1.62,0)$) and ($(v4.center)+(-1.35,0)$) .. (v4.center);
 \draw[flow] (v4.center) .. controls ($(v4.center)+(1.62,0)$) and ($(vbroccoli.center)+(-1.35,0)$) .. (vbroccoli.west);
 \end{pgfonlayer}
 \foreach \name in {va,v1,v2} { \responsetrait{\name} }
@@ -404,7 +399,7 @@ In the continuous handoff, $\mathsf{B}$ learns first, so the fixed reader keeps 
 
 The reader trajectory establishes the interruption, which endpoint Price accounting cannot detect.
 
-{{ tikz(learning=true, source="static/images/flower-toy/handoff_continuity.tex", fig_w="620px", caption="<strong>Equivalent endpoints, different continuity.</strong> A fixed reader averages both flower signals at threshold 0.45. It keeps classifying correctly during handoff but fails at updates 1–50 during recovery, despite a distinguishable signal. Flower markers use the 0.50 pathway criterion. Both schedules reach the same parameters and outputs, with zero net selection and variation.") }}
+{{ tikz(learning=true, source="static/images/flower-toy/handoff_continuity.tex", fig_w="620px", caption="<strong>Equivalent endpoints, different continuity.</strong> A fixed reader averages flower responses <em>r</em>, using classification threshold 0.45. Pairs give outputs for flower-present then flower-absent inputs. The reader keeps classifying correctly during handoff but fails at updates 1–50 during recovery, despite a distinguishable signal. Values are rounded to three decimals. Flower markers use the 0.50 pathway criterion. Both schedules reach the same parameters and outputs, with zero net selection and variation.") }}
 
 Throughout the continuous schedule, the score for flower-present inputs stays at least 0.05 above the reader’s threshold, while flower-absent inputs score zero. The contrast persists at tested reader thresholds from 0.001 to 0.45.[^toy-continuity] Allowing downstream readers to learn during the handoff would test whether keeping this reader functional also supports further development.
 
