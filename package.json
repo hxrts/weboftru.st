@@ -5,9 +5,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "zola build && node scripts/render-tikz.mjs"
+    "build": "zola build && node scripts/render-tikz.mjs",
+    "export:tweets": "node scripts/export-tweet-diagrams.mjs"
   },
   "devDependencies": {
-    "node-tikzjax": "^1.0.5"
+    "node-tikzjax": "^1.0.5",
+    "playwright": "^1.64.1"
   }
 }
