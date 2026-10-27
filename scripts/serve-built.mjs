@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { spawn } from 'node:child_process';
+import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 
@@ -244,20 +244,37 @@ server.on('error', async error => {
     if (error.code === 'EADDRINUSE' && !replacementAttempted) {
         replacementAttempted = true;
         try {
-            const response = await fetch(`${baseUrl}/__preview_info`, { signal: AbortSignal.timeout(1500) });
-            const existing = response.ok ? await response.json() : undefined;
+            let existing;
+            try {
+                const response = await fetch(`${baseUrl}/__preview_info`, { signal: AbortSignal.timeout(1500) });
+                existing = response.ok ? await response.json() : undefined;
+            } catch (failure) {
+                // A suspended preview still owns its socket but cannot answer HTTP.
+                // Only resume a process whose command and working directory match.
+                const pids = execFileSync('lsof', ['-t', '-nP', `-iTCP:${port}`, '-sTCP:LISTEN'], { encoding: 'utf8' }).trim().split(/\s+/);
+                if (pids.length !== 1) throw failure;
+                const pid = Number(pids[0]);
+                const command = execFileSync('ps', ['-p', String(pid), '-o', 'command='], { encoding: 'utf8' }).trim();
+                const cwd = execFileSync('lsof', ['-a', '-p', String(pid), '-d', 'cwd', '-Fn'], { encoding: 'utf8' });
+                if (!/^node scripts\/serve-built\.mjs$/.test(command)
+                    || !cwd.split('\n').includes(`n${root}`)) throw failure;
+                existing = { application: 'weboftrust-preview', root, pid };
+            }
             if (existing?.application !== 'weboftrust-preview' || existing.root !== root
                 || !Number.isInteger(existing.pid) || existing.pid <= 1 || existing.pid === process.pid) {
                 throw new Error('the port is occupied by a different service');
             }
             console.log(`Restarting the existing preview for this repository (PID ${existing.pid})…`);
             process.kill(existing.pid, 'SIGTERM');
+            // Deliver the pending termination signal even after Ctrl+Z.
+            process.kill(existing.pid, 'SIGCONT');
             const deadline = Date.now() + 10000;
             while (true) {
                 try {
-                    process.kill(existing.pid, 0);
+                    // Wait for the listening socket, not process reaping by its shell.
+                    execFileSync('lsof', ['-a', '-p', String(existing.pid), '-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'], { stdio: 'ignore' });
                 } catch (failure) {
-                    if (failure.code === 'ESRCH') break;
+                    if (failure.status === 1) break;
                     throw failure;
                 }
                 if (Date.now() >= deadline) throw new Error('the existing preview did not stop within 10 seconds');
