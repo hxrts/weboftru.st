@@ -63,8 +63,11 @@ try {
                     const page = await browser.newPage({ viewport: { width: 1200, height: 1000 } });
                     try {
                         await page.addInitScript(t => localStorage.setItem('theme', t), theme);
-                        const isolated = html.replace(/<body\b[^>]*>[\s\S]*?<\/body>/i,
-                            () => `<body><main><article class="post"><div class="post-content">${markup}</div></article></main></body>`);
+                        // Zola's minifier can omit </body>. Replace through EOF
+                        // so only this diagram reaches the browser renderer.
+                        const isolated = html.replace(/<body\b[\s\S]*$/i,
+                            () => `<body><main><article class="post"><div class="post-content">${markup}</div></article></main></body></html>`);
+                        if (isolated === html) throw Error(`Missing body in ${file}`);
                         const pageUrl = `${origin}/${path.relative(output, file).split(path.sep).join('/')}`;
                         await page.route('**/*', route => {
                             const url = route.request().url();

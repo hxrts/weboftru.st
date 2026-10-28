@@ -75,6 +75,7 @@ When delay and failure are indistinguishable, a node does not know when it is sa
 
 ```mermaid
 flowchart LR
+    classDef default color:#000
     A[asynchronous silence<br/>with a missing reply] --> Q
     F[possible crash<br/>failures] --> Q{delay vs failure}
     Q -->|wait| U[no termination guarantee]
@@ -92,6 +93,7 @@ For purely additive systems, coordination is altogether avoidable. Coordination 
 
 ```mermaid
 flowchart LR
+    classDef default color:#000
     G[replica state grows<br/>by accumulation] --> Q{addition vs retraction}
     R[revocation demands<br/>retraction] --> Q
     Q -->|merge| A[require monotone growth]
@@ -111,6 +113,7 @@ The ambiguity here is the late-versus-invalid ambiguity from the formal result. 
 
 ```mermaid
 flowchart LR
+    classDef default color:#000
     D[temporal secrecy<br/>needs a stable boundary] --> Q1
     S[dynamic membership<br/>moves the cutoff] --> Q1{moving vs fixed<br/>membership}
     Q1 -->|fix membership| W[forgo authority evolution]

@@ -91,6 +91,7 @@ Aura uses a dual-window ratchet that maintains overlapping valid ranges across t
 
 ```mermaid
 flowchart TD
+    classDef default color:#000
     subgraph Authority ["Authority Tree"]
         Root[Tree Root]
         D1[Device 1] --> Root

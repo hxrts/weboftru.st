@@ -114,6 +114,23 @@
                 for (const diagram of diagrams) {
                     try {
                         await mermaid.run({ nodes: [diagram] });
+                        if (isDark) {
+                            // Subgraph headings sit on the dark cluster background.
+                            diagram.querySelectorAll('.cluster-label, .cluster-label *, .cluster text').forEach(label => {
+                                label.style.setProperty('color', '#FCFCFA', 'important');
+                                label.style.setProperty('fill', '#FCFCFA', 'important');
+                            });
+                            // Explicit black labels suit pastel nodes, but the
+                            // theme's default dark grey nodes need light text.
+                            diagram.querySelectorAll('.node').forEach(node => {
+                                const shape = node.querySelector('rect, polygon, path, circle, ellipse');
+                                if (!shape || getComputedStyle(shape).fill !== 'rgb(54, 51, 56)') return;
+                                node.querySelectorAll('.nodeLabel, .nodeLabel *, text, tspan').forEach(label => {
+                                    label.style.setProperty('color', '#FCFCFA', 'important');
+                                    label.style.setProperty('fill', '#FCFCFA', 'important');
+                                });
+                            });
+                        }
                         diagram.setAttribute('data-processed', 'true');
 
                     } catch (e) {

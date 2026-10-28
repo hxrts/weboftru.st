@@ -11,6 +11,7 @@ Aura expresses these directions through semilattices, mathematical structures th
 
 ```mermaid
 graph TD
+    classDef default color:#000
     subgraph "Facts: Join-Semilattice"
         F1[Evidence] --> F2[More Evidence]
         F2 --> F3[Combined Evidence]
@@ -41,6 +42,7 @@ These operations give evidence and authority different trajectories. Replicas co
 
 ```mermaid
 graph LR
+    classDef default color:#000
     subgraph "Join: Evidence Accumulates"
         A1[Attestation A] --> M1[Combined Evidence]
         A2[Attestation B] --> M1
@@ -70,6 +72,7 @@ Replicas converge when they receive the same evidence and apply the same rules. 
 
 ```mermaid
 graph TD
+    classDef default color:#000
     subgraph "Mutable State"
         DB[(Current State)]
         W[Authorized Writer] -->|Update| DB
@@ -83,7 +86,7 @@ graph TD
         R --> S[Derived Domain State]
     end
 
-    style DB fill:#ffcdd2,color:#263238
+    style DB fill:#ffcdd2,color:#000
     style J1 fill:#e1f5fe
     style J2 fill:#e1f5fe
     style J3 fill:#e1f5fe
@@ -100,6 +103,7 @@ Authorization combines a trusted issuer key, request facts, and local policy. Ev
 
 ```mermaid
 graph TD
+    classDef default color:#000
     subgraph "Token Attenuation Chain"
         Root["Root Token<br/>granted authority"] --> T1["Attenuated<br/>+check: operation = read"]
         T1 --> T2["Further Attenuated<br/>+check: before deadline"]
@@ -138,6 +142,7 @@ Opaque context UUIDs keep participant identities out of the identifier itself. T
 
 ```mermaid
 graph TD
+    classDef default color:#000
     subgraph "Authority A"
         JA[Journal A]
     end
@@ -178,6 +183,7 @@ Guard denial blocks the outbound message. Execution errors preserve any accounti
 
 ```mermaid
 flowchart LR
+    classDef default color:#000
     R[Request] --> CG["CapGuard<br/>check authorization"]
     CG -->|pass| FG["FlowGuard<br/>admit budget charge"]
     CG -->|fail| X1[Blocked]
@@ -211,6 +217,7 @@ A protocol can prepare a `SendEnvelope` command and submit it to the relevant gu
 
 ```mermaid
 graph TD
+    classDef default color:#000
     subgraph "Protocol Specification"
         G[Global Choreography]
         G --> PA["Projection: Alice's View"]
@@ -252,6 +259,7 @@ Signal revisions advance while their values can shrink or change. A departure re
 
 ```mermaid
 graph LR
+    classDef default color:#000
     subgraph "Fact Layer"
         F[Admitted Facts] -->|⊔ join| J[Journal]
     end
@@ -288,6 +296,7 @@ Distinct eligible attestations make the request eligible for a recovery ceremony
 
 ```mermaid
 graph TD
+    classDef default color:#000
     subgraph Evidence["Guardian attestations · 2 of 3 required"]
         G1[Guardian 1 ✓]
         G2[Guardian 2 ✓]
@@ -317,6 +326,7 @@ Each answering node applies its local disclosure policy. Admitted results can me
 
 ```mermaid
 graph TD
+    classDef default color:#000
     subgraph "Query Propagation"
         Q["Query Capability<br/>initial scope"] -->|⊓ preserve or narrow| N1["Relay<br/>scoped query"]
         N1 -->|⊓ preserve or narrow| N2["Node A<br/>local disclosure policy"]

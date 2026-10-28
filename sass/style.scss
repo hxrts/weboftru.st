@@ -1268,13 +1268,6 @@ svg[id^="mermaid-"] {
 // Aura-consensus uses e1f5ff (witness) / ffe1e1 (initiator) fills, so those
 // join the blue and coral families respectively.
 [data-theme="dark"] svg[id^="mermaid-"] {
-    // Guardian 3 uses the muted blue fill for its unavailable state.
-    g.node[data-id="G3"] foreignObject div,
-    g.node[data-id="G3"] .nodeLabel {
-        color: var(--gray-100) !important;
-        fill: var(--gray-100) !important;
-    }
-
     // Blue family → muted cyan
     rect[style*="e1f5fe" i],
     polygon[style*="e1f5fe" i],
@@ -1335,14 +1328,17 @@ svg[id^="mermaid-"] {
 }
 
 .triangle-diagram {
+    // Match the adjacent Mermaid diagrams' pastel nodes in both themes.
+    color: #000;
+
     rect {
         stroke: #c0c0c0;
     }
     line {
-        stroke: #c0c0c0;
+        stroke: var(--gray-400);
     }
     marker path {
-        fill: #c0c0c0;
+        fill: var(--gray-400);
     }
 
     .tof-convergence {
@@ -1352,7 +1348,7 @@ svg[id^="mermaid-"] {
         fill: #fff3e0;
     }
     .tof-membership {
-        fill: #e8f5e9;
+        fill: #ffcdd2;
     }
 
     [data-theme="dark"] & {
@@ -1360,20 +1356,10 @@ svg[id^="mermaid-"] {
             stroke: #6b6b6a;
         }
         line {
-            stroke: #6b6b6a;
+            stroke: #8b8b8a;
         }
         marker path {
-            fill: #6b6b6a;
-        }
-
-        .tof-convergence {
-            fill: #2a3d42;
-        }
-        .tof-secrecy {
-            fill: #4a3a20;
-        }
-        .tof-membership {
-            fill: #2d3a2a;
+            fill: #8b8b8a;
         }
     }
 }

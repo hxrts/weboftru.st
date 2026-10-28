@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, rm, cp } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, writeFile, rm, cp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -22,7 +22,7 @@ async function page(label = 'Original', caption = 'Caption', tikzLabel = 'Cache 
     </script></div><figcaption>${caption}</figcaption></figure>
     <pre class="mermaid">graph LR; A[${label}] --> B[End]</pre>
     <pre class="mermaid">graph LR; C[Unchanged] --> D[End]</pre>
-    </div></article></main></body></html>`);
+    </div></article></main>`); // Match Zola's omitted closing body/html tags.
 }
 try {
     await mkdir(output);
@@ -42,6 +42,9 @@ try {
     const unique = digest(workspace).slice(0, 12);
     await page(unique);
     run('render-tikz.mjs'); run('render-diagrams.mjs');
+    const compiled = await readFile(path.join(output, 'index.html'), 'utf8');
+    assert.ok(compiled.includes(unique), 'First Mermaid diagram must keep its own content');
+    assert.ok(compiled.includes('Unchanged'), 'Second Mermaid diagram must keep its own content');
     await page(unique);
     assert.match(run('render-tikz.mjs'), /1 cached, 0 compiled/);
     assert.match(run('render-diagrams.mjs'), /3 cached, 0 rendered/);
@@ -50,7 +53,6 @@ try {
     await page(unique, 'Revised caption');
     assert.match(run('render-tikz.mjs'), /1 cached, 0 compiled/);
     assert.match(run('render-diagrams.mjs'), /3 cached, 0 rendered/);
-    const { readFile } = await import('node:fs/promises');
     assert.match(await readFile(path.join(output, 'index.html'), 'utf8'), /Revised caption/);
 
     // One changed Mermaid diagram must not rebuild its neighbors.
