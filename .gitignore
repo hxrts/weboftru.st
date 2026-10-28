@@ -10,6 +10,7 @@ result
 
 # node
 node_modules/
+.cache/diagrams/
 
 # zola
 public/

@@ -23,6 +23,8 @@ Use `npm run build` or `just build` for production and `just build-serve` for pr
 
 - `scripts/render-tikz.mjs` compiles TikZ shortcode sources into inline SVG using node-tikzjax.
 - `scripts/render-diagrams.mjs` uses Playwright at build time to finish TikZ alignment, render Mermaid fenced blocks and shortcodes in both themes, and emit shared `.img-placeholder.diagram-placeholder` wrappers with static aspect ratios.
+- Both build stages reuse individual diagrams from `.cache/diagrams/` across clean builds and previews. Content hashes include rendering dependencies, styles, and fonts. Captions are applied separately so prose edits reuse diagrams. Delete `.cache/diagrams/` to force recompilation.
+- After a site build, `npm run test:diagram-cache` checks cache reuse, caption edits, and rebuilding only a changed diagram.
 - `scripts/align-learning-figures.js` and `scripts/render-mermaid-browser.js` are build-only browser helpers. Neither renderer runs on published pages.
 - Browser prerequisites are Playwright Chromium (`npx playwright install chromium`), installed Google Chrome, or `CHROME_EXECUTABLE_PATH`. CI installs Chromium; Linux Nix builds use the packaged browser.
 - `npm run test:diagrams` checks the built pages at mobile/desktop widths in both themes, including reserved dimensions, delayed fonts, theme switching, renderer requests, and lightboxes.

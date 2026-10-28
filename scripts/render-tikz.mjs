@@ -3,11 +3,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import tikzjax from 'node-tikzjax';
 import '../static/tikzjax/ligatures.js';
+import { cached, digest, fingerprint } from './diagram-cache.mjs';
 
 const tex2svg = tikzjax.default;
 
 const projectRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const outputRoot = path.resolve(projectRoot, process.argv[2] ?? 'public');
+const renderer = await fingerprint(['scripts/render-tikz.mjs', 'scripts/diagram-cache.mjs', 'static/tikzjax/ligatures.js', 'package-lock.json'].map(file => path.join(projectRoot, file)));
+let cacheHits = 0;
 
 async function* htmlFiles(directory) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {
@@ -27,7 +30,13 @@ for await (const htmlPath of htmlFiles(outputRoot)) {
     let renderedInPage = 0;
     const output = await replaceAsync(html, figurePattern, async (_match, attributes, source) => {
         const preparedSource = globalThis.preventFlLigatures(source);
-        const svg = await tex2svg(`\\begin{document}${preparedSource}\\end{document}`);
+        const result = await cached('tikz', digest(renderer, preparedSource), async () => {
+            const svg = await tex2svg(`\\begin{document}${preparedSource}\\end{document}`);
+            if (!svg.startsWith('<svg')) throw new Error(`TikZJax returned invalid SVG for ${htmlPath}`);
+            return svg;
+        });
+        const svg = result.value;
+        if (result.hit) cacheHits++;
         if (!svg.startsWith('<svg')) {
             throw new Error(`TikZJax returned invalid SVG for ${htmlPath}`);
         }
@@ -57,7 +66,7 @@ for await (const htmlPath of htmlFiles(outputRoot)) {
     }
 }
 
-console.log(`Rendered ${figuresRendered} TikZ figure(s) at build time.`);
+console.log(`Built ${figuresRendered} TikZ figure(s): ${cacheHits} cached, ${figuresRendered - cacheHits} compiled.`);
 
 async function replaceAsync(input, pattern, replacer) {
     const matches = [...input.matchAll(pattern)];

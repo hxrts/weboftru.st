@@ -7,7 +7,8 @@
   "scripts": {
     "build": "zola build && node scripts/render-tikz.mjs && node scripts/render-diagrams.mjs",
     "export:tweets": "node scripts/export-tweet-diagrams.mjs",
-    "test:diagrams": "node scripts/check-built-diagrams.mjs"
+    "test:diagrams": "node scripts/check-built-diagrams.mjs",
+    "test:diagram-cache": "node scripts/test-diagram-cache.mjs"
   },
   "devDependencies": {
     "node-tikzjax": "^1.0.5",

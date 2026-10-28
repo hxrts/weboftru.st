@@ -45,11 +45,22 @@ jobs:
       - name: Install diagram renderer browser
         run: npx playwright install --with-deps chromium
 
+      - name: Restore compiled diagrams
+        uses: actions/cache@v4
+        with:
+          path: .cache/diagrams
+          key: diagrams-v1-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            diagrams-v1-${{ runner.os }}-
+
       - name: Build site
         run: npm run build
 
       - name: Check static diagrams
         run: npm run test:diagrams
+
+      - name: Check diagram cache
+        run: npm run test:diagram-cache
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
