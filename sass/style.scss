@@ -627,7 +627,7 @@ body > footer {
 }
 
 .post-footer {
-    margin-top: var(--s-10);
+    margin-top: calc(var(--s-10) + 4px);
     display: flex;
     justify-content: space-between;
     align-items: center;

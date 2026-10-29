@@ -3,6 +3,10 @@ title = "The Shape of Authority"
 date = 2025-01-09
 description = "How evidence, capabilities, and explicit agreement shape consent in Aura"
 slug = "shape-of-authority"
+
+[extra]
+cover_image = "/images/shape-texture.png"
+cover_alt = "Overlapping black and white textures with contrasting shapes and densities"
 +++
 
 How far should authority travel when it changes hands? You can narrow permissions or pass them along, while broader authority requires a new grant. Evidence follows a different trajectory, accumulating as participants contribute attestations and decisions.
