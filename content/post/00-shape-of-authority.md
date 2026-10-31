@@ -1,6 +1,6 @@
 +++
 title = "The Shape of Authority"
-date = 2025-01-09
+date = 2025-01-06
 description = "How evidence, capabilities, and explicit agreement shape consent in Aura"
 slug = "shape-of-authority"
 
