@@ -1,6 +1,6 @@
 +++
 title = "Adaptive Mesh Routing"
-date = 2025-05-20
+date = 2025-05-21
 description = "Building a mesh routing protocol that adapts to changing connectivity and resource limits."
 slug = "jacquard"
 +++
