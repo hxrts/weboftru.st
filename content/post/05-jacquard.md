@@ -79,7 +79,7 @@ The most immediate use is to investigate a proposed routing design’s operating
 
 ---
 
-[^jacquard]: [Jacquard source repository](https://github.com/hxrts/jacquard). This post uses the revised 60-page [routing analysis report](https://hxrts.com/jacquard/reports/router-tuning-report.pdf), with implementation and measurement code pinned to [commit `03810f6`](https://github.com/hxrts/jacquard/commit/03810f6b80e7997a281d07e0205cd6181503e715). Report generation records the source fingerprint, artifact hashes, and seeds in its provenance artifact. The rerun comprises 1,488 routing runs and 2,112 contact-policy runs across seeds 41, 43, 47, and 53.
+[^jacquard]: [Jacquard source repository](https://github.com/hxrts/jacquard). This post uses the 60-page [routing analysis report](https://hxrts.com/jacquard/reports/router-tuning-report.pdf), with implementation and measurement code pinned to [commit `03810f6`](https://github.com/hxrts/jacquard/commit/03810f6b80e7997a281d07e0205cd6181503e715). Report generation records the source fingerprint, artifact hashes, and seeds in its provenance artifact. The experiments comprise 1,488 routing runs and 2,112 contact-policy runs across seeds 41, 43, 47, and 53.
 
 [^engines]: [Introduction and engine scope](https://github.com/hxrts/jacquard/blob/03810f6b80e7997a281d07e0205cd6181503e715/docs/101_introduction.md). The BATMAN variants differ substantially. Babel permits infeasible fallback, and OLSRv2 implements a simplified protocol. Results concern these implementations and configurations.
 
@@ -89,7 +89,7 @@ The most immediate use is to investigate a proposed routing design’s operating
 
 [^stale]: [Report, Table 6, p. 27](https://hxrts.com/jacquard/reports/router-tuning-report.pdf#page=27). The [support evaluator](https://github.com/hxrts/jacquard/blob/03810f6b80e7997a281d07e0205cd6181503e715/crates/simulator/src/experiments/support.rs) checks installed explicit paths or next-hop continuations against directed, usable links. It records preexisting failures separately and scans all later rounds, including later failures. These cumulative unsupported rounds measure exposure after intervention, without attributing every failure to that intervention.
 
-[^scatter-stale]: Connected-route staleness does not apply to Scatter’s deferred-delivery claim. Its 93.3% publication presence describes retained routing claims, not connected paths or delivered messages. The revised report preserves this distinction in tables, figures, and rankings, with deferred delivery evaluated separately in the contact-policy model.
+[^scatter-stale]: Connected-route staleness does not apply to Scatter’s deferred-delivery claim. Its 93.3% publication presence describes retained routing claims, not connected paths or delivered messages. The report preserves this distinction in tables, figures, and rankings, with deferred delivery evaluated separately in the contact-policy model.
 
 [^selection]: [Report, mixed-router comparison and Table 15](https://hxrts.com/jacquard/reports/router-tuning-report.pdf#page=18). The standalone high-loss top tier includes Pathway, Scatter, Mercator, and Pathway with BATMAN Bellman. Their published route shapes provide different kinds of support.
 
