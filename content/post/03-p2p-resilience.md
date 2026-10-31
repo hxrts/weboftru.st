@@ -1,6 +1,6 @@
 +++
 title = "Patterns for P2P Resilience"
-date = 2026-04-21
+date = 2025-03-20
 description = "Design patterns for resilient encrypted P2P networks"
 slug = "p2p-resilience"
 
