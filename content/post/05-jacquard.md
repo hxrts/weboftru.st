@@ -25,6 +25,8 @@ Later observations can undermine the evidence supporting that route. A lost link
 
 This distinction also permits honest descriptions of disconnection. Scatter can claim that opportunistic delivery is supportable without publishing a connected path. A corridor engine can distinguish loss of connected support from a decision to retain a message. Applications can make waiting an explicit requirement, and admission checks must preserve its meaning across a change of strategy.
 
+{{ tikz(source="static/images/jacquard/adaptation-findings.tex", fig_w="620px", caption="<strong>One disruption, three responses.</strong> The same disconnection can leave a route claim unsupported, end the claim, or leave a message waiting for another contact. Teal arrows mark a retained route claim. This is a schematic of possible responses, not a measured switching sequence.") }}
+
 ## Experiments that can be replayed
 
 The experiments first ask where each strategy’s operating assumptions stop supporting useful routing. A further question is whether observations of changing conditions can guide a better response. Jacquard compares implementations under controlled changes in connectivity, workload, and resource pressure. The scenarios include asymmetric links, partitions, delayed observations, and overloaded relays.
@@ -56,8 +58,6 @@ Delayed information creates another discrepancy between route presence and valid
 Registering several engines provides options for adaptation. In one high-loss connected scenario, however, the mixed router achieved 87.5% route presence. The best standalone engines reached 91.6% under their representative configurations.[^selection] Having a better option registered did not ensure its selection.
 
 The router can retain an early acceptable route until maintenance or expiry triggers reconsideration. That policy preserves continuity, but it can delay a useful switch. Adaptive routing therefore requires criteria for reconsidering a strategy before its existing route disappears. The current experiments expose that requirement without yet establishing a reliable selection rule.
-
-{{ tikz(source="static/images/jacquard/adaptation-findings.tex", fig_w="620px", caption="<strong>Different limits of engine composition.</strong> A compares Pathway with Pathway + BATMAN Bellman, which eliminates two starved flows in the shared-corridor experiment. B shows mixed-router selection trailing the standalone top tier by 4.1 percentage points under high loss. Bars measure route presence, not packet delivery, over the fairness window in A and the full run in B.") }}
 
 Mercator explores a response to these findings. It maintains a bounded collection of evidence and plans a primary route with alternatives.[^mercator] It tracks underserved objectives and pressure on heavily used relays. Its repair process invalidates evidence after topology changes and withdraws connected support when surviving alternatives are insufficient.
 
