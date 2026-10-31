@@ -6,14 +6,11 @@ default:
 manifest:
     ./scripts/generate-image-manifest.sh
 
-# watch, rebuild TikZ SVGs, and serve a live preview including drafts
-serve: build-serve
-
 # watch, rebuild TikZ SVGs, and serve drafts inside the pinned Nix environment
-build-serve:
-    nix develop --command just _build-serve
+serve:
+    nix develop --command just _serve
 
-_build-serve: manifest
+_serve: manifest
     test -d node_modules/node-tikzjax || npm ci
     node scripts/serve-built.mjs
 

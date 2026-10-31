@@ -7,7 +7,7 @@ blog style guide.
 
 ## Draft visibility in post lists
 
-- `zola serve --drafts` and `just build-serve` include drafts in the
+- `zola serve --drafts` and `just serve` include drafts in the
   post list on the homepage (`templates/index.html`) and the `/post/` section
   page (`templates/section.html`).
 - Zola exposes `page.draft` (true/false) to templates, so both templates wrap
@@ -19,7 +19,7 @@ blog style guide.
 
 ## Static diagrams
 
-Use `npm run build` or `just build` for production and `just build-serve` for preview. Bare `zola build` / `zola serve` do not compile diagrams.
+Use `npm run build` or `just build` for production and `just serve` for preview. Bare `zola build` / `zola serve` do not compile diagrams.
 
 - `scripts/render-tikz.mjs` compiles TikZ shortcode sources into inline SVG using node-tikzjax.
 - `scripts/render-diagrams.mjs` uses Playwright at build time to finish TikZ alignment, render Mermaid fenced blocks and shortcodes in both themes, and emit shared `.img-placeholder.diagram-placeholder` wrappers with static aspect ratios.
