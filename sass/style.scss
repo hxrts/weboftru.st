@@ -481,6 +481,11 @@ body > footer {
 // Landing Page
 // -----------------------------------------------------------------------------
 
+// Diagram covers follow the same dark-mode inversion as inline TikZ figures.
+[data-theme="dark"] .hero-image-diagram img {
+    filter: invert(1);
+}
+
 .landing {
     margin-bottom: var(--s-8);
 
@@ -1070,7 +1075,7 @@ body > footer {
         font-size: var(--t-sm);
         color: var(--c-text-muted);
         text-align: left;
-        margin-top: var(--s-2);
+        margin-top: var(--s-3);
     }
 
     // Footnote citations — the standard citation component. Superscript
@@ -1428,7 +1433,7 @@ svg[id^="mermaid-"] {
         font-size: var(--t-sm);
         color: var(--c-text-muted);
         text-align: left;
-        margin-top: var(--s-2);
+        margin-top: var(--s-3);
     }
 }
 

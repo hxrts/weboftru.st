@@ -3,7 +3,10 @@
   "manhattan-transcripts.jpg": {"width": 705, "height": 472},
   "pixillation.jpg": {"width": 560, "height": 438},
   "byte-neuron.png": {"width": 1538, "height": 1324},
+  "mesh.png": {"width": 1000, "height": 699},
+  "playground.png": {"width": 1000, "height": 607},
   "shape-texture.png": {"width": 1100, "height": 623},
   "triangle-of-forgetting.png": {"width": 3846, "height": 2163},
-  "happening-score.webp": {"width": 1200, "height": 839}
+  "happening-score.webp": {"width": 1200, "height": 839},
+  "adaptive-mesh-routing.svg": {"width": 1400, "height": 900}
 }

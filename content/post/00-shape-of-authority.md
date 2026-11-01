@@ -5,8 +5,9 @@ description = "How evidence, capabilities, and explicit agreement shape consent 
 slug = "shape-of-authority"
 
 [extra]
-cover_image = "/images/shape-texture.png"
-cover_alt = "Overlapping black and white textures with contrasting shapes and densities"
+cover_image = "/images/playground.png"
+cover_alt = "Isamu Noguchi’s playground model with swings, climbing structures, and long shadows"
+cover_caption = "Isamu Noguchi, Playground for Ala Moana Park, Hawaii (1940)"
 +++
 
 How far should authority travel when it changes hands? You can narrow permissions or pass them along, while broader authority requires a new grant. Evidence follows a different trajectory, accumulating as participants contribute attestations and decisions.

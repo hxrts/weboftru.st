@@ -8,7 +8,8 @@ manifest:
 
 # watch, rebuild TikZ SVGs, and serve drafts inside the pinned Nix environment
 serve:
-    nix develop --command just _serve
+    mkdir -p .cache
+    nix develop --profile .cache/dev-shell --command just _serve
 
 _serve: manifest
     test -d node_modules/node-tikzjax || npm ci

@@ -11,6 +11,7 @@ result
 # node
 node_modules/
 .cache/diagrams/
+.cache/dev-shell*
 
 # zola
 public/
