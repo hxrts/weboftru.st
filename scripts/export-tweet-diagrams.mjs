@@ -58,7 +58,7 @@ try {
     for (const [filename, title, caption] of figures) {
         const page = await browser.newPage({ viewport: { width: 900, height: 675 }, deviceScaleFactor: 2, colorScheme: 'light' });
         try {
-            await page.goto(`http://127.0.0.1:${server.address().port}/post/learning-to-be-clean/`, { waitUntil: 'networkidle' });
+            await page.goto(`http://127.0.0.1:${server.address().port}/post/what-remains/`, { waitUntil: 'networkidle' });
             const selected = page.locator('figure.tikz-fig').filter({ has: page.locator('figcaption strong', { hasText: title }) });
             if (await selected.count() !== 1) throw new Error(`Expected exactly one figure titled "${title}"`);
             await selected.evaluate(element => element.setAttribute('data-tweet-selected', 'true'));

@@ -31,10 +31,12 @@ export async function continuityPlotTex() {
         tex += `\\node[anchor=west,text=black!60] at (10.15,${base + 1.08}) {Threshold};\n`;
         const trace = records.filter(row => row.schedule === schedule);
         tex += `\\draw[black,line width=1.1pt,line join=round] plot coordinates {${trace.map(row => `(${(row.step / 8).toFixed(4)},${(base + row.flower_score * 2.4).toFixed(7)})`).join(' ')}};\n`;
-        for (const step of [0, 40, 80]) tex += `\\draw[line width=.6pt] (${step / 8},${base}) -- (${step / 8},${base - .1});\n`;
+        for (const step of [0, 40, 80]) {
+            tex += `\\draw[line width=.6pt] (${step / 8},${base}) -- (${step / 8},${base - .1});\n`;
+            tex += `\\node[anchor=north] at (${step / 8},${base - .18}) {${step}};\n`;
+        }
     }
     tex += String.raw`\node[text=black!65] at (5,4.45) {Reader correct throughout};
-\foreach \x/\label in {0/0,5/40,10/80} {\node[anchor=north] at (\x,-.18) {\label};}
 \node at (5,-.9) {Training updates};
 \end{tikzpicture}`;
     return tex;
