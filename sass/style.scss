@@ -1103,14 +1103,18 @@ body > footer {
         content: ", ";
     }
 
+    .acknowledgements,
+    .footnote-definition {
+        font-size: var(--t-sm);
+        color: var(--c-text-muted);
+        text-align: left;
+    }
+
     .footnote-definition {
         display: grid;
         grid-template-columns: 1.6em minmax(0, 1fr);
         align-items: baseline;
         gap: 0 var(--s-1);
-        font-size: var(--t-sm);
-        color: var(--c-text-muted);
-        text-align: left;
         // Tighten the reference list: kill the global p bottom margin that
         // would otherwise inflate the gap between entries, and keep only a
         // small margin-top between rows.

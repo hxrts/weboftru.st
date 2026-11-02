@@ -11,13 +11,13 @@ cover_caption = "Byte Magazine, August 1979"
 
 ## What makes a feature useful?
 
-Every acquisition changes what a neural network learns next. So how should we think about learned mechanisms if neural circuitry itself is a moving target?
+Every acquisition changes what a neural network learns next. But if neural circuitry itself is a moving target, what is the conserved nature of a learned mechanism?
 
 In *Neural Networks Are Already Clean*, Nick Cammarata notes the importance of identifying when mechanisms are used in later development.
 
 > When I say neural networks are already clean, I mean something deeper than neuron monosemanticity, although even by that standard, I think things look much better than the field expects. I mean that a network’s parts are built to be read, and built upon, by its downstream readers.[^cammarata]
 
-Cammarata follows a neuron in a retrained InceptionV1 model whose strongest responses initially come from yellow-flower images, some with dogs. Green objects and dogs without flowers appear later, followed by broccoli. The observed sequence motivates his developmental explanation, but does not address the causal links that connect feature responses.
+Cammarata follows a neuron in a retrained InceptionV1 model whose strongest responses initially come from yellow-flower images, some with dogs. Green objects and dogs without flowers appear later, followed by broccoli. This developmental history traces how a mechanism's responses branch into related domains.
 
 {% tikz(learning=true, fig_w="620px", caption="<strong>A developmental history.</strong> A schematic of the response sequence Cammarata reports. Arrows suggest links between responses without establishing causation.") %}
 \begin{tikzpicture}[learning]
@@ -52,7 +52,7 @@ Cammarata follows a neuron in a retrained InceptionV1 model whose strongest resp
 
 Cammarata calls the branching of responses across related inputs "recursive generalization." His proposed explanation is that existing mechanisms give related learning a head start.
 
-An established response may give later learning a head start, but when does it help other parts of the network learn to use that response? I use controlled experiments to test how earlier acquisitions affect later learning and whether readers retain access to useful signals as their sources change.
+Cammarata traces how a mechanism develops. In this post, I build on this and ask what is conserved through that development. I use controlled experiments to examine which responses persist, which readers continue to use them, and whether their usefulness survives changes in the circuitry supplying them. These experiments distinguish forms of continuity and examine how earlier acquisitions shape later learning.
 
 ## One path leads to another
 
@@ -405,15 +405,23 @@ Each pathway has one equally weighted descendant, giving zero selection. The unc
 
 {{ tikz(learning=true, source="static/images/flower-toy/handoff_continuity.tex", fig_w="620px", caption="<strong>Equivalent endpoints, different continuity.</strong> A fixed reader averages flower responses <em>r</em>, using classification threshold 0.45. Pairs give outputs for flower-present then flower-absent inputs. The reader keeps classifying correctly during handoff but fails at updates 1–50 during recovery, despite a distinguishable signal. Values are rounded to three decimals. Flower markers use the 0.50 pathway criterion. Both schedules reach the same parameters and outputs, with zero net selection and variation.") }}
 
-Throughout the continuous schedule, the score for flower-present inputs stays at least 0.05 above the reader’s threshold, while flower-absent inputs score zero. At each tested threshold from 0.001 to 0.45, the continuous schedule preserves classification and the reversed schedule briefly loses it.[^toy-continuity] Letting the reader learn during the handoff could test whether preserving classification also helps later acquisition.
+Throughout the continuous schedule, the score for flower-present inputs stays at least 0.05 above the reader’s threshold, while flower-absent inputs score zero. At each tested threshold from 0.001 to 0.45, the continuous schedule preserves classification and the reversed schedule briefly loses it.[^toy-continuity]
 
-Different histories do not necessarily leave different learning opportunities. Both schedules reach the same state, so further training under the same conditions would produce matching updates. The earlier acquisition experiments show how retained differences in circuitry can change later learning costs. History matters through the structure it leaves available and the capabilities it maintains along the way.
+Both schedules reach the same state, so further training under identical conditions would produce matching updates. Their difference lies in what the reader could do along the way. The earlier experiments show how retained circuitry can shape later learning; this experiment shows that continuity of use is a separate property.
 
-A signal’s usefulness depends on how it supports a reader’s task. Its presence alone does not establish that the reader can use it. Following that dependence through training reveals a form of continuity that tracking individual mechanisms can miss. Learning can preserve a reader’s access to a distinction even as the mechanism supplying it changes.
+Together, these experiments distinguish a response’s persistence, a reader’s dependence on it, and uninterrupted access to it. A response can survive without remaining usable, and a useful response can pass between mechanisms. Functional conservation therefore requires specifying what remains usable, by which reader, and over what interval.
+
+Protein function offers a familiar analogy. Related proteins can retain functional structures despite differences in their amino-acid sequences.[^protein-conservation] Likewise, preserving a learned capability need not require preserving every component that first supplied it.
+
+Cammarata’s clean-network account explains mechanisms through their use by downstream readers. This account of functional conservation follows that relationship through change. Matching endpoints alone cannot establish its continuity. What is conserved is the reader’s ability to use a learned distinction, even as the mechanism supplying it changes.
 
 ---
 
+<p class="acknowledgements">Thank you to Toby Shorin and Cullen Miller for your support and feedback while writing this post.</p>
+
 [^cammarata]: Cammarata, N. (2026). [*Neural Networks Are Already Clean*](https://already-clean.goodfire.com/). Goodfire.
+
+[^protein-conservation]: Kendrew, J. C. (1962). [*Myoglobin and the Structure of Proteins*](https://www.nobelprize.org/uploads/2025/08/kendrew-lecture-2.pdf). Nobel lecture. The globins illustrate related structures and oxygen-binding functions across differences in amino-acid sequence. Continuous reader access during neural training is tested separately by the handoff experiment.
 
 [^toy-model]: The [flower-toy model and experiments](https://github.com/hxrts/flower-toy) were constructed for this post. They use flower, green, and texture cues. Acquisition trains a green coefficient under a fixed broccoli readout, while competition trains features and readers. Downstream learning trains pathway coordinates and read gains from reader errors, but plots only green-coordinate and read-gain gradients.
 
@@ -468,6 +476,8 @@ A signal’s usefulness depends on how it supports a reader’s task. Its presen
 [^toy-continuity]: The [handoff trace](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/handoff_trajectories.csv) tests flower-present and flower-absent inputs after every update, with a fixed mean reader and classification threshold 0.45. Each pathway receives 40 gradient steps at rate 0.2 on a prescribed squared-error target, with acquisition and loss ordered oppositely. [Endpoint accounting](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/handoff_price.csv) uses binary responsiveness and one-to-one ancestry. The trace includes positive and negative scores and margins.
 
     [Threshold checks](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/handoff_thresholds.csv) evaluate 0.001, 0.01, 0.10, 0.25, 0.45, and 0.50 without retraining. Continuous handoff preserves classification at the first five thresholds, while interrupted recovery fails temporarily at each. At 0.50, the continuous schedule reaches a zero-margin boundary, with floating-point rounding producing a final failed classification. Its minimum positive score is approximately 0.50, compared with 6.65 × 10⁻⁵ during interrupted recovery.
+
+    Letting the reader learn during the handoff could test whether preserving classification also helps later acquisition.
 
 [^price1972]: Price, G. R. (1972). [Extension of covariance selection mathematics](https://doi.org/10.1111/j.1469-1809.1957.tb01874.x). *Annals of Human Genetics*, 35, 485–490.
 
