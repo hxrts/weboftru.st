@@ -86,7 +86,9 @@ I would therefore replay the intended workload and check deadline success, recov
 
 The reference client assembles engines behind a host bridge for incoming events, logical time, and queued sends. Applications submit objectives through common interfaces. Mercator and Scatter expose recipient delivery records, while connected engines supply forwarding choices for application relays. Custom transports can reuse this assembly.[^library]
 
-Developers can set evaluation deadlines and resource limits in the simulator, then replay expected network conditions. They can inspect rejected requests, stale forwarding evidence, queued messages, and failed recovery. Saved configurations and seeds make failures reproducible. The library helps determine which operating contract a proposed routing system can support.
+Developers can set evaluation deadlines and resource limits in the simulator, then replay expected network conditions. They can inspect rejected requests, stale forwarding evidence, queued messages, and failed recovery. Saved configurations and seeds make failures reproducible.
+
+Give Jacquard a try if you're trying to understand the the system contract of an existing mesh routing protocol, or if you're engineering your own protocol for a desired set of conditions.
 
 ---
 
