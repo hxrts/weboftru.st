@@ -407,6 +407,8 @@ Each pathway has one equally weighted descendant, giving zero selection. The unc
 
 Throughout the continuous schedule, the score for flower-present inputs stays at least 0.05 above the reader’s threshold, while flower-absent inputs score zero. At each tested threshold from 0.001 to 0.45, the continuous schedule preserves classification and the reversed schedule briefly loses it.[^toy-continuity]
 
+{{ tikz(learning=true, source="static/images/flower-toy/handoff_reader_scores.tex", fig_w="620px", caption="<strong>Reader access during the handoff.</strong> Both schedules end with identical parameters and reader outputs. The dashed line marks the fixed classification threshold of 0.45; shading marks failed classification at updates 1–50 in the interrupted schedule. Flower-absent scores remain zero throughout.") }}
+
 Both schedules reach the same state, so further training under identical conditions would produce matching updates. Their difference lies in what the reader could do along the way. The earlier experiments show how retained circuitry can shape later learning; this experiment shows that continuity of use is a separate property.
 
 Together, these experiments distinguish a response’s persistence, a reader’s dependence on it, and uninterrupted access to it. A response can survive without remaining usable, and a useful response can pass between mechanisms. Functional conservation therefore requires specifying what remains usable, by which reader, and over what interval.
