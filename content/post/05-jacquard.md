@@ -38,7 +38,7 @@ I then broadened the simulations across routing engines and operating conditions
 
 ## Measuring service and its cost
 
-A separate support experiment counted rounds when published claims of connected forwarding lacked usable support. In its recovery-window scenario, Pathway averaged nine such rounds per objective after disruption. Mercator recorded zero, while exposing deferred claims during disconnection.[^stale] These forwarding-support results leave application deadline success to be measured.
+My next experiment counted how many simulation rounds an engine advertised connected forwarding even though its selected peer sequence or next-hop decisions could not reach the destination over usable links. In its recovery-window scenario, Pathway averaged nine such rounds per objective after disruption. Mercator recorded zero, while exposing deferred claims during disconnection.[^stale] These forwarding-support results leave application deadline success to be measured.
 
 All seven engines face the same nominal workload, with a base budget of 4 KiB per directed link per round and a 16 KiB engine payload ceiling per node. Recovery counts windows that regain 90% deadline success within two deadlines. Traffic counts actual serialized bytes through the final application deadline, including protocol messages and traffic from unsuccessful deliveries. Peak buffer is the largest engine-owned payload and reassembly footprint, and drain is the maximum observed queue clearance time in rounds after new messages stop.[^joint-metrics]
 
@@ -92,11 +92,11 @@ Scatter's result illustrates why the distinction matters: retaining a message is
 
 ## When is adaptive routing worth it?
 
-I would consider adaptive routing when changing contacts or resource constraints keep changing which forwarding choices remain usable. In this study's cyclic-contact trials, Mercator's adaptive policy met 97.8% of deadlines, compared with 82.4% for the fixed-peer-route control.[^contract]
+Waiting on a well-chosen peer sequence can handle some interruptions. Adaptation becomes useful when the available continuations change during a message's lifetime. In cyclic-contact trials, adaptive Mercator met 97.8% of deadlines, compared with 82.4% for the fixed-peer-route control.[^contract]
 
-Where the fixed control already works well, the benefit is less clear. Burst trials were nearly tied at 97.4% and 97.3%, with the paired interval for the difference including zero. In one low-bandwidth grid setting, adaptive routing lost 8.3 percentage points.[^contract] Extra discovery and state maintenance must earn their bandwidth and storage costs.
+That flexibility has costs. Burst trials were nearly tied at 97.4% and 97.3%, with the paired interval for the difference including zero. In one low-bandwidth grid setting, adaptation lost 8.3 percentage points.[^contract] Discovery and state maintenance can consume resources without producing enough additional timely deliveries.
 
-I would therefore replay the intended workload and check deadline success, recovery, traffic, and buffer limits before choosing a policy. A saved development case also missed a recovery target because one message arrived a round late.[^boundary] Unknown-peer discovery, restart survival, and validation on physical radios remain outside these simulations.
+I would therefore start with effective forwarding and bounded custody, then replay the intended workload to test whether adaptation earns its traffic and storage costs through better deadline success and recovery. These comparisons evaluate the complete adaptive policy, not the contribution of each mechanism. Recovery is not uniform: a saved development case missed its target because one message arrived a round late.[^boundary] Unknown-peer discovery, restart survival, and physical-radio validation remain outside these simulations.
 
 ## Using Jacquard as a library
 
