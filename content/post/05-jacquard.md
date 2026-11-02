@@ -1,5 +1,5 @@
 +++
-title = "Adaptive Mesh Routing"
+title = "Jacquard: Adaptive Mesh Routing"
 date = 2025-05-21
 description = "Building a mesh routing protocol that adapts to changing connectivity and resource limits."
 slug = "jacquard"
@@ -30,7 +30,7 @@ This collection lets me compare implicit contracts and locate their failure limi
 
 ## Strategy selection
 
-I first tried layering existing routing algorithms as middleware. This behaved like a priority stack, with one router serving as another's fallback. Useful switching required shared context about connectivity, evidence freshness, and resources. Encoding that context centrally would have made Jacquard's engine-neutral framework too opinionated.[^strategy]
+I first tried using the existing routing algorithms as layered middleware. The engines operated in priority order, with the fallback engine used only when the preferred engine could not provide a usable forwarding option. Useful switching required shared context about connectivity, evidence freshness, and resources. Encoding that context centrally would have made Jacquard's engine-neutral framework too opinionated.[^strategy]
 
 Next I added Bellman-Ford computation over a gossip-built topology graph to BATMAN's next-hop selection, creating BATMAN Bellman. I wanted to compare locally observed forwarding quality with quality calculated from a wider topology view. The hybrid was more effective in my early forwarding-support tests. It still maps a destination to a neighbor, paying for extra topology information without exposing a Pathway-style peer route.[^hybrid]
 
@@ -42,6 +42,8 @@ A separate support experiment counted rounds when published claims of connected 
 
 All seven engines face the same nominal workload, with a base budget of 4 KiB per directed link per round and a 16 KiB engine payload ceiling per node. Recovery counts windows that regain 90% deadline success within two deadlines. Traffic counts actual serialized bytes through the final application deadline, including protocol messages and traffic from unsuccessful deliveries. Peak buffer is the largest engine-owned payload and reassembly footprint, and drain is the maximum observed queue clearance time in rounds after new messages stop.[^joint-metrics]
 
+The classic implementations provide connected forwarding, while Mercator also supplies custody, acknowledgements, and retries. The table compares complete configured delivery systems, so differences include these delivery mechanisms as well as forwarding decisions.[^engines]
+
 | Engine | On time | Worst sender | 90% recovery | KiB / timely | Peak buffer | Drain |
 |---|---:|---:|---:|---:|---:|---:|
 | BATMAN Classic | 53.7% | 38.0% | 144/768 | 636.0 | 0 B | 0 |
@@ -52,7 +54,9 @@ All seven engines face the same nominal workload, with a base budget of 4 KiB pe
 | Scatter | 42.8% | 0.0% | 0/768 | 95.2 | 1,024 B | 62 |
 | Mercator | 96.4% | 92.9% | 768/768 | 46.9 | 1,280 B | 11 |
 
-In these configured runs, Scatter's deadline success was 42.8%, compared with 96.4% for Mercator. Worst sender success averaged 0.0% and 92.9%, respectively. Scatter's default forwarding thresholds require a peer with a sufficiently higher score. Equal relay resources leave the remote sender's packets waiting.[^scatter]
+In these configured runs, Scatter's deadline success was 42.8%, compared with 96.4% for Mercator. Worst sender success averaged 0.0% and 92.9%, respectively. Scatter's default forwarding thresholds require an advantage in storage allowance or relay headroom for non-recipient peers. Equal relay resources provide no positive gradient, and the single shared transport also restricts dense-mode forwarding.[^scatter]
+
+One sender has direct recipient contacts; the other needs intermediate relays. Scatter can retain the distant sender's messages without identifying a qualifying relay, leaving them waiting despite available forwarding opportunities. Retention alone therefore does not ensure progress. This is a limitation of the configured policy, not evidence that store-and-forward generally performs poorly.
 
 ## Testing delivery as conditions change
 
@@ -64,15 +68,27 @@ Development runs select the best-performing of eight Mercator baseline configura
 
 ## Mercator's adaptive delivery
 
+BATMAN Classic adapts its preferred neighbor as reachability observations change. Babel exchanges destination costs, while OLSRv2 derives next hops from disseminated topology. BATMAN Bellman adds graph-based computation but still selects a neighbor, and Pathway searches for explicit peer sequences. Mercator brings supported forwarding alternatives and bounded message custody into the same engine, allowing it to reconsider both where a message should move and whether it should wait.[^route-shapes][^mercator]
+
 Mercator groups a primary peer sequence and bounded alternatives into a **corridor**, using recent evidence and estimated relay pressure. A corridor preserves alternative continuations, giving forwarding more flexibility than a single selected peer route.[^route-shapes]
 
-Bounded queries fill gaps in topology knowledge, while permission to wait enables retention, custody transfers, and acknowledged returns from dead ends. Recent recipient acknowledgements temporarily discourage blind exploration and returns, while known fresh alternatives remain usable. Buffer, transmission, and lifetime limits bound the work spent pursuing delivery.[^mercator]
+If the primary sequence loses support, Mercator can replace it with an alternative whose evidence remains valid. If none remains supported, it withdraws the connected-forwarding claim. Permitted custody can keep the delivery attempt active without asserting that a connected route exists.[^mercator]
+
+For example, a message may reach a relay just before the network partitions. The relay can retain it, within storage and lifetime limits, until a usable contact appears. The delivery objective persists while the available means of reaching the recipient change.
+
+Bounded queries fill gaps in topology knowledge, while acknowledged custody transfers and returns let messages move between relays. Recent recipient acknowledgements temporarily discourage blind exploration and returns, while known fresh alternatives remain usable. Buffer, transmission, and lifetime limits bound the work spent pursuing delivery.[^mercator] These mechanisms draw on established opportunistic routing and delay-tolerant networking ideas; Mercator combines them around an evidence-qualified corridor and delivery lifecycle.
+
+Scatter also retains messages across disconnection, so waiting alone does not distinguish Mercator. Scatter chooses opportunistic replication and handoff from local peer scores without maintaining a topology graph or corridor. Mercator combines discovered peer sequences and supported alternatives with acknowledged custody transfers, using connected forwarding when supported and permitted holding when it is not.[^engines][^mercator]
 
 Adaptive Mercator delivered 96.4% of offered messages by their deadline, compared with 94.0% for the fixed-peer-route policy selected on development runs. The paired difference was 2.3 percentage points, with a 95% confidence interval of 2.0 to 2.6 points. Under resource pressure, the rates were 86.6% and 79.9%. During contact gaps, they were 92.3% and 89.9%.[^contract]
 
 {{ tikz(source="static/images/jacquard/adaptation-findings.tex", fig_w="620px", caption="<strong>Deadline success by operating condition.</strong> Points average deadline success for messages created in each condition, equally across six nominal cells and 64 paired seeds. Shading marks changing conditions. Recovered combines both recovery periods.") }}
 
 Connected-only mode, which disables deferred holding, gave 72.1% deadline success. Fixed-peer-route mode, which retains each message's first selected peer sequence, gave 94.4%. These ablations compare forwarding modes with matched retry and lifetime settings, including differences in holding, exploration, and replacement of the selected peer sequence.[^delivery]
+
+The fixed-peer-route control still discovers an initial peer sequence and uses acknowledged custody transfers, retries, fragmentation, and resource limits. Its 94.4% success shows that this combination already provides much of Mercator's nominal delivery performance. Adaptation adds a smaller nominal gain, with larger gains under particular contact patterns. Because the modes change several mechanisms together, their differences do not isolate the contribution of holding or corridor selection alone.[^delivery]
+
+Scatter's result illustrates why the distinction matters: retaining a message is useful only if the forwarding policy can exploit a later opportunity. These experiments establish Mercator's advantage over the configured Scatter policy, while leaving comparison with an optimized diffusion policy open.
 
 ## When is adaptive routing worth it?
 
@@ -104,7 +120,7 @@ Give Jacquard a try if you're trying to understand the the system contract of an
 
 [^hybrid]: [BATMAN Bellman implementation](https://github.com/hxrts/jacquard/blob/main/docs/401_batman_routing.md) and [routing analysis](https://hxrts.com/jacquard/reports/router-tuning-report.pdf). Bellman-Ford runs locally over a gossip-merged topology graph, while the router-facing result remains a next-hop decision. The early tests concerned published forwarding support and convergence. The later deadline-delivery study uses a different workload and outcome, so those early results do not establish general superiority.
 
-[^scatter]: Non-recipient [peer scores](https://github.com/hxrts/jacquard/blob/main/crates/scatter/src/support.rs) use available storage and relay headroom. Positive default thresholds discourage transfers without an advantage, while direct recipients receive a separate bonus. The [nominal scenario](https://github.com/hxrts/jacquard/blob/main/crates/simulator/src/adaptation/scenario.rs) gives one sender direct recipient contacts and requires the other to relay. This is a limitation of the configured policy, rather than an optimized comparison across diffusion policies.
+[^scatter]: Non-recipient [peer scores](https://github.com/hxrts/jacquard/blob/main/crates/scatter/src/support.rs) use available storage and relay headroom. Positive default thresholds discourage transfers without an advantage, while direct recipients receive a separate bonus. The [forwarding reducer](https://github.com/hxrts/jacquard/blob/main/crates/scatter/src/runtime.rs) also gates dense-mode non-recipient transfers on transport diversity. The [nominal scenario](https://github.com/hxrts/jacquard/blob/main/crates/simulator/src/adaptation/scenario.rs) gives one sender direct recipient contacts and requires the other to relay. This is a limitation of the configured policy, rather than an optimized comparison across diffusion policies.
 
 [^stale]: [Routing analysis report, recovery-window experiment](https://hxrts.com/jacquard/reports/router-tuning-report.pdf) and [support evaluator](https://github.com/hxrts/jacquard/blob/main/crates/simulator/src/experiments/support.rs). Installed peer sequences and corridor alternatives, or diagnostic chains reconstructed from next-hop decisions, are checked against directed, usable links. Reconstructing a chain for measurement does not mean a next-hop engine stores an explicit peer route. The count accumulates unsupported rounds after disruption, which need not be consecutive or involve the same route. Deferred-delivery claims are recorded separately, so Mercator's zero does not mean it maintained connectivity throughout the partition.
 
@@ -126,7 +142,7 @@ Give Jacquard a try if you're trying to understand the the system contract of an
 
 [^mercator]: [Mercator implementation specification](https://github.com/hxrts/jacquard/blob/main/docs/406_mercator_routing.md). Engine-owned discovery, bounded exploration, custody return, acknowledgement clocks, and broker-pressure accounting are evaluated together. Recent recipient acknowledgements discourage speculative movement away from that contact and outrank older remote-link evidence until their validity expires. These preferences were developed on excluded seeds before the frozen comparison, which assumes aligned logical clocks for expiry across nodes.
 
-[^delivery]: The same six nominal cells include connected-only and fixed-peer-route Mercator ablations with the adaptive mode's two-round retry interval and 64-round lifetime. The fixed-peer-route mode, named `FixedPath` in code, retains its initial peer sequence and permits waiting, while omitting adaptive exploration, custody returns, and replacement after an unresponsive next hop. The selected fixed baseline in the plot uses a two-round retry interval and a 32-round lifetime, chosen on development runs. [Delivery evaluation contract](https://github.com/hxrts/jacquard/blob/main/docs/308_adaptive_delivery_evaluation.md).
+[^delivery]: The same six nominal cells include connected-only and fixed-peer-route Mercator ablations with the adaptive mode's two-round retry interval and 64-round lifetime. The fixed-peer-route mode, named `FixedPath` in code, [selects an initial peer sequence](https://github.com/hxrts/jacquard/blob/main/crates/mercator/src/delivery/planning.rs) and retains it and permits waiting, while omitting adaptive exploration, custody returns, and replacement after an unresponsive next hop. The selected fixed baseline in the plot uses a two-round retry interval and a 32-round lifetime, chosen on development runs. [Delivery evaluation contract](https://github.com/hxrts/jacquard/blob/main/docs/308_adaptive_delivery_evaluation.md).
 
 [^boundary]: [Saved recovery fixtures](https://github.com/hxrts/jacquard/blob/main/analysis/fixtures/adaptive_delivery_failures.json) and [evaluation contract](https://github.com/hxrts/jacquard/blob/main/docs/308_adaptive_delivery_evaluation.md). A replay of two-cluster seed 5055 with the frozen executable exactly reproduces the development ledger. A message created at round 584 has deadline 616 and arrives at 617. This known failure remains excluded from the independent seed sample and bounds any claim of uniform recovery.
 

@@ -1,5 +1,5 @@
 +++
-title = "Global Protocol Synthesis"
+title = "Telltale: Protocol Synthesis and Safe Reconfiguration"
 date = 2025-02-09
 description = "Preserving global compatibility through local reasoning as protocols change."
 slug = "telltale"
