@@ -1,8 +1,8 @@
 +++
-title = "Learning to Be Clean"
+title = "Clean Learning and What Remains"
 date = 2026-10-28
 description = "How neural networks build useful structure."
-slug = "learning-to-be-clean"
+slug = "what-remains"
 
 [extra]
 cover_image = "/images/byte-neuron.png"
