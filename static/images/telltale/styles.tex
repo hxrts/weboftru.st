@@ -1,0 +1,17 @@
+% Match the visual conventions in templates/partials/tikz-learning.html.
+\usetikzlibrary{arrows.meta}
+\tikzset{
+  telltale/.style={x=1cm,y=1cm,line width=.65pt,
+    >={Stealth[length=4.6pt,width=3.6pt]},
+    every node/.style={font=\sffamily\footnotesize,align=center}},
+  tt heading/.style={font=\sffamily\bfseries\footnotesize},
+  tt column/.style={font=\sffamily\footnotesize},
+  tt annotation/.style={font=\sffamily\slshape\footnotesize,text=black!55},
+  tt flow/.style={->,line width=.85pt},
+  tt guide/.style={draw=black!55,line width=.65pt},
+  tt boundary/.style={draw=black!65,line width=1pt,
+    dash pattern=on .1pt off 2.5pt,line cap=round},
+  tt readout/.style={draw,line width=.65pt,fill=white,inner sep=4pt},
+  tt axis/.style={draw=black,line width=.65pt},
+  tt trace/.style={draw=black,line width=1.1pt,line join=round}
+}
