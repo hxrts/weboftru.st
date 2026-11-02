@@ -80,7 +80,7 @@ I would consider adaptive routing when changing contacts or resource constraints
 
 Where the fixed control already works well, the benefit is less clear. Burst trials were nearly tied at 97.4% and 97.3%, with the paired interval for the difference including zero. In one low-bandwidth grid setting, adaptive routing lost 8.3 percentage points.[^contract] Extra discovery and state maintenance must earn their bandwidth and storage costs.
 
-I would therefore replay the intended workload and check deadline success, recovery, traffic, and buffer limits before choosing a policy. A saved development case also missed a recovery target because one message arrived a round late.[^boundary] Unknown-peer discovery, restart survival, and radio performance remain outside these simulations.
+I would therefore replay the intended workload and check deadline success, recovery, traffic, and buffer limits before choosing a policy. A saved development case also missed a recovery target because one message arrived a round late.[^boundary] Unknown-peer discovery, restart survival, and validation on physical radios remain outside these simulations.
 
 ## Using Jacquard as a library
 
