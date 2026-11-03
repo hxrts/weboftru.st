@@ -405,7 +405,7 @@ The difference lies in what the reader could do along the way. Preserving an end
 
 Together, these experiments distinguish surviving responses from sustained downstream use. A response can survive without remaining usable, and a useful response can pass between mechanisms. Functional conservation requires a particular reader to retain access to a learned response.
 
-Protein function offers a familiar analogy. Related proteins can retain functional structures despite differences in their amino-acid sequences.[^protein-conservation] Likewise, preserving a learned capability need not require preserving every component that first supplied it.
+We can draw an analogy to functional conservation in proteins. An evolutionary lineage can preserve a protein’s function even as the amino-acid sequence supplying that function changes.[^protein-conservation] Likewise, preserving a learned capability need not require preserving every component that first supplied it.
 
 What makes a neural network clean, on this account, is the usefulness of its learned structure to downstream computations. Training targets define successful use, and errors propagated through readers shape the mechanisms that supply it. Learning can therefore conserve useful structure through changes in its implementation. What is conserved is the reader’s ability to use a learned distinction, even as the mechanism supplying it changes.
 
