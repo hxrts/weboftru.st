@@ -1,5 +1,5 @@
 +++
-title = "What Makes a Neural Network Clean"
+title = "What Makes Neural Networks Clean"
 date = 2026-10-28
 description = "Training a neural network is the persistence of useful structure."
 slug = "clean-networks"
