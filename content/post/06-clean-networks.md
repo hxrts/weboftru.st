@@ -1,8 +1,8 @@
 +++
-title = "Clean Learning and What Remains"
+title = "What Makes a Neural Network Clean"
 date = 2026-10-28
-description = "How neural networks build useful structure."
-slug = "what-remains"
+description = "Training a neural network is the persistence of useful structure."
+slug = "clean-networks"
 
 [extra]
 cover_image = "/images/byte-neuron.png"
@@ -11,7 +11,7 @@ cover_caption = "Byte Magazine, August 1979"
 
 ## What makes a feature useful?
 
-Every acquisition changes what a neural network learns next. But if neural circuitry itself is a moving target, what is the conserved nature of a learned mechanism?
+Every acquisition changes what a neural network learns next. But if neural circuitry itself is a moving target, what learned structure is actually conserved?
 
 In *Neural Networks Are Already Clean*, Nick Cammarata notes the importance of identifying when mechanisms are used in later development.
 
@@ -50,9 +50,9 @@ Cammarata follows a neuron in a retrained InceptionV1 model whose strongest resp
 \end{tikzpicture}
 {% end %}
 
-Cammarata calls the branching of responses across related inputs "recursive generalization." His proposed explanation is that existing mechanisms give related learning a head start.
+Cammarata calls the branching of responses across related inputs "recursive generalization."
 
-Cammarata traces how a mechanism develops. In this post, I build on this and ask what is conserved through that development. I use controlled experiments to examine which responses persist, which readers continue to use them, and whether their usefulness survives changes in the circuitry supplying them. These experiments distinguish forms of continuity and examine how earlier acquisitions shape later learning.
+Cammarata traces how a mechanism develops. Training targets determine what counts as successful downstream use. Building on this idea, I ask how learning preserves useful capabilities while the circuitry changes. My experiments test whether responses persist and downstream readers continue to depend on them.
 
 ## One path leads to another
 
@@ -148,11 +148,9 @@ The advantage reverses when acquisition requires a higher broccoli score. The sh
 
 A distinction can persist despite weaker activation. Both routes preserve flower classification, but the weaker signal may affect other downstream uses.
 
-Across a population of pathways, increased use of a flower-responsive mechanism can coincide with loss of flower responsiveness in its descendants. Measuring only the final responsive share would miss these opposing changes.
-
 ## How roles and responses change
 
-Across inherited pathways, an unchanged average can conceal a redistribution of the mechanisms supplying a distinction. How much change comes from ancestors supplying more pathways, and how much comes from inherited responses changing?
+Across a population, an unchanged responsive share can conceal changes in which mechanisms supply it. How much comes from earlier mechanisms supplying more pathways, and how much from their descendants changing responses?
 
 I initialized four pathways with the weights of two earlier mechanisms and trained them toward specified responses. Initially, $\mathsf{A}$ responds to flowers, while $\mathsf{B}$ supplies texture without a flower response on the same assay. Three pathways inherit $\mathsf{A}$’s weights and one inherits $\mathsf{B}$’s. Two $\mathsf{A}$ descendants retain flower responsiveness, while the third learns green and loses its flower response.
 
@@ -239,13 +237,7 @@ Counting each descendant by its ancestor’s response gives three responsive pat
 \end{tikzpicture}
 {% end %}
 
-Each copy represents an inherited use with known ancestry. Pathways count equally, so three nearly unused copies outweigh one heavily used pathway in this calculation. A persistent mechanism can also serve more readers without being copied, which motivates the allocation experiment below. Whether readers depend on those signals requires testing their use.
-
-Ancestry records identify which responses are retained or acquired. Price accounting quantifies how changing representation and inherited responses contribute to the population mean, exposing changes that cancel in the total. The identity does not itself assign causes to those changes.
-
-Explaining the changes requires examining training dynamics. Direct learning pressure and competition for shared capacity can each weaken an earlier response.[^toy-roles] Here, ancestry and targets are prescribed, so the construction illustrates the accounting without explaining why branching would emerge.
-
-The global terms do not identify which readers receive retained flower responses and which receive newly acquired ones.
+Pathways count equally here, so their representation does not measure downstream importance. Price accounting separates changes in representation from changes in inherited responses, but does not explain their causes.[^toy-roles] The global terms also leave open which readers receive retained responses and which receive newly acquired ones.
 
 ## Readers reveal inherited roles
 
@@ -351,6 +343,8 @@ Averaging the equally sized groups recovers the global terms in either history. 
 \end{tikzpicture}
 {% end %}
 
+## Readers reshape their inputs
+
 The matched histories prescribe which pathways supply each reader. In the next experiment, reader errors train both the responses of two persistent routes and the weights each reader assigns to them. These routes start afresh, with flower and green responses in A and zero responses in B.
 
 Each reader learns nonnegative routing shares that sum to one, starting with equal shares. The broccoli reader combines its routed signal with a fixed texture input.[^toy-routing]
@@ -377,9 +371,7 @@ Removing the initial green response before training leaves final classification 
 
 {{ tikz(learning=true, source="static/images/flower-toy/precursor_comparison.tex", fig_w="620px", caption="<strong>An inherited response can impede joint learning.</strong> Removing the initial green response lowers mean squared reader error by about 99% after 800 updates. Both conditions reach 100% accuracy. Earlier specialization accompanies the faster decline, but its causal role remains untested. Error is averaged equally over both readers on a logarithmic scale.") }}
 
-At update 400, the flower reader assigns about 75% to A without the precursor, compared with 56% with it. The broccoli reader assigns about 75% to B without the precursor, compared with 55% with it. B also acquires a stronger green response without the precursor. The two readers’ Price terms differ more strongly in both allocation and flower-response change.[^toy-precursor]
-
-The precursor therefore changes the course of joint learning as well as its final error. Earlier differentiation is consistent with the improvement, but the comparison does not isolate which allocation or response changes cause it.
+Without the precursor, the readers specialize toward different routes earlier, and B develops a stronger green response.[^toy-precursor] Earlier differentiation accompanies the lower reader error, but the comparison does not isolate which allocation or response changes cause the improvement.
 
 A reader’s allocation shows how strongly it weights a route, but does its classification depend on that signal? I tested this by zeroing each route after training while holding all learned weights and routing shares fixed.[^toy-ablations]
 
@@ -389,7 +381,7 @@ A reader’s allocation shows how strongly it weights a route, but does its clas
 | A | 50% | 100% |
 | B | 100% | 75% |
 
-Under this intervention, perfect flower classification requires A and perfect broccoli classification requires B. Yet B began without the green precursor. Each reader has come to depend on a different route, although either route can still affect the other reader’s numerical output.[^toy-ablations]
+Under this intervention, perfect flower classification requires A and perfect broccoli classification requires B. Yet B began without the green precursor. The readers’ different targets have shaped different dependencies on the available routes. Either route can still affect the other reader’s numerical output.[^toy-ablations]
 
 These endpoint dependencies leave open whether the readers kept classifying correctly while the routes changed.
 
@@ -409,13 +401,13 @@ Throughout the continuous schedule, the score for flower-present inputs stays at
 
 {{ tikz(learning=true, source="static/images/flower-toy/handoff_reader_scores.tex", fig_w="620px", caption="<strong>Reader access during the handoff.</strong> Both schedules end with identical parameters and reader outputs. The dashed line marks the fixed classification threshold of 0.45; shading marks failed classification at updates 1–50 in the interrupted schedule. Flower-absent scores remain zero throughout.") }}
 
-Both schedules reach the same state, so further training under identical conditions would produce matching updates. Their difference lies in what the reader could do along the way. The earlier experiments show how retained circuitry can shape later learning; this experiment shows that continuity of use is a separate property.
+The difference lies in what the reader could do along the way. Preserving an endpoint capability and preserving its continuous use are separate achievements.
 
-Together, these experiments distinguish a response’s persistence, a reader’s dependence on it, and uninterrupted access to it. A response can survive without remaining usable, and a useful response can pass between mechanisms. Functional conservation therefore requires specifying what remains usable, by which reader, and over what interval.
+Together, these experiments distinguish surviving responses from sustained downstream use. A response can survive without remaining usable, and a useful response can pass between mechanisms. Functional conservation requires a particular reader to retain access to a learned response.
 
 Protein function offers a familiar analogy. Related proteins can retain functional structures despite differences in their amino-acid sequences.[^protein-conservation] Likewise, preserving a learned capability need not require preserving every component that first supplied it.
 
-Cammarata’s clean-network account explains mechanisms through their use by downstream readers. This account of functional conservation follows that relationship through change. Matching endpoints alone cannot establish its continuity. What is conserved is the reader’s ability to use a learned distinction, even as the mechanism supplying it changes.
+What makes a neural network clean, on this account, is the usefulness of its learned structure to downstream computations. Training targets define successful use, and errors propagated through readers shape the mechanisms that supply it. Learning can therefore conserve useful structure through changes in its implementation. What is conserved is the reader’s ability to use a learned distinction, even as the mechanism supplying it changes.
 
 ---
 
@@ -471,7 +463,7 @@ Cammarata’s clean-network account explains mechanisms through their use by dow
 
 [^price-representation]: The toy fixes route identities and feature coordinates throughout training. Applying the decomposition to a larger network would require a justified correspondence between mechanisms across checkpoints and a declared signal scale and attribution rule. Changing those choices can change the terms even when the computation being studied is preserved.
 
-[^toy-precursor]: In the [training traces](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_trajectories.csv), B’s green coefficient at update 400 is 0.94 without the precursor and 0.06 with it. The corresponding [Price terms](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_price.csv) describe allocation and response changes relative to initialization without isolating which changes cause the error difference.
+[^toy-precursor]: At update 400 in the [training traces](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_trajectories.csv), the flower reader assigns about 75% to A without the precursor, compared with 56% with it. The broccoli reader assigns about 75% to B without the precursor, compared with 55% with it. B’s green coefficient is 0.94 without the precursor and 0.06 with it. The corresponding [Price terms](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_price.csv) describe allocation and response changes relative to initialization without isolating which changes cause the error difference.
 
 [^toy-ablations]: The [route-ablation measurements](https://github.com/hxrts/flower-toy/blob/b13556724b777d88d861b6d462bd3255bb684078/data/learned_routing_ablations.csv) zero one route’s output after training, without renormalizing routing shares or retraining. They record mean squared error, maximum error, and accuracy for each reader in every training condition. Selective classification losses establish dependence under this intervention, while error changes show that the other reader can also be affected.
 
