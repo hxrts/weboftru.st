@@ -538,9 +538,10 @@ body > footer {
 
 .post-list {
     a {
-        display: flex;
-        flex-direction: row;
-        align-items: baseline;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        align-items: last baseline;
         gap: 0;
         padding-top: var(--s-3);
         padding-bottom: var(--s-3);
@@ -559,20 +560,30 @@ body > footer {
     font-size: var(--t-base);
     font-weight: var(--fw-normal);
     line-height: var(--lh-snug);
-    display: flex;
-    flex: 1;
-    align-items: baseline;
+    display: block;
+    position: relative;
+    min-width: 0;
+    padding-right: 1.2rem;
 
     &::after {
         content: "";
-        flex: 1;
+        position: absolute;
+        left: 0;
+        right: 0.1rem;
+        bottom: 0.25em;
         border-bottom: 2px dotted currentColor;
-        margin-left: 0.1rem;
-        margin-right: 0.1rem;
-        margin-bottom: 0.4em;
-        min-width: 1rem;
         opacity: 0.6;
     }
+}
+
+.post-title-text {
+    // Mask the leader beneath each text fragment, leaving dots after the last line.
+    position: relative;
+    z-index: 1;
+    background: var(--c-bg);
+    padding-right: 0.1rem;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
 }
 
 .draft-tag {
