@@ -158,7 +158,7 @@ The flower-responsive share stays at ½, even though $\mathsf{A}$ now supplies �
 
 Trained networks can develop overlapping representations along separate pathways,[^overlapping-pathways] while shared parameters can receive opposing learning signals.[^gradient-conflict] The toy isolates these ingredients by prescribing ancestry and choosing changes that cancel exactly. This makes the accounting ambiguity visible without establishing how often such cancellation occurs in ordinary training.
 
-Price accounting has previously been applied to evolutionary algorithms and neural learning.[^price-learning] Here, I use it to measure how differential representation and response change contribute to the population mean. The equation separates selection (which mechanisms contribute more descendants) from variation (how those descendants differ from their ancestors).[^price][^price-variation]
+Prior work makes use of the Price equation to analyze evolutionary algorithms and neural learning.[^price-learning] Here, I use it to measure how differential representation and response change contribute to the population mean. The equation separates selection (which mechanisms contribute more descendants) from variation (how those descendants differ from their ancestors).[^price][^price-variation]
 
 Under a fixed assay, $z$ is one for a flower-responsive pathway and zero otherwise. The descendant count $w$ records how many later pathways are attributed to each earlier mechanism, with average $\bar w$.[^price-accounting] For each ancestor, $\Delta z$ is its descendants’ mean response minus its own. The change in the population mean is[^price-weights]
 
