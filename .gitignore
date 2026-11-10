@@ -23,5 +23,8 @@ work
 # pi harness
 .pi
 
-# Font generation helpers
+# font generation helpers
 __pycache__/
+
+# unpublished drafts
+content/post/draft-*

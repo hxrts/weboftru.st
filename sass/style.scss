@@ -1068,11 +1068,11 @@ body > footer {
     }
 
     figure {
-        margin-top: var(--s-6);
+        margin-top: var(--s-5);
         margin-bottom: var(--s-6);
 
         @media (min-width: 640px) {
-            margin-top: var(--s-8);
+            margin-top: var(--s-6);
             margin-bottom: var(--s-8);
         }
 
@@ -1182,7 +1182,7 @@ body > footer {
     }
 
     .mermaid {
-        margin-top: var(--s-6);
+        margin-top: var(--s-5);
         margin-bottom: var(--s-6);
         padding: 0;
         overflow-x: auto;
@@ -1193,7 +1193,7 @@ body > footer {
         text-align: center;
 
         @media (min-width: 640px) {
-            margin-top: var(--s-8);
+            margin-top: var(--s-6);
             margin-bottom: var(--s-8);
         }
 
@@ -1338,11 +1338,11 @@ svg[id^="mermaid-"] {
 
 .svg-diagram {
     cursor: pointer;
-    margin-top: var(--s-6);
+    margin-top: var(--s-5);
     margin-bottom: var(--s-6);
 
     @media (min-width: 640px) {
-        margin-top: var(--s-8);
+        margin-top: var(--s-6);
         margin-bottom: var(--s-8);
     }
 }
@@ -1396,7 +1396,7 @@ svg[id^="mermaid-"] {
 // shortcode's fig_w argument (--fig-w), like the ep-presentation deck.
 
 .tikz-fig {
-    margin-top: var(--s-6);
+    margin-top: var(--s-5);
     margin-bottom: var(--s-6);
     padding: 0;
     overflow-x: auto;
@@ -1407,7 +1407,7 @@ svg[id^="mermaid-"] {
     transition: opacity 0.2s ease-in;
 
     @media (min-width: 640px) {
-        margin-top: var(--s-8);
+        margin-top: var(--s-6);
         margin-bottom: var(--s-8);
     }
 
