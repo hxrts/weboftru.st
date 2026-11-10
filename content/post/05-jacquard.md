@@ -72,6 +72,8 @@ BATMAN Classic adapts its preferred neighbor as reachability observations change
 
 Mercator groups a primary peer sequence and bounded alternatives into a **corridor**, using recent evidence and estimated relay pressure. A corridor preserves alternative continuations, giving forwarding more flexibility than a single selected peer route.[^route-shapes]
 
+{{ tikz(source="static/images/jacquard/mercator-fields.tex", fig_w="680px", caption="<strong>Routing demands overlap at shared relays.</strong> The ten-node detour-choice simulation has concurrent objectives 1 → 6, 2 → 7, and 3 → 8. Gray lines show the actual topology. Blue arrows illustrate supported corridors, with a pale amber band marking the detour, while overlapping contours suggest competing demands and pressure around relays 4 and 5. Contours are schematic, not measured fields, and the highlighted paths do not reconstruct the run’s selected routes.") }}
+
 If the primary sequence loses support, Mercator can replace it with an alternative whose evidence remains valid. If none remains supported, it withdraws the connected-forwarding claim. Permitted custody can keep the delivery attempt active without asserting that a connected route exists.[^mercator]
 
 For example, a message may reach a relay just before the network partitions. The relay can retain it, within storage and lifetime limits, until a usable contact appears. The delivery objective persists while the available means of reaching the recipient change.
