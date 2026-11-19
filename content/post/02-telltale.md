@@ -1,5 +1,5 @@
 +++
-title = "Telltale: Local Reasoning for Safe Protocol Changes"
+title = "Telltale: Local Reasoning for Safe Protocol Change"
 date = 2025-02-09
 description = "Preserving global compatibility through local reasoning as protocols change."
 slug = "telltale"
